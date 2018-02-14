@@ -1,4 +1,34 @@
-<head>hello</head>
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Tower RPG GAME</title>
+        <script src="../assets/libs/phaser.min.js"></script>
+    </head>
+    <body>
 
+    <script type="text/javascript">
 
-CAN YOU SEE THIS MESSAGE??!?!!?
+     function loaded() 
+    {
+        var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create });
+
+        function preload () {
+
+            game.load.image('logo', '../assets/phaser.png');
+
+        }
+
+        function create () {
+
+            var logo = game.add.sprite(game.world.centerX, game.world.centerY, 'logo');
+            logo.anchor.setTo(0.5, 0.5);
+
+        }
+    };
+        window.onload = loaded();
+
+    </script>
+
+    </body>
+</html>
