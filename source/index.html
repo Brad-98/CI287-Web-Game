@@ -6,12 +6,19 @@
         <script src="../assets/libs/phaser.min.js"></script>
     </head>
     <body>
+        <style>
+        body{
+            padding: 0;
+            margin:0;
+            background-color:#000000;
+        }
+    </style>
 
     <script type="text/javascript">
 
      function loaded() 
     {
-        var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create });
+        var game = new Phaser.Game(1280, 720, Phaser.AUTO, '', { preload: preload, create: create });
 
         function preload () {
 
