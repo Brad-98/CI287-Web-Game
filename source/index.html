@@ -1,41 +1,30 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        <meta charset="UTF-8" />
-        <title>Tower RPG GAME</title>
+        <meta charset="utf-8">
+        <title>Climb the Tower!</title>
         <script src="../assets/libs/phaser.min.js"></script>
-    </head>
-    <body>
+        <script src="mainMenu.js"></script>
+        <script src="outdoorZone.js"></script>
+        <script src="tower_level1.js"></script>
+        
         <style>
-        body{
-            padding: 0;
-            margin:0;
-            background-color:#000000;
-        }
-    </style>
+            body
+            {
+                padding: 0;
+                margin: 0;
+                background-color: white;
+            }
+        </style>
+       
+        <script>
+            var game = new Phaser.Game(1280, 720, Phaser.Auto, '');
 
-    <script type="text/javascript">
-
-     function loaded() 
-    {
-        var game = new Phaser.Game(1280, 720, Phaser.AUTO, '', { preload: preload, create: create });
-
-        function preload () {
-
-            game.load.image('logo', '../assets/phaser.png');
-
-        }
-
-        function create () {
-
-            var logo = game.add.sprite(game.world.centerX, game.world.centerY, 'logo');
-            logo.anchor.setTo(0.5, 0.5);
-
-        }
-    };
-        window.onload = loaded();
-
-    </script>
-
-    </body>
+            game.state.add('mainMenu', mainMenu);
+            game.state.add('outdoorZone', outdoorZone);
+            game.state.add('tower_level1', tower_level1);
+            
+            game.state.start('mainMenu');
+        </script>
+    </head>
 </html>

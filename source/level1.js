@@ -1,7 +1,0 @@
-
-
-
-function test(int qa)
-{
-    
-}
