@@ -1,11 +1,7 @@
 
-function add(int x, int y)
-{
-    return x + y;
-}
 
-function remove(int x, int y)
+function multiply(int x, int y)
 {
-    return x - y;
+    return x * y;
 }
 =
