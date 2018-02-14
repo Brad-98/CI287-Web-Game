@@ -9,3 +9,7 @@ function remove(int x, int y)
     return x - y;
 }
 =
+function test(int qa)
+{
+    
+}
