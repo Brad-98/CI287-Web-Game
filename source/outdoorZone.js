@@ -4,15 +4,15 @@ var controls;
 
 var world = {
     map: null,
-    groundLayer: null
+    dirt_layer: null
 }; // end of world
 
 function buildWorld(game, world) {
     // Initialise the tilemap
-    world.map = game.add.tilemap('groundLevel');
+    world.map = game.add.tilemap('NewMap.');
     world.map.addTilesetImage('roguelikeSheet_transparent', 'tileSheet');
     // set up the tilemap layers
-    world.groundLayer = world.map.createLayer('groundLayer');
+    world.groundLayer = world.map.createLayer('dirt_layer');
 } //buildWorld()   
 
 var outdoorZone =
@@ -22,7 +22,7 @@ var outdoorZone =
         this.game.load.spritesheet('player', '../assets/player.png',64,65,77);
         this.game.load.spritesheet('enemy_elf', '../assets/enemy_elf.png',64,69,65);
         this.game.load.image('tileSheet', '../assets/roguelikeSheet_transparent.png');
-        this.game.load.tilemap('groundLevel','../assets/test.json', null, Phaser.Tilemap.TILED_JSON);
+        this.game.load.tilemap('NewMap.','../assets/NewMap..json', null, Phaser.Tilemap.TILED_JSON);
         
         enemy_elf = function (index, game, x, y) {
             this.enemy_elf = game.add.sprite(x,y,"enemy_elf");
