@@ -7,19 +7,19 @@
         <script src="mainMenu.js"></script>
         <script src="outdoorZone.js"></script>
         <script src="tower_level1.js"></script>
-        <script src="outdoor.js"></script>
+        
         
         <style>
             body
             {
-                padding: 0;
-                margin: 0;
+
                 background-color: black;
             }
         </style>
        
         <script>
             var game = new Phaser.Game(1280, 720, Phaser.Auto, '');
+            //var game = new Phaser.Game(3840, 2160, Phaser.CANVAS, '');
 
             game.state.add('mainMenu', mainMenu);
             game.state.add('outdoorZone', outdoorZone);
