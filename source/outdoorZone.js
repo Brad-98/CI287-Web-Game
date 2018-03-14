@@ -150,7 +150,7 @@ var outdoorZone =
             player.animations.stop();    
         }
         
-        this.game.physics.arcade.overlap(player, coin, playerCollisionCoin, null, this);
+        this.game.physics.arcade.overlap(player, coin, this.playerCollisionCoin, null, this);
     },
     
     playerCollisionCoin : function(player, coin)
