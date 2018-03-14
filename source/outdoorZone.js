@@ -1,18 +1,21 @@
 var player;
 var enemy_elf;
 var controls;
-var world = {
+
+var world = 
+{
     map: null,
     dirt_layer: null
 }; // end of world
 
-function buildWorld(game, world) {
+function buildWorld(game, world) 
+{
     // Initialise the tilemap
     world.map = game.add.tilemap('NewMap.');
     world.map.addTilesetImage('roguelikeSheet_transparent', 'tileSheet');
     // set up the tilemap layers
     world.groundLayer = world.map.createLayer('dirt_layer');
-} //buildWorld()   
+}   
 
 var outdoorZone =
 {
@@ -23,14 +26,15 @@ var outdoorZone =
         this.game.load.image('tileSheet', '../assets/roguelikeSheet_transparent.png');
         this.game.load.tilemap('NewMap.','../assets/NewMap..json', null, Phaser.Tilemap.TILED_JSON);
 
-        enemy_elf = function (index, game, x, y) {
+        enemy_elf = function (index, game, x, y) 
+        {
             this.enemy_elf = game.add.sprite(x,y,"enemy_elf");
             this.enemy_elf.anchor.setTo(0.5,0.5);
             this.enemy_elf.name = index.toString;
             this.enemy_elf.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],9, true);
             this.enemy_elf.animations.play('walkUp');
             game.physics.enable(this.enemy_elf,Phaser.Physics.ARCADE);     
-};
+        };
     },  
     
     create : function()
@@ -52,15 +56,10 @@ var outdoorZone =
         player.anchor.setTo(0.5,0.5);
         //this.game.physics.arcade.enable(this.player);
         //this.game.physics.p2.enable(this.player);
-       
-        
-        
-        //Enemy Elf Code
         
         new enemy_elf(0,game,100,100);
         new enemy_elf(0,game,200,100);
     
-        //Player Movement controls
         controls = 
         {
             up: this.input.keyboard.addKey(Phaser.Keyboard.W),
@@ -80,17 +79,32 @@ var outdoorZone =
             player.y -=1.8;
             player.x -=1.8;
         }
+       
+        else if(controls.up.isDown && controls.right.isDown)
+        {
+            player.animations.play('walkRight');
+            player.y -=1.8;
+            player.x +=1.8;
+        }
         
-        else if(controls.up.isDown)
+        else if (controls.up.isDown)
         {
             player.animations.play('walkUp');
             player.y -=2;
         }
         
-        else if(controls.left.isDown)
+        else if(controls.down.isDown && controls.left.isDown)
         {
             player.animations.play('walkLeft');
-            player.x -=2;
+            player.y +=1.8;
+            player.x -=1.8;
+        }
+        
+        else if(controls.down.isDown && controls.right.isDown)
+        {
+            player.animations.play('walkRight');
+            player.y +=1.8;
+            player.x +=1.8;
         }
         
         else if(controls.down.isDown)
@@ -98,6 +112,12 @@ var outdoorZone =
             player.animations.play('walkDown');
             player.y +=2;
             this.game.camera.y +=4;
+        }
+        
+        else if(controls.left.isDown)
+        {
+            player.animations.play('walkLeft');
+            player.x -=2;
         }
         
         else if(controls.right.isDown)
