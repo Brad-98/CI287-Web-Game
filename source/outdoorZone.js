@@ -1,6 +1,10 @@
 var player;
 var enemy_elf;
 var controls;
+var coin;
+var coinScore = 0;
+var coinScoreString = '';
+var coinScoreText;
 
 var world = 
 {
@@ -11,7 +15,7 @@ var world =
 function buildWorld(game, world) 
 {
     // Initialise the tilemap
-    world.map = game.add.tilemap('NewMap.');
+    world.map = this.game.add.tilemap('NewMap.');
     world.map.addTilesetImage('roguelikeSheet_transparent', 'tileSheet');
     // set up the tilemap layers
     world.groundLayer = world.map.createLayer('dirt_layer');
@@ -23,17 +27,27 @@ var outdoorZone =
     {
         this.game.load.spritesheet('player', '../assets/player.png',64,65,77);
         this.game.load.spritesheet('enemy_elf', '../assets/enemy_elf.png',64,69,77);
+        this.game.load.image('coin', '../assets/Coin.png');
+        
         this.game.load.image('tileSheet', '../assets/roguelikeSheet_transparent.png');
         this.game.load.tilemap('NewMap.','../assets/NewMap..json', null, Phaser.Tilemap.TILED_JSON);
 
         enemy_elf = function (index, game, x, y) 
         {
-            this.enemy_elf = game.add.sprite(x,y,"enemy_elf");
+            this.enemy_elf = game.add.sprite(x ,y , "enemy_elf");
             this.enemy_elf.anchor.setTo(0.5,0.5);
             this.enemy_elf.name = index.toString;
             this.enemy_elf.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],9, true);
             this.enemy_elf.animations.play('walkUp');
-            game.physics.enable(this.enemy_elf,Phaser.Physics.ARCADE);     
+            game.physics.arcade.enable(enemy_elf);     
+        };
+        
+        coin = function (index, game, x, y) 
+        {
+            this.coin = game.add.sprite(x, y , "coin");
+            this.coin.anchor.setTo(0.5,0.5);
+            this.coin.name = index.toString;
+            game.physics.arcade.enable(coin);     
         };
     },  
     
@@ -54,11 +68,13 @@ var outdoorZone =
         player.animations.add('walkRight', [63,64,65,66,67,68,69,70,71],12, false);
         
         player.anchor.setTo(0.5,0.5);
-        //this.game.physics.arcade.enable(this.player);
-        //this.game.physics.p2.enable(this.player);
+        this.game.physics.arcade.enable(player);
         
-        new enemy_elf(0,game,100,100);
-        new enemy_elf(0,game,200,100);
+        new enemy_elf(0,this.game,100,100);
+        new enemy_elf(0,this.game,200,100);
+        
+        new coin(0,this.game,100,500);
+        new coin(0,this.game,400,400);
     
         controls = 
         {
@@ -67,12 +83,15 @@ var outdoorZone =
             right: this.input.keyboard.addKey(Phaser.Keyboard.D),
             down: this.input.keyboard.addKey(Phaser.Keyboard.S),
         };
+        
+        coinScoreString = 'Coins : ';
+        coinScoreText = this.game.add.text(300, 300, coinScoreString + coinScore, {font: '40px Arial', fill: '#ffffff'});
+        
         this.game.camera.follow(player,Phaser.Camera.FOLLOW_LOCKON,0.1,0.1);
     },
     
     update : function()
-    { 
-        
+    {  
         if(controls.up.isDown && controls.left.isDown)
         {
             player.animations.play('walkLeft');
@@ -125,5 +144,22 @@ var outdoorZone =
             player.animations.play('walkRight');
             player.x +=2;
         }
+        
+        else
+        {
+            player.animations.stop();    
+        }
+        
+        this.game.physics.arcade.overlap(player, coin, playerCollisionCoin, null, this);
+    },
+    
+    playerCollisionCoin : function(player, coin)
+    {
+        coin.kill();
+        coinScore += 1;
+        coinScoreText.text = coinScoreString + coinScore;
+        
+        //Also get image of coin next to the coin text looks cooler in my space invaders game
+        //Play coin sound effect don't loop
     },
 };
