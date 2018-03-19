@@ -9,16 +9,16 @@ var coinScoreText;
 var world = 
 {
     map: null,
-    dirt_layer: null
+    grass_layer: null
 }; // end of world
 
 function buildWorld(game, world) 
 {
     // Initialise the tilemap
-    world.map = this.game.add.tilemap('NewMap.');
-    world.map.addTilesetImage('roguelikeSheet_transparent', 'tileSheet');
+    world.map = this.game.add.tilemap('outdoorZone.');
+    world.map.addTilesetImage('GrassandSand', 'tileSheet');
     // set up the tilemap layers
-    world.groundLayer = world.map.createLayer('dirt_layer');
+    world.grass_layer = world.map.createLayer('grass_layer');
 }   
 
 var outdoorZone =
@@ -29,8 +29,8 @@ var outdoorZone =
         this.game.load.spritesheet('enemy_elf', '../assets/enemy_elf.png',64,69,77);
         this.game.load.image('coin', '../assets/Coin.png');
         
-        this.game.load.image('tileSheet', '../assets/roguelikeSheet_transparent.png');
-        this.game.load.tilemap('NewMap.','../assets/NewMap..json', null, Phaser.Tilemap.TILED_JSON);
+        this.game.load.image('tileSheet', '../assets/tilesets/Grass&Sand.png');
+        this.game.load.tilemap('outdoorZone.','../assets/tilesets/outdoorZone..json', null, Phaser.Tilemap.TILED_JSON);
 
         enemy_elf = function (index, game, x, y) 
         {
@@ -54,7 +54,7 @@ var outdoorZone =
     create : function()
     {
         buildWorld(game, world);
-        this.game.world.setBounds(0,0,3840,2160);
+        this.game.world.setBounds(0,0,3840,2176);
         //Player Code
         
         player = this.game.add.sprite(400,150,"player");
