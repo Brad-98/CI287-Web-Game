@@ -9,16 +9,17 @@ var coinScoreText;
 var world = 
 {
     map: null,
-    grass_layer: null
+    layer: null
 }; // end of world
 
 function buildWorld(game, world) 
 {
     // Initialise the tilemap
-    world.map = this.game.add.tilemap('outdoorZone.');
-    world.map.addTilesetImage('GrassandSand', 'tileSheet');
+    world.map = this.game.add.tilemap('map', 32, 32);
+    world.map.addTilesetImage('tileSheet');
     // set up the tilemap layers
-    world.grass_layer = world.map.createLayer('grass_layer');
+    world.layer = world.map.createLayer(0);
+    world.layer.resizeWorld();
 }   
 
 var outdoorZone =
@@ -29,8 +30,8 @@ var outdoorZone =
         this.game.load.spritesheet('enemy_elf', '../assets/enemy_elf.png',64,69,77);
         this.game.load.image('coin', '../assets/Coin.png');
         
-        this.game.load.image('tileSheet', '../assets/tilesets/Grass&Sand.png');
-        this.game.load.tilemap('outdoorZone.','../assets/tilesets/outdoorZone..json', null, Phaser.Tilemap.TILED_JSON);
+        this.game.load.image('tileSheet', '../assets/tilesets/grass.png');
+        this.game.load.tilemap('map','../assets/tilesets/outdoorZone..csv');
 
         enemy_elf = function (index, game, x, y) 
         {
