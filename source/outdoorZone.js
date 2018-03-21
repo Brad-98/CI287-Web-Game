@@ -5,6 +5,10 @@ var coin;
 var coinScore = 0;
 var coinScoreString = '';
 var coinScoreText;
+var facingUp = true;
+var facingLeft = false;
+var facingDown = false;
+var facingRight = false;
 
 var world = 
 {
@@ -27,7 +31,7 @@ var outdoorZone =
 {
     preload : function()
     {
-        this.game.load.spritesheet('player', '../assets/player.png',64,65,77);
+        this.game.load.spritesheet('player', '../assets/player.png',64,65.75,77);
         this.game.load.spritesheet('enemy_elf', '../assets/enemy_elf.png',64,69,77);
         this.game.load.image('coin', '../assets/Coin.png');
         
@@ -61,7 +65,7 @@ var outdoorZone =
         world.map.setTileIndexCallback(7, this.resetplayer, this);
         
         //Player Code
-        player = this.game.add.sprite(2000,1500,"player");
+        player = this.game.add.sprite(2000,150,"player");
  
         player.animations.add('walkUp', [36,37,38,39,40,41,42,43,44],8, false);
         
@@ -70,6 +74,14 @@ var outdoorZone =
         player.animations.add('walkLeft', [45,46,47,48,49,50,51,52,53],12, false);
         
         player.animations.add('walkRight', [63,64,65,66,67,68,69,70,71],12, false);
+        
+        player.animations.add('attackUp', [0,1,2,3,4,5,6,7,0],10, false);
+        
+        player.animations.add('attackDown', [18,19,20,21,22,23,24,25,18],10, false);
+        
+        player.animations.add('attackLeft', [9,10,11,12,13,14,15,16,9],10, false);
+        
+        player.animations.add('attackRight', [27,28,29,30,31,32,33,34,27],10, false);
         
         player.anchor.setTo(0.5,0.5);
         this.game.physics.arcade.enable(player);
@@ -103,6 +115,11 @@ var outdoorZone =
             player.animations.play('walkLeft');
             player.y -=1.8;
             player.x -=1.8;
+            
+            facingUp = false;
+            facingLeft = true;
+            facingDown = false;
+            facingRight = false;
         }
        
         else if(controls.up.isDown && controls.right.isDown)
@@ -110,19 +127,25 @@ var outdoorZone =
             player.animations.play('walkRight');
             player.y -=1.8;
             player.x +=1.8;
+            
+            facingUp = false;
+            facingLeft = false;
+            facingDown = false;
+            facingRight = true;
         }
         
-        else if (controls.up.isDown)
-        {
-            player.animations.play('walkUp');
-            player.y -=2;
-        }
         
         else if(controls.down.isDown && controls.left.isDown)
         {
             player.animations.play('walkLeft');
             player.y +=1.8;
             player.x -=1.8;
+            
+            facingUp = false;
+            facingLeft = true;
+            facingDown = false;
+            facingRight = false;
+            
         }
         
         else if(controls.down.isDown && controls.right.isDown)
@@ -130,30 +153,84 @@ var outdoorZone =
             player.animations.play('walkRight');
             player.y +=1.8;
             player.x +=1.8;
+            
+            facingUp = false;
+            facingLeft = false;
+            facingDown = false;
+            facingRight = true;
+            
+        }
+        
+        else if (controls.up.isDown)
+        {
+            player.animations.play('walkUp');
+            player.y -=2;
+            
+            facingUp = true;
+            facingLeft = false;
+            facingDown = false;
+            facingRight = false;
         }
         
         else if(controls.down.isDown)
         {
             player.animations.play('walkDown');
             player.y +=2;
+            
+            facingUp = false;
+            facingLeft = false;
+            facingDown = true;
+            facingRight = false;
         }
         
         else if(controls.left.isDown)
         {
             player.animations.play('walkLeft');
             player.x -=2;
+            
+            facingUp = false;
+            facingLeft = true;
+            facingDown = false;
+            facingRight = false;
         }
         
         else if(controls.right.isDown)
         {
             player.animations.play('walkRight');
             player.x +=2;
+            
+            facingUp = false;
+            facingLeft = false;
+            facingDown = false;
+            facingRight = true;
         }
         
-        else
+        else if(this.game.input.activePointer.isDown)
         {
-            player.animations.stop();    
-        }  
+            if(facingUp)
+            {
+                player.animations.play('attackUp');
+            }
+            else if(facingLeft)
+            {
+                player.animations.play('attackLeft');
+            }
+            else if(facingDown)
+            {
+                player.animations.play('attackDown');
+            }
+            else if(facingRight)
+            {
+                player.animations.play('attackRight');
+            }
+            
+        }
+        
+        //else
+       // {
+        //   player.animations.stop();    
+        //}  
+         
     },
     
     resetplayer : function ()
