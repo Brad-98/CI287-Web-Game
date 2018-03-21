@@ -23,7 +23,6 @@ function buildWorld(game, world)
     world.map.addTilesetImage('tileSheet');
     // set up the tilemap layers
     world.layer = world.map.createLayer(0);
-    //world.map.setCollision(7, world.layer);
     world.layer.resizeWorld();
 }   
 
@@ -62,7 +61,9 @@ var outdoorZone =
         buildWorld(game, world);
         
         //7 is the tile in the grass tileset, call the function just to move the player posistion
-        world.map.setTileIndexCallback(7, this.resetplayer, this);
+        
+        world.map.setCollision([58, 67, 75, 93, 95], true, world.layer, true);
+        world.layer.debug = true;
         
         //Player Code
         player = this.game.add.sprite(2000,150,"player");
@@ -85,6 +86,7 @@ var outdoorZone =
         
         player.anchor.setTo(0.5,0.5);
         this.game.physics.arcade.enable(player);
+        
         
         new enemy_elf(0,this.game,100,100);
         new enemy_elf(0,this.game,200,100);
@@ -234,8 +236,9 @@ var outdoorZone =
          
     },
     
-    resetplayer : function ()
+    playerStop : function ()
     {
-        player.reset(2000, 150);
+        player.x = 0;
+        player.y = 0;
     },
 };
