@@ -31,7 +31,7 @@ var outdoorZone =
         this.game.load.spritesheet('enemy_elf', '../assets/enemy_elf.png',64,69,77);
         this.game.load.image('coin', '../assets/Coin.png');
         
-        this.game.load.image('tileSheet', '../assets/tilesets/grass.png');
+        this.game.load.image('tileSheet', '../assets/tilesets/tileset_outdoor.png');
         this.game.load.tilemap('map','../assets/tilesets/outdoorZone..csv');
 
         enemy_elf = function (index, game, x, y) 
@@ -61,7 +61,7 @@ var outdoorZone =
         world.map.setTileIndexCallback(7, this.resetplayer, this);
         
         //Player Code
-        player = this.game.add.sprite(2000,150,"player");
+        player = this.game.add.sprite(2000,1500,"player");
  
         player.animations.add('walkUp', [36,37,38,39,40,41,42,43,44],8, false);
         
