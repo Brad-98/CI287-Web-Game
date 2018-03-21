@@ -19,6 +19,7 @@ function buildWorld(game, world)
     world.map.addTilesetImage('tileSheet');
     // set up the tilemap layers
     world.layer = world.map.createLayer(0);
+    //world.map.setCollision(7, world.layer);
     world.layer.resizeWorld();
 }   
 
@@ -55,10 +56,12 @@ var outdoorZone =
     create : function()
     {
         buildWorld(game, world);
-        this.game.world.setBounds(0,0,3840,2176);
-        //Player Code
         
-        player = this.game.add.sprite(400,150,"player");
+        //7 is the tile in the grass tileset, call the function just to move the player posistion
+        world.map.setTileIndexCallback(7, this.resetplayer, this);
+        
+        //Player Code
+        player = this.game.add.sprite(2000,150,"player");
  
         player.animations.add('walkUp', [36,37,38,39,40,41,42,43,44],8, false);
         
@@ -93,6 +96,8 @@ var outdoorZone =
     
     update : function()
     {  
+        this.game.physics.arcade.collide(player, world.layer);
+        
         if(controls.up.isDown && controls.left.isDown)
         {
             player.animations.play('walkLeft');
@@ -131,7 +136,6 @@ var outdoorZone =
         {
             player.animations.play('walkDown');
             player.y +=2;
-            this.game.camera.y +=4;
         }
         
         else if(controls.left.isDown)
@@ -149,18 +153,11 @@ var outdoorZone =
         else
         {
             player.animations.stop();    
-        }
-        
-        this.game.physics.arcade.overlap(player, coin, this.playerCollisionCoin, null, this);
+        }  
     },
     
-    playerCollisionCoin : function(player, coin)
+    resetplayer : function ()
     {
-        coin.kill();
-        coinScore += 1;
-        coinScoreText.text = coinScoreString + coinScore;
-        
-        //Also get image of coin next to the coin text looks cooler in my space invaders game
-        //Play coin sound effect don't loop
+        player.reset(2000, 150);
     },
 };
