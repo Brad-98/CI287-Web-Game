@@ -31,7 +31,7 @@ var outdoorZone =
 {
     preload : function()
     {
-        this.game.load.spritesheet('player', '../assets/player.png',64,65.75,77);
+        this.game.load.spritesheet('player', '../assets/player.png',64,65.8,77);
         this.game.load.spritesheet('enemy_elf', '../assets/enemy_elf.png',64,69,77);
         this.game.load.image('coin', '../assets/Coin.png');
         
@@ -101,7 +101,8 @@ var outdoorZone =
         };
         
         coinScoreString = 'Coins : ';
-        coinScoreText = this.game.add.text(300, 300, coinScoreString + coinScore, {font: '40px Arial', fill: '#ffffff'});
+        coinScoreText = this.game.add.text(30, 30, coinScoreString + coinScore, {font: '40px Arial', fill: '#ffffff'});
+        coinScoreText.fixedToCamera = true;
         
         this.game.camera.follow(player,Phaser.Camera.FOLLOW_LOCKON,0.1,0.1);
     },
@@ -205,7 +206,7 @@ var outdoorZone =
             facingRight = true;
         }
         
-        else if(this.game.input.activePointer.isDown)
+        else if(this.game.input.activePointer.leftButton.isDown)
         {
             if(facingUp)
             {
