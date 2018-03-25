@@ -1,5 +1,7 @@
 var player;
 var enemy_elf;
+var elfTween;
+var elfPos;
 var controls;
 var coin;
 var coinScore = 0;
@@ -43,8 +45,21 @@ var outdoorZone =
             this.enemy_elf.anchor.setTo(0.5,0.5);
             this.enemy_elf.name = index.toString;
             this.enemy_elf.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],9, true);
+            this.enemy_elf.animations.add('walkDown', [18,19,20,21,22,23,24,25,26],9, true);
             this.enemy_elf.animations.play('walkUp');
             game.physics.arcade.enable(enemy_elf);     
+            
+            elfPos = this.enemy_elf.y;
+            
+            this.elfTween = game.add.tween(this.enemy_elf).to({
+                y:this.enemy_elf.y+100
+            },2000,'Linear',true,0,100,true);
+            
+            if(this.enemy_elf.y+100 > elfPos)
+                {
+                    this.enemy_elf.animations.play('walkDown');
+                }
+           
         };
         
         coin = function (index, game, x, y) 
@@ -66,7 +81,7 @@ var outdoorZone =
         world.layer.debug = true;
         
         //Player Code
-        player = this.game.add.sprite(2000,150,"player");
+        player = this.game.add.sprite(500,150,"player");
  
         player.animations.add('walkUp', [36,37,38,39,40,41,42,43,44],8, false);
         
@@ -86,6 +101,8 @@ var outdoorZone =
         
         player.anchor.setTo(0.5,0.5);
         this.game.physics.arcade.enable(player);
+        
+        player.body.collideWorldBounds=true;
         
         
         new enemy_elf(0,this.game,100,100);
