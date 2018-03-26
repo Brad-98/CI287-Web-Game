@@ -11,22 +11,26 @@ var facingUp = true;
 var facingLeft = false;
 var facingDown = false;
 var facingRight = false;
+var map;
+var layer;
+var layer2;
 
-var world = 
-{
-    map: null,
-    layer: null
-}; // end of world
+//var world = 
+//{
+//    map: null,
+//    layer: null
+//}; // end of world
 
-function buildWorld(game, world) 
-{
-    // Initialise the tilemap
-    world.map = this.game.add.tilemap('map', 32, 32);
-    world.map.addTilesetImage('tileSheet');
-    // set up the tilemap layers
-    world.layer = world.map.createLayer(0);
-    world.layer.resizeWorld();
-}   
+//function buildWorld(game, world) 
+//{
+//    // Initialise the tilemap
+//    world.map = this.game.add.tilemap('map', 32, 32);
+//    world.map.addTilesetImage('tileSheet');
+//    // set up the tilemap layers
+//    world.layer = world.map.createLayer(0);
+//    world.layer.resizeWorld();
+//    //world.map.createLayer(1);  
+//}   
 
 var outdoorZone =
 {
@@ -36,8 +40,11 @@ var outdoorZone =
         this.game.load.spritesheet('enemy_elf', '../assets/enemy_elf.png',64,69,77);
         this.game.load.image('coin', '../assets/Coin.png');
         
+       
+        this.game.load.tilemap('map','../assets/tilesets/outdoorZone..json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tileSheet', '../assets/tilesets/tileset_outdoor.png');
-        this.game.load.tilemap('map','../assets/tilesets/outdoorZone..csv');
+       // this.game.load.tilemap('map','../assets/tilesets/outdoorZone._WorldMap.csv', null, Phaser.Tilemap.CSV);
+       // this.game.load.tilemap('map','../assets/tilesets/outdoorZone._Walls.csv', null, Phaser.Tilemap.CSV);
 
         enemy_elf = function (index, game, x, y) 
         {
@@ -73,12 +80,19 @@ var outdoorZone =
     
     create : function()
     {
-        buildWorld(game, world);
+        // Initialise the tilemap
+        map = this.game.add.tilemap('map');
+        map.addTilesetImage('tileset_outdoorZone','tileSheet');
         
-        //7 is the tile in the grass tileset, call the function just to move the player posistion
+        // Set up the tilemap layers
+        layer = map.createLayer('WorldMap');
+        layer.resizeWorld();
         
-        world.map.setCollision([58, 67, 75, 93, 95], true, world.layer, true);
-        world.layer.debug = true;
+        layer2 = map.createLayer('Walls')
+        
+        map.setCollisionBetween(0, 1000, true, layer2, true);
+  
+        layer2.debug = true;
         
         //Player Code
         player = this.game.add.sprite(500,150,"player");
@@ -100,9 +114,10 @@ var outdoorZone =
         player.animations.add('attackRight', [27,28,29,30,31,32,33,34,27],10, false);
         
         player.anchor.setTo(0.5,0.5);
-        this.game.physics.arcade.enable(player);
+       
+        this.game.physics.enable(player, Phaser.Physics.ARCADE);;
         
-        player.body.collideWorldBounds=true;
+        //player.body.collideWorldBounds=true;
         
         
         new enemy_elf(0,this.game,100,100);
@@ -128,7 +143,9 @@ var outdoorZone =
     
     update : function()
     {  
-        this.game.physics.arcade.collide(player, world.layer);
+        
+        this.game.physics.arcade.collide(player, layer2);
+            
         
         if(controls.up.isDown && controls.left.isDown)
         {
@@ -251,11 +268,5 @@ var outdoorZone =
         //   player.animations.stop();    
         //}  
          
-    },
-    
-    playerStop : function ()
-    {
-        player.x = 0;
-        player.y = 0;
     },
 };
