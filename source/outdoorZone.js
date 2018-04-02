@@ -38,8 +38,8 @@ var outdoorZone =
 {
     preload : function()
     {
-        this.game.load.spritesheet('player', '../assets/player.png',64, 65.7,77);
-        this.game.load.spritesheet('enemy_elf', '../assets/enemy_elf.png',64,69,77);
+        this.game.load.spritesheet('player', '../assets/playerCharacter.png',64, 64,77);
+        this.game.load.spritesheet('enemy_elf', '../assets/enemyCharacter.png',64,64,117);
         this.game.load.spritesheet('coin', '../assets/Coin.png', 64, 64, 4);
         
        
@@ -52,8 +52,8 @@ var outdoorZone =
             this.enemy_elf.anchor.setTo(0.5,0.5);
             this.enemy_elf.name = index.toString;
             this.enemy_elf.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],9, true);
-            this.enemy_elf.animations.add('walkDown', [18,19,20,21,22,23,24,25,26],9, true);
-            this.enemy_elf.animations.play('walkUp');
+            this.enemy_elf.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
+            this.enemy_elf.animations.play('walkDown');
             game.physics.arcade.enable(enemy_elf);     
             
             elfPos = this.enemy_elf.y;
@@ -80,21 +80,21 @@ var outdoorZone =
         //Player Code
         player = this.game.add.sprite(500,150,"player");
  
-        player.animations.add('walkUp', [36,37,38,39,40,41,42,43,44],8, false);
+        player.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],8, false);
         
-        player.animations.add('walkDown', [54,55,56,57,58,59,60,61,62],8, false);
+        player.animations.add('walkDown', [18,19,20,21,22,23,24,25,26],8, false);
         
-        player.animations.add('walkLeft', [45,46,47,48,49,50,51,52,53],12, false);
+        player.animations.add('walkLeft', [9,10,11,12,13,14,15,16,17],12, false);
         
-        player.animations.add('walkRight', [63,64,65,66,67,68,69,70,71],12, false);
+        player.animations.add('walkRight', [27,28,29,30,31,32,33,34,35],12, false);
         
-        player.animations.add('attackUp', [0,1,2,3,4,5,6,7,0],10, false);
+        player.animations.add('attackUp', [36,37,38,39,40,41,36],10, false);
         
-        player.animations.add('attackDown', [18,19,20,21,22,23,24,25,18],10, false);
+        player.animations.add('attackDown', [54,55,56,57,58,59,54],10, false);
         
-        player.animations.add('attackLeft', [9,10,11,12,13,14,15,16,9],10, false);
+        player.animations.add('attackLeft', [45,46,47,48,49,50,45],10, false);
         
-        player.animations.add('attackRight', [27,28,29,30,31,32,33,34,27],10, false);
+        player.animations.add('attackRight', [63,64,65,66,67,68,63],10, false);
         
         player.anchor.setTo(0.5,0.5);
        
