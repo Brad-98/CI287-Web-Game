@@ -3,7 +3,7 @@ var enemy_elf;
 var elfTween;
 var elfPos;
 var controls;
-var coin;
+var coins;
 var coinScore = 0;
 var coinScoreString = '';
 var coinScoreText;
@@ -16,7 +16,8 @@ var world_outdoorZone =
 {
     map: null,
     layer_ground: null,
-    layer_coins: null,
+    layer_Tower: null,
+    coin_group: null
 };
 
 function buildWorld_outdoorZone (game, world) 
@@ -27,7 +28,9 @@ function buildWorld_outdoorZone (game, world)
     
     // Tilemap layers
     world_outdoorZone.layer_ground = world_outdoorZone.map.createLayer('layer_Ground');
-    world_outdoorZone.layer_coins = world_outdoorZone.map.createLayer('layer_Coins');
+    world_outdoorZone.layer_coins = world_outdoorZone.map.createLayer('layer_Tower');
+    world_outdoorZone.coin_group = game.add.group(world_outdoorZone.layer_ground);
+    world_outdoorZone.map.createFromObjects('object_Coins', 109, 'coin', 0, true, false, world_outdoorZone.coin_group);
     world.layer_ground.resizeWorld();
 }   
 
@@ -35,15 +38,13 @@ var outdoorZone =
 {
     preload : function()
     {
-        this.game.load.spritesheet('player', '../assets/player.png',64,65.8,77);
+        this.game.load.spritesheet('player', '../assets/player.png',64, 65.7,77);
         this.game.load.spritesheet('enemy_elf', '../assets/enemy_elf.png',64,69,77);
-        this.game.load.image('coin', '../assets/Coin.png');
+        this.game.load.spritesheet('coin', '../assets/Coin.png', 64, 64, 4);
         
        
         this.game.load.tilemap('map','../assets/tilesets/outdoorZone..json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tileSheet', '../assets/tilesets/tileset_outdoor.png');
-       // this.game.load.tilemap('map','../assets/tilesets/outdoorZone._WorldMap.csv', null, Phaser.Tilemap.CSV);
-       // this.game.load.tilemap('map','../assets/tilesets/outdoorZone._Walls.csv', null, Phaser.Tilemap.CSV);
 
         enemy_elf = function (index, game, x, y) 
         {
@@ -68,13 +69,7 @@ var outdoorZone =
            
         };
         
-        coin = function (index, game, x, y) 
-        {
-            this.coin = game.add.sprite(x, y , "coin");
-            this.coin.anchor.setTo(0.5,0.5);
-            this.coin.name = index.toString;
-            game.physics.arcade.enable(coin);     
-        };
+        
     },  
     
     create : function()
@@ -84,11 +79,6 @@ var outdoorZone =
         
         //Player Code
         player = this.game.add.sprite(500,150,"player");
-      //  world_outdoorZone.map.setCollisionBetween(101,102, true ,world_outdoorZone.layer_coins, true);
-        world_outdoorZone.map.setTileIndexCallback([101,102], this.collectCoin, this ,world_outdoorZone.layer_coins);
-        world_outdoorZone.layer_coins.debug = true;
-        
-        //world.playerLayer.addChild(player);
  
         player.animations.add('walkUp', [36,37,38,39,40,41,42,43,44],8, false);
         
@@ -116,8 +106,11 @@ var outdoorZone =
         new enemy_elf(0,this.game,100,100);
         new enemy_elf(0,this.game,200,100);
         
-        new coin(0,this.game,100,500);
-        new coin(0,this.game,400,400);
+//        coins = game.add.group();
+//        coins.enableBody = true;
+//        world_outdoorZone.map.createFromObjects('object_Coins', 109, 'coin', 0, true, false, coins);
+//     //   coins.callAll('animation.add', 'animations', 'spin', [0, 1, 2, 3], 10, true);
+//      //  coins.callAll('animation.play', 'animations', 'spin');
     
         controls = 
         {
@@ -136,8 +129,9 @@ var outdoorZone =
     
     update : function()
     {   
-        this.game.physics.arcade.collide(player, world_outdoorZone.layer_coins);
-            
+        //this.game.physics.arcade.collide(player, world_outdoorZone.layer_coins);
+        this.game.physics.arcade.overlap(player, coins, this.collectCoin);
+           
         if(controls.up.isDown && controls.left.isDown)
         {
             player.animations.play('walkLeft');
@@ -252,16 +246,17 @@ var outdoorZone =
             }
             
         }
-        
+            
+      
         //else
        // {
         //   player.animations.stop();    
         //}  
          
     },
-    
-    collectCoin: function()
-    {
-        world_outdoorZone.map.putTile(9, world_outdoorZone.layer_coins.getTileX(player.x), world_outdoorZone.layer_coins.getTileY(player.y));
-    },
+      collectCoin : function()
+        {
+            coins.kill();
+        },
+        
 };
