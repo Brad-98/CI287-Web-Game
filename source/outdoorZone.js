@@ -11,26 +11,25 @@ var facingUp = true;
 var facingLeft = false;
 var facingDown = false;
 var facingRight = false;
-var map;
-var layer;
-var layer2;
 
-//var world = 
-//{
-//    map: null,
-//    layer: null
-//}; // end of world
+var world = 
+{
+    map: null,
+    layer: null,
+    layer2: null,
+    playerLayer: null
+}; // end of world
 
-//function buildWorld(game, world) 
-//{
-//    // Initialise the tilemap
-//    world.map = this.game.add.tilemap('map', 32, 32);
-//    world.map.addTilesetImage('tileSheet');
-//    // set up the tilemap layers
-//    world.layer = world.map.createLayer(0);
-//    world.layer.resizeWorld();
-//    //world.map.createLayer(1);  
-//}   
+function buildWorld(game, world) 
+{
+    world.map = this.game.add.tilemap('map');
+    world.map.addTilesetImage('tileset_outdoorZone','tileSheet');
+    world.layer = world.map.createLayer('WorldMap');
+    world.layer.resizeWorld();
+    world.layer2 = world.map.createLayer('Walls');
+    world.playerLayer = world.map.createLayer('playerLayer');
+    world.map.setCollisionBetween(0, 1000, true, world.layer2);
+}   
 
 var outdoorZone =
 {
@@ -81,21 +80,13 @@ var outdoorZone =
     create : function()
     {
         // Initialise the tilemap
-        map = this.game.add.tilemap('map');
-        map.addTilesetImage('tileset_outdoorZone','tileSheet');
-        
-        // Set up the tilemap layers
-        layer = map.createLayer('WorldMap');
-        layer.resizeWorld();
-        
-        layer2 = map.createLayer('Walls')
-        
-        map.setCollisionBetween(0, 1000, true, layer2, true);
-  
-        layer2.debug = true;
+        buildWorld(game, world);
         
         //Player Code
         player = this.game.add.sprite(500,150,"player");
+        
+        
+        //world.playerLayer.addChild(player);
  
         player.animations.add('walkUp', [36,37,38,39,40,41,42,43,44],8, false);
         
@@ -117,7 +108,7 @@ var outdoorZone =
        
         this.game.physics.enable(player, Phaser.Physics.ARCADE);;
         
-        //player.body.collideWorldBounds=true;
+        player.body.collideWorldBounds=true;
         
         
         new enemy_elf(0,this.game,100,100);
@@ -144,7 +135,7 @@ var outdoorZone =
     update : function()
     {  
         
-        this.game.physics.arcade.collide(player, layer2);
+        this.game.physics.arcade.collide(player,world.layer2);
             
         
         if(controls.up.isDown && controls.left.isDown)
@@ -269,4 +260,9 @@ var outdoorZone =
         //}  
          
     },
+    
+    //wallCollision: function(){
+    //    player.x = 0;
+    //    player.y = 0;
+   // }
 };
