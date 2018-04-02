@@ -12,23 +12,23 @@ var facingLeft = false;
 var facingDown = false;
 var facingRight = false;
 
-var world = 
+var world_outdoorZone = 
 {
     map: null,
-    layer: null,
-    layer2: null,
-    playerLayer: null
-}; // end of world
+    layer_ground: null,
+    layer_coins: null,
+};
 
-function buildWorld(game, world) 
+function buildWorld_outdoorZone (game, world) 
 {
-    world.map = this.game.add.tilemap('map');
-    world.map.addTilesetImage('tileset_outdoorZone','tileSheet');
-    world.layer = world.map.createLayer('WorldMap');
-    world.layer.resizeWorld();
-    world.layer2 = world.map.createLayer('Walls');
-    world.playerLayer = world.map.createLayer('playerLayer');
-    world.map.setCollisionBetween(0, 1000, true, world.layer2);
+    // Tilemap
+    world_outdoorZone.map = this.game.add.tilemap('map');
+    world_outdoorZone.map.addTilesetImage('tileset_outdoorZone','tileSheet');
+    
+    // Tilemap layers
+    world_outdoorZone.layer_ground = world_outdoorZone.map.createLayer('layer_Ground');
+    world_outdoorZone.layer_coins = world_outdoorZone.map.createLayer('layer_Coins');
+    world.layer_ground.resizeWorld();
 }   
 
 var outdoorZone =
@@ -80,11 +80,13 @@ var outdoorZone =
     create : function()
     {
         // Initialise the tilemap
-        buildWorld(game, world);
+        buildWorld_outdoorZone(game, world_outdoorZone);
         
         //Player Code
         player = this.game.add.sprite(500,150,"player");
-        
+      //  world_outdoorZone.map.setCollisionBetween(101,102, true ,world_outdoorZone.layer_coins, true);
+        world_outdoorZone.map.setTileIndexCallback([101,102], this.collectCoin, this ,world_outdoorZone.layer_coins);
+        world_outdoorZone.layer_coins.debug = true;
         
         //world.playerLayer.addChild(player);
  
@@ -133,11 +135,9 @@ var outdoorZone =
     },
     
     update : function()
-    {  
-        
-        this.game.physics.arcade.collide(player,world.layer2);
+    {   
+        this.game.physics.arcade.collide(player, world_outdoorZone.layer_coins);
             
-        
         if(controls.up.isDown && controls.left.isDown)
         {
             player.animations.play('walkLeft');
@@ -161,8 +161,7 @@ var outdoorZone =
             facingDown = false;
             facingRight = true;
         }
-        
-        
+          
         else if(controls.down.isDown && controls.left.isDown)
         {
             player.animations.play('walkLeft');
@@ -261,8 +260,8 @@ var outdoorZone =
          
     },
     
-    //wallCollision: function(){
-    //    player.x = 0;
-    //    player.y = 0;
-   // }
+    collectCoin: function()
+    {
+        world_outdoorZone.map.putTile(9, world_outdoorZone.layer_coins.getTileX(player.x), world_outdoorZone.layer_coins.getTileY(player.y));
+    },
 };
