@@ -37,7 +37,7 @@ var outdoorZone =
     {
         this.game.load.spritesheet('player', '../assets/playerCharacter.png',64, 64,77);
         this.game.load.spritesheet('enemy_elf', '../assets/enemyCharacter.png',64,64,117);
-        this.game.load.spritesheet('coin', '../assets/Coin.png',64,64,3);
+        this.game.load.spritesheet('coin', '../assets/coins.png',16,16,3);
         
        
         this.game.load.tilemap('map','../assets/tilesets/outdoorZone..json', null, Phaser.Tilemap.TILED_JSON);
@@ -64,6 +64,17 @@ var outdoorZone =
                     this.enemy_elf.animations.play('walkDown');
                 }
         };
+        
+        coins = function (index, game, x, y)
+        {
+            coins = game.add.sprite(x,y,"coin");
+            coins.anchor.setTo(0.5,0.5);
+            coins.name = index.toString;
+            coins.animations.add('spin', [0,1,2,3],7,true);
+            coins.animations.play('spin');
+            coins.enableBody = true;
+            game.physics.arcade.enable(coins);
+        }
     },  
     
     create : function()
@@ -105,6 +116,8 @@ var outdoorZone =
         new enemy_elf(0,this.game,200,100);
         new enemy_elf(0,this.game,300,100);
         new enemy_elf(0,this.game,400,100);
+        
+        new coins(0,this.game,200,200);
     
         controls = 
         {
@@ -123,7 +136,8 @@ var outdoorZone =
     
     update : function()
     {   
-        //this.game.physics.arcade.collide(player, world_outdoorZone.layer_coins);  
+        //this.game.physics.arcade.collide(player, world_outdoorZone.layer_coins); 
+        game.physics.arcade.collide(player,coins, this.collectCoin);
         
         if(controls.up.isDown && controls.left.isDown)
         {
@@ -245,10 +259,12 @@ var outdoorZone =
         //}    
     },
       
-    collectCoin : function() 
-    {
-        coins.kill();
-    },
+      collectCoin : function(player,coins)
+        {
+            coins.kill();
+            coinScore +=1;
+            coinScoreText.text = "Coins : " + coinScore;
+        },
     
     gotoTowerLevel : function()
     {
