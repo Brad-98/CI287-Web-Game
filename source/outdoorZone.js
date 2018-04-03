@@ -40,7 +40,7 @@ var outdoorZone =
     {
         this.game.load.spritesheet('player', '../assets/playerCharacter.png',64, 64,77);
         this.game.load.spritesheet('enemy_elf', '../assets/enemyCharacter.png',64,64,117);
-        this.game.load.spritesheet('coin', '../assets/Coin.png', 64, 64, 4);
+        this.game.load.spritesheet('coin', '../assets/Coin.png',64,64,3);
         
        
         this.game.load.tilemap('map','../assets/tilesets/outdoorZone..json', null, Phaser.Tilemap.TILED_JSON);
