@@ -16,8 +16,7 @@ var world_outdoorZone =
 {
     map: null,
     layer_ground: null,
-    layer_Tower: null,
-    coin_group: null
+    layer_Tower: null
 };
 
 function buildWorld_outdoorZone (game, world) 
@@ -29,9 +28,7 @@ function buildWorld_outdoorZone (game, world)
     // Tilemap layers
     world_outdoorZone.layer_ground = world_outdoorZone.map.createLayer('layer_Ground');
     world_outdoorZone.layer_coins = world_outdoorZone.map.createLayer('layer_Tower');
-    world_outdoorZone.coin_group = game.add.group(world_outdoorZone.layer_ground);
-    world_outdoorZone.map.createFromObjects('object_Coins', 109, 'coin', 0, true, false, world_outdoorZone.coin_group);
-    world.layer_ground.resizeWorld();
+    world_outdoorZone.layer_ground.resizeWorld();
 }   
 
 var outdoorZone =
@@ -66,10 +63,7 @@ var outdoorZone =
                 {
                     this.enemy_elf.animations.play('walkDown');
                 }
-           
         };
-        
-        
     },  
     
     create : function()
@@ -77,8 +71,13 @@ var outdoorZone =
         // Initialise the tilemap
         buildWorld_outdoorZone(game, world_outdoorZone);
         
+        //world_outdoorZone.map.setTileIndexCallback([0, 100], this.gotoTowerLevel, this ,world_outdoorZone.layer_tower);
+        //world_outdoorZone.map.setCollisionBetween(0, 100, true ,world_outdoorZone.layer_tower);
+        //world_outdoorZone.map.setTileLocationCallback(2, 0, 1, 1, this.gotoTowerLevel, this, world_outdoorZone.layer_tower);
+        //world_outdoorZone.layer_tower.debug = true;
+        
         //Player Code
-        player = this.game.add.sprite(500,150,"player");
+        player = this.game.add.sprite(300,300,"player");
  
         player.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],8, false);
         
@@ -98,19 +97,14 @@ var outdoorZone =
         
         player.anchor.setTo(0.5,0.5);
        
-        this.game.physics.enable(player, Phaser.Physics.ARCADE);;
+        this.game.physics.enable(player, Phaser.Physics.ARCADE);
         
         player.body.collideWorldBounds=true;
         
-        
         new enemy_elf(0,this.game,100,100);
         new enemy_elf(0,this.game,200,100);
-        
-//        coins = game.add.group();
-//        coins.enableBody = true;
-//        world_outdoorZone.map.createFromObjects('object_Coins', 109, 'coin', 0, true, false, coins);
-//     //   coins.callAll('animation.add', 'animations', 'spin', [0, 1, 2, 3], 10, true);
-//      //  coins.callAll('animation.play', 'animations', 'spin');
+        new enemy_elf(0,this.game,300,100);
+        new enemy_elf(0,this.game,400,100);
     
         controls = 
         {
@@ -129,9 +123,8 @@ var outdoorZone =
     
     update : function()
     {   
-        //this.game.physics.arcade.collide(player, world_outdoorZone.layer_coins);
-        this.game.physics.arcade.overlap(player, coins, this.collectCoin);
-           
+        //this.game.physics.arcade.collide(player, world_outdoorZone.layer_coins);  
+        
         if(controls.up.isDown && controls.left.isDown)
         {
             player.animations.play('walkLeft');
@@ -245,18 +238,21 @@ var outdoorZone =
                 player.animations.play('attackRight');
             }
             
-        }
-            
-      
+        }  
         //else
        // {
         //   player.animations.stop();    
-        //}  
-         
+        //}    
     },
-      collectCoin : function()
-        {
-            coins.kill();
-        },
+      
+    collectCoin : function() 
+    {
+        coins.kill();
+    },
+    
+    gotoTowerLevel : function()
+    {
+        this.state.start('tower_level'); 
+    },
         
 };
