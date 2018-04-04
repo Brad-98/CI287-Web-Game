@@ -1,6 +1,8 @@
 var player;
 var enemy_elf;
+var enemy;
 var elfTween;
+var enemy1;
 var controls;
 var coins;
 var coin;
@@ -55,16 +57,16 @@ var outdoorZone =
 
         enemy_elf = function (index, game, x, y) 
         {
-            this.enemy_elf = game.add.sprite(x ,y , "enemy_elf");
-            this.enemy_elf.anchor.setTo(0.5,0.5);
-            this.enemy_elf.name = index.toString;
-            this.enemy_elf.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],9, true);
-            this.enemy_elf.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
-            this.enemy_elf.animations.play('walkDown');
-            game.physics.arcade.enable(enemy_elf);     
+            this.enemy= game.add.sprite(x ,y , "enemy_elf");
+            this.enemy.anchor.setTo(0.5,0.5);
+            this.enemy.name = index.toString;
+            this.enemy.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],9, true);
+            this.enemy.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
+            this.enemy.animations.play('walkDown');
+            game.physics.arcade.enable(this.enemy,Phaser.Physics.ARCADE);     
             
-            this.elfTween = game.add.tween(this.enemy_elf).to({
-                y:this.enemy_elf.y+100
+            this.elfTween = game.add.tween(this.enemy).to({
+                y:this.enemy.y+100
             },2000,'Linear',true,0,100,true);
         };
         
@@ -110,7 +112,7 @@ var outdoorZone =
         
         player.body.collideWorldBounds=true;
         
-        new enemy_elf(0,this.game,100,100);
+        enemy1 = new enemy_elf(0,this.game,100,100);
         new enemy_elf(0,this.game,200,100);
         new enemy_elf(0,this.game,300,100);
         new enemy_elf(0,this.game,400,100);
@@ -137,6 +139,7 @@ var outdoorZone =
     {   
         //this.game.physics.arcade.collide(player, world_outdoorZone.layer_coins); 
         this.game.physics.arcade.collide(player,coins, this.collectCoin);
+        this.game.physics.arcade.collide(player,enemy1.enemy, this.respawnPlayer);
         
         //if(checkOverlap(player,coin1.coin)){
         //    coin1.coin.kill();
@@ -287,6 +290,11 @@ var outdoorZone =
             coin.kill();
             coinScore +=1;
             coinScoreText.text = "Coins : " + coinScore;
+        },
+    
+        respawnPlayer : function()
+        {
+            player.reset(300,300);
         },
     
     gotoTowerLevel : function()
