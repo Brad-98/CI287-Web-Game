@@ -1,9 +1,10 @@
 var player;
 var enemy_elf;
 var elfTween;
-var elfPos;
 var controls;
 var coins;
+var coin;
+var coin1;
 var coinScore = 0;
 var coinScoreString = '';
 var coinScoreText;
@@ -32,6 +33,13 @@ function buildWorld_outdoorZone (game, world)
     world_outdoorZone.layer_ground.resizeWorld();
 }   
 
+function checkOverlap (spriteA,spriteB){
+        var boundsA = spriteA.getBounds();
+        var boundsB = spriteB.getBounds();
+        
+        return Phaser.Rectangle.intersects(boundsA,boundsB);
+    }
+
 var outdoorZone =
 {
     preload : function()
@@ -55,28 +63,11 @@ var outdoorZone =
             this.enemy_elf.animations.play('walkDown');
             game.physics.arcade.enable(enemy_elf);     
             
-            elfPos = this.enemy_elf.y;
-            
             this.elfTween = game.add.tween(this.enemy_elf).to({
                 y:this.enemy_elf.y+100
             },2000,'Linear',true,0,100,true);
-            
-            if(this.enemy_elf.y+100 > elfPos)
-                {
-                    this.enemy_elf.animations.play('walkDown');
-                }
         };
         
-        coins = function (index, game, x, y)
-        {
-            coins = game.add.sprite(x,y,"coin");
-            coins.anchor.setTo(0.5,0.5);
-            coins.name = index.toString;
-            coins.animations.add('spin', [0,1,2,3],7,true);
-            coins.animations.play('spin');
-            coins.enableBody = true;
-            game.physics.arcade.enable(coins);
-        }
     },  
     
     create : function()
@@ -90,6 +81,9 @@ var outdoorZone =
         //world_outdoorZone.map.setCollisionBetween(0, 100, true ,world_outdoorZone.layer_tower);
         //world_outdoorZone.map.setTileLocationCallback(2, 0, 1, 1, this.gotoTowerLevel, this, world_outdoorZone.layer_tower);
         //world_outdoorZone.layer_tower.debug = true;
+        
+        coins = this.game.add.group();
+        this.createCoins();
         
         //Player Code
         player = this.game.add.sprite(300,300,"player");
@@ -121,7 +115,8 @@ var outdoorZone =
         new enemy_elf(0,this.game,300,100);
         new enemy_elf(0,this.game,400,100);
         
-        new coins(0,this.game,200,200);
+        //coin1 = new coins(0,this.game,200,200);
+    
     
         controls = 
         {
@@ -141,7 +136,13 @@ var outdoorZone =
     update : function()
     {   
         //this.game.physics.arcade.collide(player, world_outdoorZone.layer_coins); 
-        game.physics.arcade.collide(player,coins, this.collectCoin);
+        this.game.physics.arcade.collide(player,coins, this.collectCoin);
+        
+        //if(checkOverlap(player,coin1.coin)){
+        //    coin1.coin.kill();
+         //   coin1.coin.reset(3000,2000);
+         //   this.collectCoin();
+       // }
         
         if(controls.up.isDown && controls.left.isDown)
         {
@@ -257,15 +258,33 @@ var outdoorZone =
             }
             
         }  
-        //else
-       // {
-        //   player.animations.stop();    
-        //}    
+    
     },
-      
-      collectCoin : function(player,coins)
+    
+      createCoins : function()
         {
-            coins.kill();
+            coins.enableBody = true;
+            this.game.physics.arcade.enable(coins);
+            for (var x = 1; x < 3; x++)
+            {
+                coin = coins.create(50 * x, 50, 'coin');
+                coin.animations.add('spin', [0,1,2,3],7,true);
+                coin.animations.play('spin');
+                coin.anchor.setTo(0.5,0.5);
+            }
+            
+            for (var x = 1; x < 3; x++)
+            {
+                coin = coins.create(50 * x, 150, 'coin');
+                coin.animations.add('spin', [0,1,2,3],7,true);
+                coin.animations.play('spin');
+                coin.anchor.setTo(0.5,0.5);
+            }
+        },
+      
+      collectCoin : function(player,coin)
+        {
+            coin.kill();
             coinScore +=1;
             coinScoreText.text = "Coins : " + coinScore;
         },
@@ -274,5 +293,5 @@ var outdoorZone =
     {
         this.state.start('tower_level'); 
     },
-        
+            
 };
