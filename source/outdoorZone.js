@@ -11,6 +11,7 @@ var facingUp = true;
 var facingLeft = false;
 var facingDown = false;
 var facingRight = false;
+var sound_objects = {};
 
 var world_outdoorZone = 
 {
@@ -39,9 +40,10 @@ var outdoorZone =
         this.game.load.spritesheet('enemy_elf', '../assets/enemyCharacter.png',64,64,117);
         this.game.load.spritesheet('coin', '../assets/coins.png',16,16,3);
         
-       
         this.game.load.tilemap('map','../assets/tilesets/outdoorZone..json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tileSheet', '../assets/tilesets/tileset_outdoor.png');
+        
+        this.game.load.audio('levelMusic', '../assets/music/music_outdoorZone.mp3'); 
 
         enemy_elf = function (index, game, x, y) 
         {
@@ -81,6 +83,8 @@ var outdoorZone =
     {
         // Initialise the tilemap
         buildWorld_outdoorZone(game, world_outdoorZone);
+        sound_objects.levelMusic = this.game.add.audio('levelMusic');
+        sound_objects.levelMusic.loopFull();
         
         //world_outdoorZone.map.setTileIndexCallback([0, 100], this.gotoTowerLevel, this ,world_outdoorZone.layer_tower);
         //world_outdoorZone.map.setCollisionBetween(0, 100, true ,world_outdoorZone.layer_tower);
