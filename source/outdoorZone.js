@@ -180,7 +180,7 @@ var outdoorZone =
         {
             this.game.physics.arcade.collide(player, world_outdoorZone.layer_ground);
             this.game.physics.arcade.collide(player,coins, this.collectCoin);
-            this.game.physics.arcade.collide(player,enemy1.enemy, this.respawnPlayer);
+            //this.game.physics.arcade.collide(player,enemy1.enemy, this.respawnPlayer);
             
             player.body.velocity.set(0);
 
@@ -304,6 +304,11 @@ var outdoorZone =
                 }
 
             }
+            
+            if(player.y == enemy1.enemy.y)
+                {
+                    enemy1.enemy.animations.play('walkUp');
+                }
         }
     
     },
