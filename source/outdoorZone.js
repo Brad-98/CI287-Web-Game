@@ -22,8 +22,8 @@ var sound_objects = {};
 var world_outdoorZone = 
 {
     map: null,
-    layer_ground: null,
-    layer_Tower: null
+    layer_ground: null
+    //layer_Tower: null
 };
 
 function buildWorld_outdoorZone (game, world) 
@@ -34,8 +34,11 @@ function buildWorld_outdoorZone (game, world)
     
     // Tilemap layers
     world_outdoorZone.layer_ground = world_outdoorZone.map.createLayer('layer_Ground');
-    world_outdoorZone.layer_coins = world_outdoorZone.map.createLayer('layer_Tower');
+    //world_outdoorZone.layer_coins = world_outdoorZone.map.createLayer('layer_Tower');
     world_outdoorZone.layer_ground.resizeWorld();
+    world_outdoorZone.map.setCollisionBetween(2, 3);
+    world_outdoorZone.map.setCollisionBetween(11, 12);
+    world_outdoorZone.layer_ground.debug = true;
 }   
 
 function checkOverlap (spriteA,spriteB){
@@ -80,6 +83,8 @@ var outdoorZone =
     create : function()
     {
         // Initialise the tilemap
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        
         buildWorld_outdoorZone(game, world_outdoorZone);
         sound_objects.levelMusic = this.game.add.audio('levelMusic');
         sound_objects.levelMusic.loopFull();
@@ -112,8 +117,9 @@ var outdoorZone =
         player.animations.add('attackRight', [63,64,65,66,67,68,63],10, false);
         
         player.anchor.setTo(0.5,0.5);
+    
        
-        this.game.physics.enable(player, Phaser.Physics.ARCADE);
+        this.game.physics.enable(player);
         
         player.body.collideWorldBounds=true;
         
@@ -123,7 +129,6 @@ var outdoorZone =
         new enemy_elf(0,this.game,400,100);
         
         //coin1 = new coins(0,this.game,200,200);
-    
     
         controls = 
         {
@@ -171,11 +176,13 @@ var outdoorZone =
     
     update : function()
     {   
-        //this.game.physics.arcade.collide(player, world_outdoorZone.layer_coins); 
         if(player.alive)
         {
+            this.game.physics.arcade.collide(player, world_outdoorZone.layer_ground);
             this.game.physics.arcade.collide(player,coins, this.collectCoin);
             this.game.physics.arcade.collide(player,enemy1.enemy, this.respawnPlayer);
+            
+            player.body.velocity.set(0);
 
             //if(checkOverlap(player,coin1.coin)){
             //    coin1.coin.kill();
@@ -186,8 +193,8 @@ var outdoorZone =
             if(controls.up.isDown && controls.left.isDown)
             {
                 player.animations.play('walkLeft');
-                player.y -=1.8;
-                player.x -=1.8;
+                player.body.velocity.y = -140;
+                player.body.velocity.x = -140;
 
                 facingUp = false;
                 facingLeft = true;
@@ -198,8 +205,8 @@ var outdoorZone =
             else if(controls.up.isDown && controls.right.isDown)
             {
                 player.animations.play('walkRight');
-                player.y -=1.8;
-                player.x +=1.8;
+                player.body.velocity.y = -140;
+                player.body.velocity.x = 140;
 
                 facingUp = false;
                 facingLeft = false;
@@ -210,8 +217,8 @@ var outdoorZone =
             else if(controls.down.isDown && controls.left.isDown)
             {
                 player.animations.play('walkLeft');
-                player.y +=1.8;
-                player.x -=1.8;
+                player.body.velocity.y = 140;
+                player.body.velocity.x = -140;
 
                 facingUp = false;
                 facingLeft = true;
@@ -223,8 +230,8 @@ var outdoorZone =
             else if(controls.down.isDown && controls.right.isDown)
             {
                 player.animations.play('walkRight');
-                player.y +=1.8;
-                player.x +=1.8;
+                player.body.velocity.y = 140;
+                player.body.velocity.x = 140;
 
                 facingUp = false;
                 facingLeft = false;
@@ -236,7 +243,7 @@ var outdoorZone =
             else if (controls.up.isDown)
             {
                 player.animations.play('walkUp');
-                player.y -=2;
+                player.body.velocity.y = -140;
 
                 facingUp = true;
                 facingLeft = false;
@@ -247,7 +254,7 @@ var outdoorZone =
             else if(controls.down.isDown)
             {
                 player.animations.play('walkDown');
-                player.y +=2;
+                player.body.velocity.y = 140;
 
                 facingUp = false;
                 facingLeft = false;
@@ -258,7 +265,7 @@ var outdoorZone =
             else if(controls.left.isDown)
             {
                 player.animations.play('walkLeft');
-                player.x -=2;
+                player.body.velocity.x = -140;
 
                 facingUp = false;
                 facingLeft = true;
@@ -269,7 +276,7 @@ var outdoorZone =
             else if(controls.right.isDown)
             {
                 player.animations.play('walkRight');
-                player.x +=2;
+                player.body.velocity.x = 140;
 
                 facingUp = false;
                 facingLeft = false;
@@ -308,7 +315,7 @@ var outdoorZone =
             for (var x = 1; x < 3; x++)
             {
                 coin = coins.create(50 * x, 50, 'coin');
-                coin.animations.add('spin', [0,1,2,3],7,true);
+                coin.animations.add('spin', [0,1,2,3],8,true);
                 coin.animations.play('spin');
                 coin.anchor.setTo(0.5,0.5);
             }
@@ -316,7 +323,7 @@ var outdoorZone =
             for (var x = 1; x < 3; x++)
             {
                 coin = coins.create(50 * x, 150, 'coin');
-                coin.animations.add('spin', [0,1,2,3],7,true);
+                coin.animations.add('spin', [0,1,2,3],8,true);
                 coin.animations.play('spin');
                 coin.anchor.setTo(0.5,0.5);
             }
