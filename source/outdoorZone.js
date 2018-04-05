@@ -1,4 +1,7 @@
 var player;
+var player_lives;
+var player_livesText;
+var upgrade_text;
 var enemy_elf;
 var enemy;
 var elfTween;
@@ -49,6 +52,8 @@ var outdoorZone =
         this.game.load.spritesheet('player', '../assets/playerCharacter.png',64, 64,77);
         this.game.load.spritesheet('enemy_elf', '../assets/enemyCharacter.png',64,64,117);
         this.game.load.spritesheet('coin', '../assets/coins.png',16,16,3);
+        this.game.load.image('heart', '../assets/player_heart.png');
+        this.game.load.image('heart_upgrade', '../assets/player_heartUpgrade.png');
         
         this.game.load.tilemap('map','../assets/tilesets/outdoorZone..json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tileSheet', '../assets/tilesets/tileset_outdoor.png');
@@ -88,7 +93,7 @@ var outdoorZone =
         this.createCoins();
         
         //Player Code
-        player = this.game.add.sprite(300,300,"player");
+        player = this.game.add.sprite(1000,400,'player');
  
         player.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],8, false);
         
@@ -128,9 +133,38 @@ var outdoorZone =
             down: this.input.keyboard.addKey(Phaser.Keyboard.S),
         };
         
-        coinScoreString = 'Coins : ';
-        coinScoreText = this.game.add.text(30, 30, coinScoreString + coinScore, {font: '40px Arial', fill: '#ffffff'});
+        coinScoreString = 'Coins     : ';
+        coinScoreText = this.game.add.text(10, 80, coinScoreString + coinScore, {font: '30px Arial', fill: '#ffffff'});
         coinScoreText.fixedToCamera = true;
+        var coin_image;
+        coin_image = this.game.add.sprite(100, 89, 'coin');
+        coin_image.scale.setTo(1.3,1.3);
+        coin_image.fixedToCamera = true;
+        
+        player_lives = this.game.add.group();
+        player_livesText = this.game.add.text(10 ,15 ,'Health : ', {font: '30px Arial', fill: '#ffffff'});
+        player_livesText.fixedToCamera = true;
+        
+        //Spawn player hearts
+        for (var i = 0; i < 3; i++) 
+        {
+            var heart = player_lives.create(138 + (35 * i), 35, 'heart');
+            heart.anchor.setTo(0.5, 0.5);
+            heart.fixedToCamera = true;
+        }
+        
+        upgrade_text = this.game.add.text(1180 , 15 ,'Upgrades', {font: '20px Arial', fill: '#ffffff'});
+        upgrade_text.fixedToCamera = true;
+        var heart_upgrade;
+        heart_upgrade = this.game.add.sprite(1182, 50, 'heart_upgrade');
+        heart_upgrade.fixedToCamera = true;
+        var upgrade_priceHeart;
+        upgrade_priceHeart = this.game.add.text(1250 , 56 ,'10', {font: '18px Arial', fill: '#ffffff'});
+        upgrade_priceHeart.fixedToCamera = true;
+        var coin_imageUpgrade;
+        coin_imageUpgrade = this.game.add.sprite(1225, 56, 'coin');
+        coin_imageUpgrade.scale.setTo(1.2,1.2);
+        coin_imageUpgrade.fixedToCamera = true;
         
         this.game.camera.follow(player,Phaser.Camera.FOLLOW_LOCKON,0.1,0.1);
     },
@@ -138,129 +172,132 @@ var outdoorZone =
     update : function()
     {   
         //this.game.physics.arcade.collide(player, world_outdoorZone.layer_coins); 
-        this.game.physics.arcade.collide(player,coins, this.collectCoin);
-        this.game.physics.arcade.collide(player,enemy1.enemy, this.respawnPlayer);
-        
-        //if(checkOverlap(player,coin1.coin)){
-        //    coin1.coin.kill();
-         //   coin1.coin.reset(3000,2000);
-         //   this.collectCoin();
-       // }
-        
-        if(controls.up.isDown && controls.left.isDown)
+        if(player.alive)
         {
-            player.animations.play('walkLeft');
-            player.y -=1.8;
-            player.x -=1.8;
-            
-            facingUp = false;
-            facingLeft = true;
-            facingDown = false;
-            facingRight = false;
-        }
-       
-        else if(controls.up.isDown && controls.right.isDown)
-        {
-            player.animations.play('walkRight');
-            player.y -=1.8;
-            player.x +=1.8;
-            
-            facingUp = false;
-            facingLeft = false;
-            facingDown = false;
-            facingRight = true;
-        }
-          
-        else if(controls.down.isDown && controls.left.isDown)
-        {
-            player.animations.play('walkLeft');
-            player.y +=1.8;
-            player.x -=1.8;
-            
-            facingUp = false;
-            facingLeft = true;
-            facingDown = false;
-            facingRight = false;
-            
-        }
-        
-        else if(controls.down.isDown && controls.right.isDown)
-        {
-            player.animations.play('walkRight');
-            player.y +=1.8;
-            player.x +=1.8;
-            
-            facingUp = false;
-            facingLeft = false;
-            facingDown = false;
-            facingRight = true;
-            
-        }
-        
-        else if (controls.up.isDown)
-        {
-            player.animations.play('walkUp');
-            player.y -=2;
-            
-            facingUp = true;
-            facingLeft = false;
-            facingDown = false;
-            facingRight = false;
-        }
-        
-        else if(controls.down.isDown)
-        {
-            player.animations.play('walkDown');
-            player.y +=2;
-            
-            facingUp = false;
-            facingLeft = false;
-            facingDown = true;
-            facingRight = false;
-        }
-        
-        else if(controls.left.isDown)
-        {
-            player.animations.play('walkLeft');
-            player.x -=2;
-            
-            facingUp = false;
-            facingLeft = true;
-            facingDown = false;
-            facingRight = false;
-        }
-        
-        else if(controls.right.isDown)
-        {
-            player.animations.play('walkRight');
-            player.x +=2;
-            
-            facingUp = false;
-            facingLeft = false;
-            facingDown = false;
-            facingRight = true;
-        }
-        
-        else if(this.game.input.activePointer.leftButton.isDown)
-        {
-            if(facingUp)
+            this.game.physics.arcade.collide(player,coins, this.collectCoin);
+            this.game.physics.arcade.collide(player,enemy1.enemy, this.respawnPlayer);
+
+            //if(checkOverlap(player,coin1.coin)){
+            //    coin1.coin.kill();
+             //   coin1.coin.reset(3000,2000);
+             //   this.collectCoin();
+           // }
+
+            if(controls.up.isDown && controls.left.isDown)
             {
-                player.animations.play('attackUp');
+                player.animations.play('walkLeft');
+                player.y -=1.8;
+                player.x -=1.8;
+
+                facingUp = false;
+                facingLeft = true;
+                facingDown = false;
+                facingRight = false;
             }
-            else if(facingLeft)
+
+            else if(controls.up.isDown && controls.right.isDown)
             {
-                player.animations.play('attackLeft');
+                player.animations.play('walkRight');
+                player.y -=1.8;
+                player.x +=1.8;
+
+                facingUp = false;
+                facingLeft = false;
+                facingDown = false;
+                facingRight = true;
             }
-            else if(facingDown)
+
+            else if(controls.down.isDown && controls.left.isDown)
             {
-                player.animations.play('attackDown');
+                player.animations.play('walkLeft');
+                player.y +=1.8;
+                player.x -=1.8;
+
+                facingUp = false;
+                facingLeft = true;
+                facingDown = false;
+                facingRight = false;
+
             }
-            else if(facingRight)
+
+            else if(controls.down.isDown && controls.right.isDown)
             {
-                player.animations.play('attackRight');
+                player.animations.play('walkRight');
+                player.y +=1.8;
+                player.x +=1.8;
+
+                facingUp = false;
+                facingLeft = false;
+                facingDown = false;
+                facingRight = true;
+
             }
-            
-        }  
+
+            else if (controls.up.isDown)
+            {
+                player.animations.play('walkUp');
+                player.y -=2;
+
+                facingUp = true;
+                facingLeft = false;
+                facingDown = false;
+                facingRight = false;
+            }
+
+            else if(controls.down.isDown)
+            {
+                player.animations.play('walkDown');
+                player.y +=2;
+
+                facingUp = false;
+                facingLeft = false;
+                facingDown = true;
+                facingRight = false;
+            }
+
+            else if(controls.left.isDown)
+            {
+                player.animations.play('walkLeft');
+                player.x -=2;
+
+                facingUp = false;
+                facingLeft = true;
+                facingDown = false;
+                facingRight = false;
+            }
+
+            else if(controls.right.isDown)
+            {
+                player.animations.play('walkRight');
+                player.x +=2;
+
+                facingUp = false;
+                facingLeft = false;
+                facingDown = false;
+                facingRight = true;
+            }
+
+            else if(this.game.input.activePointer.leftButton.isDown)
+            {
+                if(facingUp)
+                {
+                    player.animations.play('attackUp');
+                }
+                else if(facingLeft)
+                {
+                    player.animations.play('attackLeft');
+                }
+                else if(facingDown)
+                {
+                    player.animations.play('attackDown');
+                }
+                else if(facingRight)
+                {
+                    player.animations.play('attackRight');
+                }
+
+            }
+        }
     
     },
     
@@ -289,7 +326,7 @@ var outdoorZone =
         {
             coin.kill();
             coinScore +=1;
-            coinScoreText.text = "Coins : " + coinScore;
+            coinScoreText.text = coinScoreString + coinScore;
         },
     
         respawnPlayer : function()
