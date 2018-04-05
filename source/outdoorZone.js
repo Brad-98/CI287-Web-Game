@@ -133,11 +133,11 @@ var outdoorZone =
             down: this.input.keyboard.addKey(Phaser.Keyboard.S),
         };
         
-        coinScoreString = 'Coins     : ';
+        coinScoreString = 'Coins    : ';
         coinScoreText = this.game.add.text(10, 80, coinScoreString + coinScore, {font: '30px Arial', fill: '#ffffff'});
         coinScoreText.fixedToCamera = true;
         var coin_image;
-        coin_image = this.game.add.sprite(100, 89, 'coin');
+        coin_image = this.game.add.sprite(90, 89, 'coin');
         coin_image.scale.setTo(1.3,1.3);
         coin_image.fixedToCamera = true;
         
