@@ -22,8 +22,8 @@ var sound_objects = {};
 var world_outdoorZone = 
 {
     map: null,
-    layer_ground: null
-    //layer_Tower: null
+    layer_ground: null,
+    layer_tower: null
 };
 
 function buildWorld_outdoorZone (game, world) 
@@ -34,11 +34,12 @@ function buildWorld_outdoorZone (game, world)
     
     // Tilemap layers
     world_outdoorZone.layer_ground = world_outdoorZone.map.createLayer('layer_Ground');
-    //world_outdoorZone.layer_coins = world_outdoorZone.map.createLayer('layer_Tower');
+    world_outdoorZone.layer_tower = world_outdoorZone.map.createLayer('layer_Tower');
     world_outdoorZone.layer_ground.resizeWorld();
-    world_outdoorZone.map.setCollisionBetween(2, 3);
-    world_outdoorZone.map.setCollisionBetween(11, 12);
-    world_outdoorZone.layer_ground.debug = true;
+    //world_outdoorZone.map.setCollisionBetween(5, 7, true, world_outdoorZone.layer_tower);
+    //world_outdoorZone.map.setCollisionBetween(14, 16, true, world_outdoorZone.layer_tower);
+    world_outdoorZone.map.setTileIndexCallback([5, 16], this.gotoTowerLevel, this ,world_outdoorZone.layer_tower);
+    //world_outdoorZone.layer_tower.debug = true;
 }   
 
 function checkOverlap (spriteA,spriteB){
@@ -89,10 +90,9 @@ var outdoorZone =
         sound_objects.levelMusic = this.game.add.audio('levelMusic');
         sound_objects.levelMusic.loopFull();
         
-        //world_outdoorZone.map.setTileIndexCallback([0, 100], this.gotoTowerLevel, this ,world_outdoorZone.layer_tower);
-        //world_outdoorZone.map.setCollisionBetween(0, 100, true ,world_outdoorZone.layer_tower);
-        //world_outdoorZone.map.setTileLocationCallback(2, 0, 1, 1, this.gotoTowerLevel, this, world_outdoorZone.layer_tower);
-        //world_outdoorZone.layer_tower.debug = true;
+        this.towerSprite = this.game.add.sprite(700, 100, 'towerSprite');
+        this.towerSprite.scale.setTo(2, 2);
+        
         
         coins = this.game.add.group();
         this.createCoins();
@@ -178,7 +178,7 @@ var outdoorZone =
     {   
         if(player.alive)
         {
-            this.game.physics.arcade.collide(player, world_outdoorZone.layer_ground);
+            this.game.physics.arcade.collide(player, world_outdoorZone.layer_tower);
             this.game.physics.arcade.collide(player,coins, this.collectCoin);
             //this.game.physics.arcade.collide(player,enemy1.enemy, this.respawnPlayer);
             
@@ -313,42 +313,42 @@ var outdoorZone =
     
     },
     
-      createCoins : function()
+    createCoins : function()
+    {
+        coins.enableBody = true;
+        this.game.physics.arcade.enable(coins);
+        for (var x = 1; x < 3; x++)
         {
-            coins.enableBody = true;
-            this.game.physics.arcade.enable(coins);
-            for (var x = 1; x < 3; x++)
-            {
-                coin = coins.create(50 * x, 50, 'coin');
-                coin.animations.add('spin', [0,1,2,3],8,true);
-                coin.animations.play('spin');
-                coin.anchor.setTo(0.5,0.5);
-            }
+            coin = coins.create(50 * x, 50, 'coin');
+            coin.animations.add('spin', [0,1,2,3],8,true);
+            coin.animations.play('spin');
+            coin.anchor.setTo(0.5,0.5);
+        }
             
-            for (var x = 1; x < 3; x++)
-            {
-                coin = coins.create(50 * x, 150, 'coin');
-                coin.animations.add('spin', [0,1,2,3],8,true);
-                coin.animations.play('spin');
-                coin.anchor.setTo(0.5,0.5);
-            }
-        },
+        for (var x = 1; x < 3; x++)
+        {
+            coin = coins.create(50 * x, 150, 'coin');
+            coin.animations.add('spin', [0,1,2,3],8,true);
+            coin.animations.play('spin');
+            coin.anchor.setTo(0.5,0.5);
+        }
+    },
       
-      collectCoin : function(player,coin)
-        {
-            coin.kill();
-            coinScore +=1;
-            coinScoreText.text = coinScoreString + coinScore;
-        },
+    collectCoin : function(player,coin)
+    {
+        coin.kill();
+        coinScore +=1;
+        coinScoreText.text = coinScoreString + coinScore;
+    },
     
-        respawnPlayer : function()
-        {
-            player.reset(300,300);
-        },
+    respawnPlayer : function()
+    {
+        player.reset(300,300);
+    },
     
     gotoTowerLevel : function()
     {
-        this.state.start('tower_level'); 
-    },
-            
+        //this.state.start('tower_level');
+        console.log("Cake");
+    },         
 };
