@@ -10,6 +10,7 @@ function buildWorld_towerLevel (game, world)
 {
     // Tilemap
     world_towerLevel.map = this.game.add.tilemap('map');
+    world_towerLevel.map.addTilesetImage('TileA3-byLunarea','tileSheet');
     
     // Tilemap layers
     world_towerLevel.layer_ground = world_towerLevel.map.createLayer('layer_Ground');

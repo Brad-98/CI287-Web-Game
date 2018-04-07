@@ -18,6 +18,8 @@ var facingLeft = false;
 var facingDown = false;
 var facingRight = false;
 var sound_objects = {};
+var fireballs;
+var fireball_castTime = 0;
 
 var world_outdoorZone = 
 {
@@ -60,6 +62,7 @@ var outdoorZone =
         this.game.load.spritesheet('player', '../assets/playerCharacter.png',64, 64,77);
         this.game.load.spritesheet('enemy_elf', '../assets/enemyCharacter.png',64,64,117);
         this.game.load.spritesheet('coin', '../assets/coins.png',16,16,3);
+        this.game.load.spritesheet('fireball', '../assets/fireball.png',64,64,63);
         this.game.load.image('heart', '../assets/player_heart.png');
         this.game.load.image('heart_upgrade', '../assets/player_heartUpgrade.png');
         
@@ -103,6 +106,15 @@ var outdoorZone =
         coins = this.game.add.group();
         this.createCoins();
         
+        fireballs = this.game.add.group();
+        fireballs.enableBody = true;
+        this.game.physics.arcade.enable(fireballs);
+        fireballs.createMultiple(5, 'fireball');
+        fireballs.setAll('anchor.x', 0.5);
+        fireballs.setAll('anchor.y', 1);
+        fireballs.setAll('outOfBoundsKill', true);
+        fireballs.setAll('checkWorldBounds', true);
+       
         //Player Code
         player = this.game.add.sprite(1770,2050,'player');
  
@@ -299,6 +311,7 @@ var outdoorZone =
                 if(facingUp)
                 {
                     player.animations.play('attackUp');
+                    this.shootFireball();
                 }
                 else if(facingLeft)
                 {
@@ -321,6 +334,28 @@ var outdoorZone =
                 }
         }
     
+    },
+    
+    shootFireball : function()
+    {
+        if(this.game.time.now > fireball_castTime)
+        {
+            this.fireball = fireballs.getFirstExists(false);
+                
+            if(this.fireball)
+            {
+               this.fireball.reset(player.x, player.y);
+               this.fireball.body.velocity.y = -50;
+               this.fireball.animations.add('fireUp', [16, 17, 18, 19 ,20 ,21 ,22, 23],30,true);
+               this.fireball.animations.play('fireUp');
+               fireball_castTime = this.game.time.now + 300;     
+            }
+        }
+    },
+    
+    resetFireball : function (fireball) 
+    {
+        fireball.kill();
     },
     
     createCoins : function()
@@ -358,7 +393,6 @@ var outdoorZone =
     
     gotoTowerLevel : function()
     {
-        //this.state.start('tower_level');
-        console.log("Cake");
+        this.game.state.start('tower_level');
     },         
 };
