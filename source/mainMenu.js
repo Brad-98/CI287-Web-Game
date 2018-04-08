@@ -22,6 +22,6 @@ var mainMenu =
     
     gotoOutdoorZone : function()
     {
-        this.state.start('outdoorZone');
+        this.state.start('tower_level');
     }
 };

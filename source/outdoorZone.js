@@ -9,7 +9,7 @@ var enemy1;
 var controls;
 var coins;
 var coin;
-var coin1;
+//var coin1;
 var coinScore = 0;
 var coinScoreString = '';
 var coinScoreText;
@@ -48,12 +48,12 @@ function buildWorld_outdoorZone (game, world)
     //world_outdoorZone.layer_tower.debug = true;
 }   
 
-function checkOverlap (spriteA,spriteB){
-        var boundsA = spriteA.getBounds();
-        var boundsB = spriteB.getBounds();
+//function checkOverlap (spriteA,spriteB){
+ //       var boundsA = spriteA.getBounds();
+ //       var boundsB = spriteB.getBounds();
         
-        return Phaser.Rectangle.intersects(boundsA,boundsB);
-    }
+ //       return Phaser.Rectangle.intersects(boundsA,boundsB);
+ //   }
 
 var outdoorZone =
 {
@@ -114,7 +114,15 @@ var outdoorZone =
         fireballs.setAll('anchor.y', 1);
         fireballs.setAll('outOfBoundsKill', true);
         fireballs.setAll('checkWorldBounds', true);
-       
+        this.fireball = fireballs.getFirstExists(false);
+        this.fireball.animations.add('fireUp', [16, 17, 18, 19 ,20 ,21 ,22, 23],30,true);
+        this.fireball.animations.add('fireLeft', [0,1,2,3,4,5,6,7],30,true);
+        this.fireball.animations.add('fireDown', [48,49,50,51,52,53,54,55],30,true);
+        this.fireball.animations.add('fireRight', [32,33,34,35,36,37,38,39],30,true);
+        this.fireball.animations.add('fireUpLeft', [8,9,10,11,12,13,14,15],30,true);
+        this.fireball.animations.add('fireDownLeft', [56,57,58,59,60,61,62,63],30,true);
+        this.fireball.animations.add('fireUpRight', [24,25,26,27,28,29,30,31],30,true);
+        this.fireball.animations.add('fireDownRight', [40,41,42,43,44,45,46,47],30,true);
         //Player Code
         player = this.game.add.sprite(1770,2050,'player');
  
@@ -136,7 +144,6 @@ var outdoorZone =
         
         player.anchor.setTo(0.5,0.5);
     
-       
         this.game.physics.enable(player);
         
         player.body.collideWorldBounds=true;
@@ -218,7 +225,7 @@ var outdoorZone =
                 player.body.velocity.y = -140;
                 player.body.velocity.x = -140;
 
-                facingUp = false;
+                facingUp = true;
                 facingLeft = true;
                 facingDown = false;
                 facingRight = false;
@@ -230,7 +237,7 @@ var outdoorZone =
                 player.body.velocity.y = -140;
                 player.body.velocity.x = 140;
 
-                facingUp = false;
+                facingUp = true;
                 facingLeft = false;
                 facingDown = false;
                 facingRight = true;
@@ -244,7 +251,7 @@ var outdoorZone =
 
                 facingUp = false;
                 facingLeft = true;
-                facingDown = false;
+                facingDown = true;
                 facingRight = false;
 
             }
@@ -257,7 +264,7 @@ var outdoorZone =
 
                 facingUp = false;
                 facingLeft = false;
-                facingDown = false;
+                facingDown = true;
                 facingRight = true;
 
             }
@@ -308,22 +315,25 @@ var outdoorZone =
 
             else if(this.game.input.activePointer.leftButton.isDown)
             {
-                if(facingUp)
+                if(facingUp && facingLeft || facingDown && facingLeft || facingLeft)
+                {
+                   player.animations.play('attackLeft');
+                   this.shootFireball();
+                }
+                else if(facingUp && facingRight || facingDown && facingRight || facingRight)
+                {
+                   player.animations.play('attackRight');
+                   this.shootFireball();
+                }
+                else if(facingUp)
                 {
                     player.animations.play('attackUp');
                     this.shootFireball();
                 }
-                else if(facingLeft)
-                {
-                    player.animations.play('attackLeft');
-                }
                 else if(facingDown)
                 {
                     player.animations.play('attackDown');
-                }
-                else if(facingRight)
-                {
-                    player.animations.play('attackRight');
+                    this.shootFireball();
                 }
 
             }
@@ -340,16 +350,68 @@ var outdoorZone =
     {
         if(this.game.time.now > fireball_castTime)
         {
-            this.fireball = fireballs.getFirstExists(false);
-                
-            if(this.fireball)
+            
+            if(this.fireball && facingUp && facingLeft)   
             {
                this.fireball.reset(player.x, player.y);
                this.fireball.body.velocity.y = -50;
-               this.fireball.animations.add('fireUp', [16, 17, 18, 19 ,20 ,21 ,22, 23],30,true);
+               this.fireball.body.velocity.x = -50;
+               this.fireball.animations.play('fireUpLeft');
+               fireball_castTime = this.game.time.now + 300; 
+            }
+            else if(this.fireball && facingUp && facingRight)   
+            {
+               this.fireball.reset(player.x, player.y);
+               this.fireball.body.velocity.y = -50;
+               this.fireball.body.velocity.x = +50;
+               this.fireball.animations.play('fireUpRight');
+               fireball_castTime = this.game.time.now + 300; 
+            }
+            else if(this.fireball && facingDown && facingLeft)   
+            {
+               this.fireball.reset(player.x, player.y);
+               this.fireball.body.velocity.y = +50;
+               this.fireball.body.velocity.x = -50;
+               this.fireball.animations.play('fireDownLeft');
+               fireball_castTime = this.game.time.now + 300; 
+            }
+            else if(this.fireball && facingDown && facingRight)   
+            {
+               this.fireball.reset(player.x, player.y);
+               this.fireball.body.velocity.y = +50;
+               this.fireball.body.velocity.x = +50;
+               this.fireball.animations.play('fireDownRight');
+               fireball_castTime = this.game.time.now + 300; 
+            }
+            else if(this.fireball && facingUp)
+            {
+               this.fireball.reset(player.x, player.y);
+               this.fireball.body.velocity.y = -50;
                this.fireball.animations.play('fireUp');
                fireball_castTime = this.game.time.now + 300;     
             }
+            else if(this.fireball && facingLeft)
+            {
+               this.fireball.reset(player.x, player.y);
+               this.fireball.body.velocity.x = -50;
+               this.fireball.animations.play('fireLeft');
+               fireball_castTime = this.game.time.now + 300;  
+            }
+            else if(this.fireball && facingDown)
+            {
+               this.fireball.reset(player.x, player.y);
+               this.fireball.body.velocity.y = +50;
+               this.fireball.animations.play('fireDown');
+               fireball_castTime = this.game.time.now + 300;  
+            }
+            else if(this.fireball && facingRight)
+            {
+               this.fireball.reset(player.x, player.y);
+               this.fireball.body.velocity.x = +50;
+               this.fireball.animations.play('fireRight');
+               fireball_castTime = this.game.time.now + 300;  
+            }
+            
         }
     },
     
