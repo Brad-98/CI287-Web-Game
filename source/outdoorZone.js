@@ -2,9 +2,18 @@ var player;
 var player_lives;
 var player_livesText;
 var upgrade_text;
-var enemy_elf;
-var enemy;
-var elfTween;
+var enemy_elf_up;
+var enemy_elf_left;
+var enemy_elf_down;
+var enemy_elf_right;
+var enemy_up;
+var enemy_left;
+var enemy_down;
+var enemy_right;
+var elfTween_up;
+var elfTween_left;
+var elfTween_down;
+var elfTween_right;
 //var enemy1;
 var controls;
 var coins;
@@ -108,8 +117,17 @@ var outdoorZone =
         coins = this.game.add.group();
         this.createCoins();
         
-        enemy_elf = this.game.add.group();
-        this.createEnemies();
+        enemy_elf_up = this.game.add.group();
+        this.createEnemiesUp();
+        
+        enemy_elf_left = this.game.add.group();
+        this.createEnemiesLeft();
+        
+        enemy_elf_down = this.game.add.group();
+        this.createEnemiesDown();
+        
+        enemy_elf_right = this.game.add.group();
+        this.createEnemiesRight();
         
         fireballs = this.game.add.group();
         fireballs.enableBody = true;
@@ -206,12 +224,6 @@ var outdoorZone =
             //this.game.physics.arcade.collide(player,enemy1.enemy, this.respawnPlayer);
             
             player.body.velocity.set(0);
-
-            //if(checkOverlap(player,coin1.coin)){
-            //    coin1.coin.kill();
-             //   coin1.coin.reset(3000,2000);
-             //   this.collectCoin();
-           // }
 
             if(controls.up.isDown && controls.left.isDown)
             {
@@ -331,15 +343,48 @@ var outdoorZone =
                 }
             }
             
-            if(player.y <= enemy.y+100)
+            if(player.y <= enemy_up.y+100 && player.x <= enemy_up.x+10)
                {
-                   enemy.animations.play('fireDown');
-                   elfTween.pause();
+                   enemy_up.animations.play('fireUp');
+                   elfTween_up.pause();
                }
             else
                {
-                   enemy.animations.play('walkDown');
-                   elfTween.resume();
+                   enemy_up.animations.play('walkUp');
+                   elfTween_up.resume();
+               }
+            
+            if(player.x <= enemy_left.x+100 && player.y <= enemy_left.y+10)
+               {
+                   enemy_left.animations.play('fireLeft');
+                   elfTween_left.pause();
+               }
+            else
+               {
+                   enemy_left.animations.play('walkLeft');
+                   elfTween_left.resume();
+               }
+            
+            if(player.y <= enemy_down.y+100 && player.x <= enemy_down.x+10)
+               {
+                   enemy_down.animations.play('fireDown');
+                   elfTween_down.pause();
+               }
+            else
+               {
+                   enemy_down.animations.play('walkDown');
+                   elfTween_down.resume();
+               }
+            
+            if(player.x <= enemy_right.x+100 && player.y <= enemy_right.y+10)
+               {
+                   enemy_right.animations.play('fireRight');
+                   elfTween_right.pause();
+               }
+            else
+               {
+                   enemy_right.animations.play('walkRight');
+                   elfTween_right.resume();
                }
         }
     },
@@ -462,26 +507,96 @@ var outdoorZone =
         }
     },
     
-    createEnemies : function()
+    createEnemiesUp : function()
     {
-         enemy_elf.enableBody = true;
-         enemy = enemy_elf.create(50 , 50, 'enemy_elf');
-         enemy.anchor.setTo(0.5,0.5);
+         enemy_elf_up.enableBody = true;
+         this.game.physics.arcade.enable(enemy_elf_up);
+         enemy_up = enemy_elf_up.create(150 , 150, 'enemy_elf');
+         enemy_up.anchor.setTo(0.5,0.5);
             //this.enemy.name = index.toString;
-         enemy.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],9, true);
-         enemy.animations.add('walkLeft', [13,14,15,16,17,18,19,20],9, true);
-         enemy.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
-         enemy.animations.add('walkRight', [37,38,39,40,41,42,43,44],9, true);
-         enemy.animations.add('fireUp', [48,49,50,51,52,53,54,55,56,57,58,59],9, true);
-         enemy.animations.add('fireLeft', [60,61,62,63,64,65,66,67,68,69,70,71],9, true);
-         enemy.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
-         enemy.animations.add('fireRight', [84,85,86,87,88,89,90,91,92,93,94,95],9, true);
+         enemy_up.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],9, true);
+         enemy_up.animations.add('fireUp', [48,49,50,51,52,53,54,55,56,57,58,59],9, true);
         
-         enemy.animations.play('walkDown');
-         game.physics.arcade.enable(enemy,Phaser.Physics.ARCADE);     
+         enemy_up.animations.play('walkUp');
+              
             
-        elfTween = game.add.tween(enemy).to({
-                y:enemy.y+100
+        elfTween_up = game.add.tween(enemy_up).to({
+                y:enemy_up.y-100
+            },2000,'Linear',true,0,100,true);
+    },
+    
+    createEnemiesLeft : function()
+    {
+         enemy_elf_left.enableBody = true;
+         enemy_left = enemy_elf_left.create(100 , 100, 'enemy_elf');
+         enemy_left.anchor.setTo(0.5,0.5);
+            //this.enemy.name = index.toString;
+         enemy_left.animations.add('walkLeft', [13,14,15,16,17,18,19,20],9, true);
+         enemy_left.animations.add('fireLeft', [60,61,62,63,64,65,66,67,68,69,70,71],9, true);
+
+         enemy_left.animations.play('walkLeft');
+         game.physics.arcade.enable(enemy_left,Phaser.Physics.ARCADE);     
+            
+        elfTween_left = game.add.tween(enemy_left).to({
+                x:enemy_left.x-100
+            },2000,'Linear',true,0,100,true);
+    },
+    
+    createEnemiesDown : function()
+    {
+        enemy_elf_down.enableBody = true;
+        this.game.physics.arcade.enable(enemy_elf_down);
+         //enemy_down = enemy_elf_down.create(50 , 50, 'enemy_elf');
+        
+        for (var x = 1; x < 3; x++)
+        {
+            enemy_down = enemy_elf_down.create(50 * x, 150, 'enemy_elf');
+            enemy_down.anchor.setTo(0.5,0.5);
+            enemy_down.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
+            enemy_down.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
+        
+            enemy_down.animations.play('walkDown');     
+        
+        }
+        
+        for (var x = 1; x < 3; x++)
+        {
+            enemy_down = enemy_elf_down.create(150 * x, 300, 'enemy_elf');
+            enemy_down.anchor.setTo(0.5,0.5);
+            enemy_down.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
+            enemy_down.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
+        
+            enemy_down.animations.play('walkDown');     
+        }
+        
+            elfTween_down = game.add.tween(enemy_elf_down).to({
+                y:enemy_elf_down.y+100
+            },2000,'Linear',true,0,100,true);
+        
+         //enemy_down.anchor.setTo(0.5,0.5);
+         //enemy_down.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
+         //enemy_down.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
+        
+         //enemy_down.animations.play('walkDown');
+         //game.physics.arcade.enable(enemy_down,Phaser.Physics.ARCADE);     
+            
+
+    },
+    
+    createEnemiesRight : function()
+    {
+         enemy_elf_right.enableBody = true;
+         enemy_right = enemy_elf_right.create(200 , 200, 'enemy_elf');
+         enemy_right.anchor.setTo(0.5,0.5);
+            //this.enemy.name = index.toString;
+         enemy_right.animations.add('walkRight', [37,38,39,40,41,42,43,44],9, true);
+         enemy_right.animations.add('fireRight', [84,85,86,87,88,89,90,91,92,93,94,95],9, true);
+        
+         enemy_right.animations.play('walkRight');
+         game.physics.arcade.enable(enemy_right,Phaser.Physics.ARCADE);     
+            
+        elfTween_right = game.add.tween(enemy_right).to({
+                x:enemy_right.x+100
             },2000,'Linear',true,0,100,true);
     },
       
