@@ -9,6 +9,7 @@ var enemy_elf_right;
 var enemy_up;
 var enemy_left;
 var enemy_down;
+var enemy_down1;
 var enemy_right;
 var elfTween_up;
 var elfTween_left;
@@ -343,7 +344,7 @@ var outdoorZone =
                 }
             }
             
-            if(player.y <= enemy_up.y+100 && player.x <= enemy_up.x+10)
+            if(player.y <= enemy_up.y+500 && player.x <= enemy_up.x+10)
                {
                    enemy_up.animations.play('fireUp');
                    elfTween_up.pause();
@@ -354,7 +355,7 @@ var outdoorZone =
                    elfTween_up.resume();
                }
             
-            if(player.x <= enemy_left.x+100 && player.y <= enemy_left.y+10)
+            if(player.x <= enemy_left.x+500 && player.y <= enemy_left.y+10)
                {
                    enemy_left.animations.play('fireLeft');
                    elfTween_left.pause();
@@ -365,7 +366,7 @@ var outdoorZone =
                    elfTween_left.resume();
                }
             
-            if(player.y <= enemy_down.y+100 && player.x <= enemy_down.x+10)
+            if(player.y <= enemy_down.y+500 && player.x <= enemy_down.x+10)
                {
                    enemy_down.animations.play('fireDown');
                    elfTween_down.pause();
@@ -375,8 +376,18 @@ var outdoorZone =
                    enemy_down.animations.play('walkDown');
                    elfTween_down.resume();
                }
+            if(player.y <= enemy_down1.y+500 && player.x <= enemy_down1.x+10)
+               {
+                   enemy_down1.animations.play('fireDown');
+                   elfTween_down.pause();
+               }
+            else
+               {
+                   enemy_down1.animations.play('walkDown');
+                   elfTween_down.resume();
+               }
             
-            if(player.x <= enemy_right.x+100 && player.y <= enemy_right.y+10)
+            if(player.x <= enemy_right.x+500 && player.y <= enemy_right.y+10)
                {
                    enemy_right.animations.play('fireRight');
                    elfTween_right.pause();
@@ -546,28 +557,22 @@ var outdoorZone =
     {
         enemy_elf_down.enableBody = true;
         this.game.physics.arcade.enable(enemy_elf_down);
-         //enemy_down = enemy_elf_down.create(50 , 50, 'enemy_elf');
+        enemy_down = enemy_elf_down.create(50 , 50, 'enemy_elf');
+        enemy_down1 = enemy_elf_down.create(150 , 50, 'enemy_elf');
+        enemy_down.anchor.setTo(0.5,0.5);
+        enemy_down.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
+        enemy_down.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
+        enemy_down.animations.play('walkDown');
+        enemy_down1.anchor.setTo(0.5,0.5);
+        enemy_down1.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
+        enemy_down1.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
+        enemy_down1.animations.play('walkDown');
         
-        for (var x = 1; x < 3; x++)
-        {
-            enemy_down = enemy_elf_down.create(50 * x, 150, 'enemy_elf');
-            enemy_down.anchor.setTo(0.5,0.5);
-            enemy_down.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
-            enemy_down.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
+        //for (var x = 1; x < 3; x++)
+       // {
+            //enemy_down = enemy_elf_down.create(50 * x, 150, 'enemy_elf');     
         
-            enemy_down.animations.play('walkDown');     
-        
-        }
-        
-        for (var x = 1; x < 3; x++)
-        {
-            enemy_down = enemy_elf_down.create(150 * x, 300, 'enemy_elf');
-            enemy_down.anchor.setTo(0.5,0.5);
-            enemy_down.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
-            enemy_down.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
-        
-            enemy_down.animations.play('walkDown');     
-        }
+       // }
         
             elfTween_down = game.add.tween(enemy_elf_down).to({
                 y:enemy_elf_down.y+100
