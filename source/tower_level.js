@@ -10,7 +10,8 @@ var enemy1;
 var controls;
 var coins;
 var coin;
-//var coin1;
+var silverKey;
+var goldKey;
 var coinScore = 0;
 var coinScoreString = '';
 var coinScoreText;
@@ -26,7 +27,9 @@ var world_towerLevel =
     map: null,
     layer_ground: null,
     layer_walls: null,
-    layer_doors: null
+    layer_doors: null,
+    layer_doors2: null
+    
 };
 
 function buildWorld_towerLevel (game, world) 
@@ -39,7 +42,10 @@ function buildWorld_towerLevel (game, world)
     world_towerLevel.layer_ground = world_towerLevel.map.createLayer('layer_Ground');
     world_towerLevel.layer_walls = world_towerLevel.map.createLayer('layer_Walls');
     world_towerLevel.layer_doors = world_towerLevel.map.createLayer('layer_Doors');
+    world_towerLevel.layer_doors2 = world_towerLevel.map.createLayer('layer_Doors2');
     world_towerLevel.layer_ground.resizeWorld();
+    
+    
 }
 
 var tower_level =
@@ -52,6 +58,8 @@ var tower_level =
         this.game.load.spritesheet('fireball', '../assets/fireball.png',64,64,63);
         this.game.load.image('heart', '../assets/player_heart.png');
         this.game.load.image('heart_upgrade', '../assets/player_heartUpgrade.png');
+        this.game.load.image('goldKey', '../assets/goldKey.png');
+        this.game.load.image('silverKey', '../assets/silverKey.png');
         
         this.game.load.tilemap('map','../assets/tilesets/towerLevel..json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tileSheet', '../assets/tilesets/TileA3-byLunarea.png');
@@ -148,6 +156,14 @@ var tower_level =
         coin_image.scale.setTo(1.3,1.3);
         coin_image.fixedToCamera = true;
         
+        goldKey = this.game.add.sprite(1700,1700,'goldKey');
+        goldKey.enableBody = true;
+        this.game.physics.arcade.enable(goldKey);
+        
+        silverKey = this.game.add.sprite(1800,1700,'silverKey');
+        silverKey.enableBody = true;
+        this.game.physics.arcade.enable(silverKey);
+        
         player_lives = this.game.add.group();
         player_livesText = this.game.add.text(10 ,15 ,'Health : ', {font: '30px Arial', fill: '#ffffff'});
         player_livesText.fixedToCamera = true;
@@ -183,8 +199,10 @@ var tower_level =
         
         if(player.alive)
         {
-            this.game.physics.arcade.collide(player, world_outdoorZone.layer_tower);
+            this.game.physics.arcade.collide(player, world_towerLevel.layer_walls);
+            this.game.physics.arcade.collide(player, world_towerLevel.layer_doors);
             this.game.physics.arcade.collide(player,coins, this.collectCoin);
+            this.game.physics.arcade.collide(player,silverKey, this.collectSilverKey);
             
             player.body.velocity.set(0);
 
@@ -409,6 +427,12 @@ var tower_level =
         coin.kill();
         coinScore +=1;
         coinScoreText.text = coinScoreString + coinScore;
+    },
+    
+    collectSilverKey : function(player,silverKey)
+    {
+        silverKey.kill();
+        world_towerLevel.layer_doors.kill();
     },
     
     respawnPlayer : function()
