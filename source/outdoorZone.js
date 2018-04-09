@@ -45,7 +45,8 @@ function buildWorld_outdoorZone (game, world)
     //world_outdoorZone.map.setCollisionBetween(5, 7, true, world_outdoorZone.layer_tower);
     //world_outdoorZone.map.setCollisionBetween(14, 16, true, world_outdoorZone.layer_tower);
     world_outdoorZone.map.setTileIndexCallback([5, 16], this.gotoTowerLevel, this ,world_outdoorZone.layer_tower);
-    //world_outdoorZone.layer_tower.debug = true;
+    //world_outdoorZone.layer_walls.debug = true;
+    
 }   
 
 //function checkOverlap (spriteA,spriteB){
@@ -72,6 +73,7 @@ var outdoorZone =
         this.game.load.image('plants', '../assets/tilesets/plants.png');
         
         this.game.load.audio('levelMusic', '../assets/music/music_outdoorZone.mp3'); 
+        this.game.load.audio('fireball_sound', '../assets/music/sound_fireball.mp3'); 
 
         enemy_elf = function (index, game, x, y) 
         {
@@ -96,6 +98,7 @@ var outdoorZone =
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
         buildWorld_outdoorZone(game, world_outdoorZone);
+        sound_objects.fireball_sound = this.game.add.audio('fireball_sound');
         sound_objects.levelMusic = this.game.add.audio('levelMusic');
         sound_objects.levelMusic.loopFull();
         
@@ -109,20 +112,12 @@ var outdoorZone =
         fireballs = this.game.add.group();
         fireballs.enableBody = true;
         this.game.physics.arcade.enable(fireballs);
-        fireballs.createMultiple(5, 'fireball');
+        fireballs.createMultiple(50, 'fireball');
         fireballs.setAll('anchor.x', 0.5);
         fireballs.setAll('anchor.y', 1);
         fireballs.setAll('outOfBoundsKill', true);
         fireballs.setAll('checkWorldBounds', true);
-        this.fireball = fireballs.getFirstExists(false);
-        this.fireball.animations.add('fireUp', [16, 17, 18, 19 ,20 ,21 ,22, 23],30,true);
-        this.fireball.animations.add('fireLeft', [0,1,2,3,4,5,6,7],30,true);
-        this.fireball.animations.add('fireDown', [48,49,50,51,52,53,54,55],30,true);
-        this.fireball.animations.add('fireRight', [32,33,34,35,36,37,38,39],30,true);
-        this.fireball.animations.add('fireUpLeft', [8,9,10,11,12,13,14,15],30,true);
-        this.fireball.animations.add('fireDownLeft', [56,57,58,59,60,61,62,63],30,true);
-        this.fireball.animations.add('fireUpRight', [24,25,26,27,28,29,30,31],30,true);
-        this.fireball.animations.add('fireDownRight', [40,41,42,43,44,45,46,47],30,true);
+        
         //Player Code
         player = this.game.add.sprite(1770,2050,'player');
  
@@ -313,17 +308,17 @@ var outdoorZone =
                 facingRight = true;
             }
 
-            else if(this.game.input.activePointer.leftButton.isDown)
+            if(this.game.input.activePointer.leftButton.isDown)
             {
                 if(facingUp && facingLeft || facingDown && facingLeft || facingLeft)
                 {
-                   player.animations.play('attackLeft');
-                   this.shootFireball();
+                    player.animations.play('attackLeft');
+                    this.shootFireball();
                 }
                 else if(facingUp && facingRight || facingDown && facingRight || facingRight)
                 {
-                   player.animations.play('attackRight');
-                   this.shootFireball();
+                    player.animations.play('attackRight');
+                    this.shootFireball();
                 }
                 else if(facingUp)
                 {
@@ -335,90 +330,111 @@ var outdoorZone =
                     player.animations.play('attackDown');
                     this.shootFireball();
                 }
-
             }
             
             if(player.y == enemy1.enemy.y)
-                {
-                    enemy1.enemy.animations.play('walkUp');
-                }
+            {
+                enemy1.enemy.animations.play('walkUp');
+            }
         }
-    
     },
     
     shootFireball : function()
     {
         if(this.game.time.now > fireball_castTime)
-        {
+        { 
+            this.fireball = fireballs.getFirstExists(false);
             
             if(this.fireball && facingUp && facingLeft)   
             {
-               this.fireball.reset(player.x, player.y);
-               this.fireball.body.velocity.y = -50;
-               this.fireball.body.velocity.x = -50;
-               this.fireball.animations.play('fireUpLeft');
-               fireball_castTime = this.game.time.now + 300; 
-            }
-            else if(this.fireball && facingUp && facingRight)   
-            {
-               this.fireball.reset(player.x, player.y);
-               this.fireball.body.velocity.y = -50;
-               this.fireball.body.velocity.x = +50;
-               this.fireball.animations.play('fireUpRight');
-               fireball_castTime = this.game.time.now + 300; 
-            }
-            else if(this.fireball && facingDown && facingLeft)   
-            {
-               this.fireball.reset(player.x, player.y);
-               this.fireball.body.velocity.y = +50;
-               this.fireball.body.velocity.x = -50;
-               this.fireball.animations.play('fireDownLeft');
-               fireball_castTime = this.game.time.now + 300; 
-            }
-            else if(this.fireball && facingDown && facingRight)   
-            {
-               this.fireball.reset(player.x, player.y);
-               this.fireball.body.velocity.y = +50;
-               this.fireball.body.velocity.x = +50;
-               this.fireball.animations.play('fireDownRight');
-               fireball_castTime = this.game.time.now + 300; 
-            }
-            else if(this.fireball && facingUp)
-            {
-               this.fireball.reset(player.x, player.y);
-               this.fireball.body.velocity.y = -50;
-               this.fireball.animations.play('fireUp');
-               fireball_castTime = this.game.time.now + 300;     
-            }
-            else if(this.fireball && facingLeft)
-            {
-               this.fireball.reset(player.x, player.y);
-               this.fireball.body.velocity.x = -50;
-               this.fireball.animations.play('fireLeft');
-               fireball_castTime = this.game.time.now + 300;  
-            }
-            else if(this.fireball && facingDown)
-            {
-               this.fireball.reset(player.x, player.y);
-               this.fireball.body.velocity.y = +50;
-               this.fireball.animations.play('fireDown');
-               fireball_castTime = this.game.time.now + 300;  
-            }
-            else if(this.fireball && facingRight)
-            {
-               this.fireball.reset(player.x, player.y);
-               this.fireball.body.velocity.x = +50;
-               this.fireball.animations.play('fireRight');
-               fireball_castTime = this.game.time.now + 300;  
+                sound_objects.fireball_sound.play();
+                this.fireball.reset(player.x - 20, player.y + 32);
+                this.fireball.body.velocity.y = -300;
+                this.fireball.body.velocity.x = -300;
+                this.fireball.animations.add('fireUpLeft', [8, 9, 10, 11, 12, 13, 14, 15],30,true);
+                this.fireball.animations.play('fireUpLeft');
+                fireball_castTime = this.game.time.now + 1000; 
             }
             
+            else if(this.fireball && facingUp && facingRight)   
+            {
+                sound_objects.fireball_sound.play();
+                this.fireball.reset(player.x + 20, player.y + 32);
+                this.fireball.body.velocity.y = -300;
+                this.fireball.body.velocity.x = +300;
+                this.fireball.animations.play('fireUpRight');
+                this.fireball.animations.add('fireUpRight', [24, 25, 26, 27, 28, 29, 30, 31],30,true);
+                fireball_castTime = this.game.time.now + 1000; 
+            }
+           
+            else if(this.fireball && facingDown && facingLeft)   
+            {
+                sound_objects.fireball_sound.play();
+                this.fireball.reset(player.x - 20, player.y + 32);
+                this.fireball.body.velocity.y = +300;
+                this.fireball.body.velocity.x = -300;
+                this.fireball.animations.add('fireDownLeft', [56, 57, 58, 59, 60, 61, 62, 63],30,true);
+                this.fireball.animations.play('fireDownLeft');
+                fireball_castTime = this.game.time.now + 1000; 
+            }
+           
+            else if(this.fireball && facingDown && facingRight)   
+            {
+                sound_objects.fireball_sound.play();
+                this.fireball.reset(player.x + 20, player.y + 32);
+                this.fireball.body.velocity.y = +300;
+                this.fireball.body.velocity.x = +300;
+                this.fireball.animations.add('fireDownRight', [40, 41, 42, 43, 44, 45, 46, 47],30,true);
+                this.fireball.animations.play('fireDownRight');
+                fireball_castTime = this.game.time.now + 1000; 
+            }
+            
+            else if(this.fireball && facingUp)
+            {
+                sound_objects.fireball_sound.play();    
+                this.fireball.reset(player.x, player.y);
+                this.fireball.body.velocity.y = -300;
+                this.fireball.animations.add('fireUp', [16, 17, 18, 19 ,20 ,21 ,22, 23],30,true);
+                this.fireball.animations.play('fireUp');
+                fireball_castTime = this.game.time.now + 1000;     
+            }
+           
+            else if(this.fireball && facingLeft)
+            {
+                sound_objects.fireball_sound.play();
+                this.fireball.reset(player.x - 32, player.y + 32);
+                this.fireball.body.velocity.x = -300;
+                this.fireball.animations.add('fireLeft', [0, 1, 2, 3, 4, 5, 6, 7],30,true);
+                this.fireball.animations.play('fireLeft');
+                fireball_castTime = this.game.time.now + 1000;  
+            }
+            
+            else if(this.fireball && facingDown)
+            {
+                sound_objects.fireball_sound.play();
+                this.fireball.reset(player.x, player.y + 64);
+                this.fireball.body.velocity.y = +300;
+                this.fireball.animations.add('fireDown', [48, 49, 50, 51, 52, 53, 54, 55],30,true);
+                this.fireball.animations.play('fireDown');
+                fireball_castTime = this.game.time.now + 1000;  
+            }
+            
+            else if(this.fireball && facingRight)
+            {
+                sound_objects.fireball_sound.play();
+                this.fireball.reset(player.x + 32, player.y + 32);
+                this.fireball.body.velocity.x = +300;
+                this.fireball.animations.add('fireRight', [32, 33, 34, 35, 36, 37, 38, 39],30,true);
+                this.fireball.animations.play('fireRight');
+                fireball_castTime = this.game.time.now + 1000;  
+            }    
         }
     },
     
-    resetFireball : function (fireball) 
-    {
-        fireball.kill();
-    },
+    //resetFireball : function (fireball) 
+    //{
+    //    fireball.kill();
+    //},
     
     createCoins : function()
     {
