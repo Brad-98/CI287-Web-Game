@@ -44,16 +44,21 @@ function buildWorld_outdoorZone (game, world)
     world_outdoorZone.map.addTilesetImage('tileset_outdoorZone','tileSheet');
     world_outdoorZone.map.addTilesetImage('farming_fishing','fish&farming');
     world_outdoorZone.map.addTilesetImage('plants','plants');
+    world_outdoorZone.map.addTilesetImage('stonePath','stonePath');
     
     // Tilemap layers
     world_outdoorZone.layer_ground = world_outdoorZone.map.createLayer('layer_Ground');
     world_outdoorZone.layer_walls = world_outdoorZone.map.createLayer('layer_Walls');
     world_outdoorZone.layer_tower = world_outdoorZone.map.createLayer('layer_Tower');
     world_outdoorZone.layer_ground.resizeWorld();
-    //world_outdoorZone.map.setCollisionBetween(5, 7, true, world_outdoorZone.layer_tower);
-    //world_outdoorZone.map.setCollisionBetween(14, 16, true, world_outdoorZone.layer_tower);
-    world_outdoorZone.map.setTileIndexCallback([5, 16], this.gotoTowerLevel, this ,world_outdoorZone.layer_tower);
-    //world_outdoorZone.layer_walls.debug = true;
+    world_outdoorZone.map.setCollision(13, true, world_outdoorZone.layer_walls);
+    world_outdoorZone.map.setCollisionBetween(57, 60, true, world_outdoorZone.layer_walls);
+    world_outdoorZone.map.setCollisionBetween(66, 68, true, world_outdoorZone.layer_walls);
+    world_outdoorZone.map.setCollisionBetween(75, 78, true, world_outdoorZone.layer_walls);
+    world_outdoorZone.map.setCollisionBetween(93, 96, true, world_outdoorZone.layer_walls);
+    world_outdoorZone.map.setCollisionBetween(102, 105, true, world_outdoorZone.layer_walls);
+    //world_outdoorZone.map.setTileIndexCallback([5, 16], this.gotoTowerLevel, this ,world_outdoorZone.layer_tower);
+    world_outdoorZone.layer_walls.debug = true;
     
 }   
 
@@ -79,6 +84,7 @@ var outdoorZone =
         this.game.load.image('tileSheet', '../assets/tilesets/tileset_outdoor.png');
         this.game.load.image('fish&farming', '../assets/tilesets/farming_fishing.png');
         this.game.load.image('plants', '../assets/tilesets/plants.png');
+        this.game.load.image('stonePath', '../assets/tilesets/stonePath.png');
         
         this.game.load.audio('levelMusic', '../assets/music/music_outdoorZone.mp3'); 
         this.game.load.audio('fireball_sound', '../assets/music/sound_fireball.mp3'); 
@@ -110,7 +116,7 @@ var outdoorZone =
         sound_objects.levelMusic = this.game.add.audio('levelMusic');
         sound_objects.levelMusic.loopFull();
         
-        this.towerSprite = this.game.add.sprite(3300, 30, 'towerSprite');
+        this.towerSprite = this.game.add.sprite(3300, 35, 'towerSprite');
         this.towerSprite.scale.setTo(2, 2);
         
         
@@ -139,8 +145,8 @@ var outdoorZone =
         fireballs.setAll('checkWorldBounds', true);
         
         //Player Code
-        //player = this.game.add.sprite(1770,2050,'player');
-        player = this.game.add.sprite(300,300,'player')
+        player = this.game.add.sprite(1770,2050,'player');
+        //player = this.game.add.sprite(300,300,'player')
  
         player.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],8, false);
         
@@ -159,9 +165,10 @@ var outdoorZone =
         player.animations.add('attackRight', [63,64,65,66,67,68,63],10, false);
         
         player.anchor.setTo(0.5,0.5);
+        
     
         this.game.physics.enable(player);
-        
+        player.body.setSize(28, 48, 18, 8);
         player.body.collideWorldBounds=true;
         
         //enemy1 = new enemy_elf(0,this.game,100,100);
@@ -216,10 +223,10 @@ var outdoorZone =
     },
     
     update : function()
-    {   
+    {   this.game.debug.body(player);
         if(player.alive)
         {
-            this.game.physics.arcade.collide(player, world_outdoorZone.layer_tower);
+            this.game.physics.arcade.collide(player, world_outdoorZone.layer_walls);
             this.game.physics.arcade.collide(player,coins, this.collectCoin);
             //this.game.physics.arcade.collide(player,enemy1.enemy, this.respawnPlayer);
             
