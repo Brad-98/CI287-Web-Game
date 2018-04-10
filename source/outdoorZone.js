@@ -59,7 +59,7 @@ function buildWorld_outdoorZone (game, world)
     world_outdoorZone.map.setCollisionBetween(93, 96, true, world_outdoorZone.layer_walls);
     world_outdoorZone.map.setCollisionBetween(102, 105, true, world_outdoorZone.layer_walls);
     //world_outdoorZone.map.setTileIndexCallback([5, 16], this.gotoTowerLevel, this ,world_outdoorZone.layer_tower);
-    world_outdoorZone.layer_walls.debug = true;
+    //world_outdoorZone.layer_walls.debug = true;
     
 }   
 
@@ -167,7 +167,6 @@ var outdoorZone =
         
         player.anchor.setTo(0.5,0.5);
         
-    
         this.game.physics.enable(player);
         player.body.setSize(28, 48, 18, 8);
         player.body.collideWorldBounds=true;
