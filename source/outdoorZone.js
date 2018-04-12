@@ -87,6 +87,7 @@ var outdoorZone =
         this.game.load.image('merchantBack', '../assets/merchant2.png');
         this.game.load.image('heart', '../assets/player_heart.png');
         this.game.load.image('heart_upgrade', '../assets/player_heartUpgrade.png');
+        this.game.load.image('arrow', '../assets/arrow.png');
         
         this.game.load.tilemap('map','../assets/tilesets/outdoorZone..json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tileSheet', '../assets/tilesets/tileset_outdoor.png');
@@ -238,10 +239,7 @@ var outdoorZone =
     },
     
     update : function()
-    {  // this.game.debug.body(this.towerSprite);
-     //this.game.debug.body(enemy_up);
-     //this.game.debug.body(enemy_down);
-     //this.game.debug.body(enemy_left);
+    {  
         if(player.alive)
         {
             this.game.physics.arcade.collide(player, world_outdoorZone.layer_walls);
@@ -375,6 +373,7 @@ var outdoorZone =
                {
                    enemy_elf_up.callAll('play',null,'fireUp');
                    elfTween_up.pause();
+                   this.shootArrow();
                }
             else
                {
@@ -639,6 +638,11 @@ var outdoorZone =
         fireball.kill();
         enemy_right.kill();
     },
+    
+    shootArrow : function()
+    {
+        
+    },
       
     collectCoin : function(player,coin)
     {
@@ -655,5 +659,5 @@ var outdoorZone =
     gotoTowerLevel : function(player, towerSprite)
     {
         game.state.start('tower_level');
-    },       
+    }, 
 };
