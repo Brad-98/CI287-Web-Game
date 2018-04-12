@@ -119,6 +119,7 @@ var outdoorZone =
         this.towerSprite = this.game.add.sprite(3300, 35, 'towerSprite');
         this.game.physics.enable(this.towerSprite);
         this.towerSprite.scale.setTo(2, 2);
+        this.towerSprite.body.setSize(20, 4, 38, 126);
         
         coins = this.game.add.group();
         this.createCoins();
@@ -222,7 +223,7 @@ var outdoorZone =
     },
     
     update : function()
-    {   this.game.debug.body(this.towerSprite);
+    {  // this.game.debug.body(this.towerSprite);
      //this.game.debug.body(enemy_up);
      //this.game.debug.body(enemy_down);
      //this.game.debug.body(enemy_left);
@@ -411,8 +412,8 @@ var outdoorZone =
             {
                 sound_objects.fireball_sound.play();
                 this.fireball.reset(player.x - 20, player.y + 32);
-                this.fireball.body.velocity.y = -300;
-                this.fireball.body.velocity.x = -300;
+                this.fireball.body.velocity.y = -260;
+                this.fireball.body.velocity.x = -260;
                 this.fireball.animations.add('fireUpLeft', [8, 9, 10, 11, 12, 13, 14, 15],30,true);
                 this.fireball.animations.play('fireUpLeft');
                 fireball_castTime = this.game.time.now + 1000; 
@@ -422,8 +423,8 @@ var outdoorZone =
             {
                 sound_objects.fireball_sound.play();
                 this.fireball.reset(player.x + 20, player.y + 32);
-                this.fireball.body.velocity.y = -300;
-                this.fireball.body.velocity.x = +300;
+                this.fireball.body.velocity.y = -260;
+                this.fireball.body.velocity.x = +260;
                 this.fireball.animations.add('fireUpRight', [24, 25, 26, 27, 28, 29, 30, 31],30,true);
                 this.fireball.animations.play('fireUpRight');
                 fireball_castTime = this.game.time.now + 1000; 
@@ -433,8 +434,8 @@ var outdoorZone =
             {
                 sound_objects.fireball_sound.play();
                 this.fireball.reset(player.x - 20, player.y + 32);
-                this.fireball.body.velocity.y = +300;
-                this.fireball.body.velocity.x = -300;
+                this.fireball.body.velocity.y = +260;
+                this.fireball.body.velocity.x = -260;
                 this.fireball.animations.add('fireDownLeft', [56, 57, 58, 59, 60, 61, 62, 63],30,true);
                 this.fireball.animations.play('fireDownLeft');
                 fireball_castTime = this.game.time.now + 1000; 
@@ -444,8 +445,8 @@ var outdoorZone =
             {
                 sound_objects.fireball_sound.play();
                 this.fireball.reset(player.x + 20, player.y + 32);
-                this.fireball.body.velocity.y = +300;
-                this.fireball.body.velocity.x = +300;
+                this.fireball.body.velocity.y = +260;
+                this.fireball.body.velocity.x = +260;
                 this.fireball.animations.add('fireDownRight', [40, 41, 42, 43, 44, 45, 46, 47],30,true);
                 this.fireball.animations.play('fireDownRight');
                 fireball_castTime = this.game.time.now + 1000; 
