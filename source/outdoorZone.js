@@ -117,8 +117,8 @@ var outdoorZone =
         sound_objects.levelMusic.loopFull();
         
         this.towerSprite = this.game.add.sprite(3300, 35, 'towerSprite');
+        this.game.physics.enable(this.towerSprite);
         this.towerSprite.scale.setTo(2, 2);
-        
         
         coins = this.game.add.group();
         this.createCoins();
@@ -138,7 +138,7 @@ var outdoorZone =
         fireballs = this.game.add.group();
         fireballs.enableBody = true;
         this.game.physics.arcade.enable(fireballs);
-        fireballs.createMultiple(50, 'fireball');
+        fireballs.createMultiple(20, 'fireball');
         fireballs.setAll('anchor.x', 0.5);
         fireballs.setAll('anchor.y', 1);
         fireballs.setAll('outOfBoundsKill', true);
@@ -146,7 +146,7 @@ var outdoorZone =
         
         //Player Code
         //player = this.game.add.sprite(1770,2050,'player');
-        player = this.game.add.sprite(100,300,'player')
+        player = this.game.add.sprite(3000,300,'player')
  
         player.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],8, false);
         
@@ -222,11 +222,19 @@ var outdoorZone =
     },
     
     update : function()
-    {   this.game.debug.body(player);
+    {   this.game.debug.body(this.towerSprite);
+     //this.game.debug.body(enemy_up);
+     //this.game.debug.body(enemy_down);
+     //this.game.debug.body(enemy_left);
         if(player.alive)
         {
             this.game.physics.arcade.collide(player, world_outdoorZone.layer_walls);
             this.game.physics.arcade.collide(player,coins, this.collectCoin);
+            this.game.physics.arcade.collide(player, this.towerSprite, this.gotoTowerLevel);
+            this.game.physics.arcade.collide(fireballs, enemy_elf_down, this.fireballHitEnemyDown);
+            this.game.physics.arcade.collide(fireballs, enemy_elf_up, this.fireballHitEnemyUp);
+            this.game.physics.arcade.collide(fireballs, enemy_elf_left, this.fireballHitEnemyLeft);
+            this.game.physics.arcade.collide(fireballs, enemy_elf_right, this.fireballHitEnemyRight);
             //this.game.physics.arcade.collide(player,enemy1.enemy, this.respawnPlayer);
             
             player.body.velocity.set(0);
@@ -265,7 +273,6 @@ var outdoorZone =
                 facingLeft = true;
                 facingDown = true;
                 facingRight = false;
-
             }
 
             else if(controls.down.isDown && controls.right.isDown)
@@ -278,7 +285,6 @@ var outdoorZone =
                 facingLeft = false;
                 facingDown = true;
                 facingRight = true;
-
             }
 
             else if (controls.up.isDown)
@@ -519,6 +525,7 @@ var outdoorZone =
          this.game.physics.arcade.enable(enemy_elf_up);
          enemy_up = enemy_elf_up.create(150 , 150, 'enemy_elf');
          enemy_up.anchor.setTo(0.5,0.5);
+         enemy_up.body.setSize(8, 13, 28, 26);
             //this.enemy.name = index.toString;
          enemy_up.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],9, true);
          enemy_up.animations.add('fireUp', [48,49,50,51,52,53,54,55,56,57,58,59],9, true);
@@ -536,6 +543,7 @@ var outdoorZone =
          enemy_elf_left.enableBody = true;
          enemy_left = enemy_elf_left.create(100 , 100, 'enemy_elf');
          enemy_left.anchor.setTo(0.5,0.5);
+         enemy_left.body.setSize(8, 13, 28, 26);
             //this.enemy.name = index.toString;
          enemy_left.animations.add('walkLeft', [13,14,15,16,17,18,19,20],9, true);
          enemy_left.animations.add('fireLeft', [60,61,62,63,64,65,66,67,68,69,70,71],9, true);
@@ -558,6 +566,7 @@ var outdoorZone =
         {
             enemy_down = enemy_elf_down.create(50 * x, 150, 'enemy_elf');     
             enemy_down.anchor.setTo(0.5,0.5);
+            enemy_down.body.setSize(8, 13, 28, 26);
             enemy_down.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
             enemy_down.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
             enemy_elf_down.callAll('play',null,'walkDown');
@@ -578,6 +587,7 @@ var outdoorZone =
          enemy_elf_right.enableBody = true;
          enemy_right = enemy_elf_right.create(200 , 200, 'enemy_elf');
          enemy_right.anchor.setTo(0.5,0.5);
+         enemy_right.body.setSize(8, 13, 28, 26);
             //this.enemy.name = index.toString;
          enemy_right.animations.add('walkRight', [37,38,39,40,41,42,43,44],9, true);
          enemy_right.animations.add('fireRight', [84,85,86,87,88,89,90,91,92,93,94,95],9, true);
@@ -588,6 +598,30 @@ var outdoorZone =
         elfTween_right = game.add.tween(enemy_right).to({
                 x:enemy_right.x+100
             },2000,'Linear',true,0,100,true);
+    },
+    
+    fireballHitEnemyUp : function (fireball, enemy_up)
+    {
+        fireball.kill();
+        enemy_up.kill();
+    },
+    
+    fireballHitEnemyDown : function (fireball, enemy_down)
+    {
+        fireball.kill();
+        enemy_down.kill();
+    },
+
+    fireballHitEnemyLeft : function (fireball, enemy_left)
+    {
+        fireball.kill();
+        enemy_left.kill();
+    },
+
+    fireballHitEnemyRight : function (fireball, enemy_right)
+    {
+        fireball.kill();
+        enemy_right.kill();
     },
       
     collectCoin : function(player,coin)
@@ -602,8 +636,8 @@ var outdoorZone =
         player.reset(300,300);
     },
     
-    gotoTowerLevel : function()
+    gotoTowerLevel : function(player, towerSprite)
     {
-        this.game.state.start('tower_level');
-    },         
+        game.state.start('tower_level');
+    },       
 };
