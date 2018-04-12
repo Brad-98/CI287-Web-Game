@@ -28,6 +28,12 @@ var facingRight = false;
 var sound_objects = {};
 var fireballs;
 var fireball_castTime = 0;
+var merchant;
+var merchant2;
+var merchant3;
+var merchant4;
+var merchant5;
+var merchant6;
 
 var world_outdoorZone = 
 {
@@ -77,6 +83,8 @@ var outdoorZone =
         this.game.load.spritesheet('enemy_elf', '../assets/enemyCharacter.png',64,65,117);
         this.game.load.spritesheet('coin', '../assets/coins.png',16,16,3);
         this.game.load.spritesheet('fireball', '../assets/fireball.png',64,64,63);
+        this.game.load.image('merchant', '../assets/merchant.png');
+        this.game.load.image('merchantBack', '../assets/merchant2.png');
         this.game.load.image('heart', '../assets/player_heart.png');
         this.game.load.image('heart_upgrade', '../assets/player_heartUpgrade.png');
         
@@ -121,6 +129,13 @@ var outdoorZone =
         this.towerSprite.scale.setTo(2, 2);
         this.towerSprite.body.setSize(20, 4, 38, 126);
         
+        merchant = this.game.add.sprite(1400, 1172, 'merchant');
+        merchant2 = this.game.add.sprite(1410, 1737, 'merchantBack');
+        merchant3 = this.game.add.sprite(1820, 1860, 'merchant');
+        merchant4 = this.game.add.sprite(850, 1780, 'merchant');
+        merchant5 = this.game.add.sprite(2237, 1110, 'merchantBack');
+        merchant6 = this.game.add.sprite(330, 1200, 'merchant');
+        
         coins = this.game.add.group();
         this.createCoins();
         
@@ -146,8 +161,8 @@ var outdoorZone =
         fireballs.setAll('checkWorldBounds', true);
         
         //Player Code
-        //player = this.game.add.sprite(1770,2050,'player');
-        player = this.game.add.sprite(3000,300,'player')
+        player = this.game.add.sprite(1770,2050,'player');
+        //player = this.game.add.sprite(3000,300,'player')
  
         player.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],8, false);
         
