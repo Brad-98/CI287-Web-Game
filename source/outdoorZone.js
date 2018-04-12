@@ -9,7 +9,6 @@ var enemy_elf_right;
 var enemy_up;
 var enemy_left;
 var enemy_down;
-var enemy_down1;
 var enemy_right;
 var elfTween_up;
 var elfTween_left;
@@ -146,8 +145,8 @@ var outdoorZone =
         fireballs.setAll('checkWorldBounds', true);
         
         //Player Code
-        player = this.game.add.sprite(1770,2050,'player');
-        //player = this.game.add.sprite(300,300,'player')
+        //player = this.game.add.sprite(1770,2050,'player');
+        player = this.game.add.sprite(100,300,'player')
  
         player.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],8, false);
         
@@ -374,22 +373,12 @@ var outdoorZone =
             
             if(player.y <= enemy_down.y+500 && player.x <= enemy_down.x+10)
                {
-                   enemy_down.animations.play('fireDown');
+                   enemy_elf_down.callAll('play',null,'fireDown');
                    elfTween_down.pause();
                }
             else
                {
-                   enemy_down.animations.play('walkDown');
-                   elfTween_down.resume();
-               }
-            if(player.y <= enemy_down1.y+500 && player.x <= enemy_down1.x+10)
-               {
-                   enemy_down1.animations.play('fireDown');
-                   elfTween_down.pause();
-               }
-            else
-               {
-                   enemy_down1.animations.play('walkDown');
+                   enemy_elf_down.callAll('play',null,'walkDown');
                    elfTween_down.resume();
                }
             
@@ -563,33 +552,23 @@ var outdoorZone =
     {
         enemy_elf_down.enableBody = true;
         this.game.physics.arcade.enable(enemy_elf_down);
-        enemy_down = enemy_elf_down.create(50 , 50, 'enemy_elf');
-        enemy_down1 = enemy_elf_down.create(150 , 50, 'enemy_elf');
-        enemy_down.anchor.setTo(0.5,0.5);
-        enemy_down.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
-        enemy_down.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
-        enemy_down.animations.play('walkDown');
-        enemy_down1.anchor.setTo(0.5,0.5);
-        enemy_down1.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
-        enemy_down1.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
-        enemy_down1.animations.play('walkDown');
+        //enemy_down = enemy_elf_down.create(50 , 50, 'enemy_elf');
         
-        //for (var x = 1; x < 3; x++)
-       // {
-            //enemy_down = enemy_elf_down.create(50 * x, 150, 'enemy_elf');     
+     for (var x = 1; x < 3; x++)
+        {
+            enemy_down = enemy_elf_down.create(50 * x, 150, 'enemy_elf');     
+            enemy_down.anchor.setTo(0.5,0.5);
+            enemy_down.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
+            enemy_down.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
+            enemy_elf_down.callAll('play',null,'walkDown');
         
-       // }
+        }
+        enemy_elf_down.x = 0;
+        enemy_elf_down.y = 0;
         
             elfTween_down = game.add.tween(enemy_elf_down).to({
                 y:enemy_elf_down.y+100
-            },2000,'Linear',true,0,100,true);
-        
-         //enemy_down.anchor.setTo(0.5,0.5);
-         //enemy_down.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
-         //enemy_down.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
-        
-         //enemy_down.animations.play('walkDown');
-         //game.physics.arcade.enable(enemy_down,Phaser.Physics.ARCADE);     
+            },2000,'Linear',true,0,100,true);;     
             
 
     },
