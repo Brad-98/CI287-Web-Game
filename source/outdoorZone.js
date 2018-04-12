@@ -358,23 +358,23 @@ var outdoorZone =
             
             if(player.y <= enemy_up.y+500 && player.x <= enemy_up.x+10)
                {
-                   enemy_up.animations.play('fireUp');
+                   enemy_elf_up.callAll('play',null,'fireUp');
                    elfTween_up.pause();
                }
             else
                {
-                   enemy_up.animations.play('walkUp');
+                   enemy_elf_up.callAll('play',null,'walkUp');
                    elfTween_up.resume();
                }
             
             if(player.x <= enemy_left.x+500 && player.y <= enemy_left.y+10)
                {
-                   enemy_left.animations.play('fireLeft');
+                   enemy_elf_left.callAll('play',null,'fireLeft');
                    elfTween_left.pause();
                }
             else
                {
-                   enemy_left.animations.play('walkLeft');
+                   enemy_elf_left.callAll('play',null,'walkLeft');
                    elfTween_left.resume();
                }
             
@@ -391,12 +391,12 @@ var outdoorZone =
             
             if(player.x <= enemy_right.x+500 && player.y <= enemy_right.y+10)
                {
-                   enemy_right.animations.play('fireRight');
+                   enemy_elf_right.callAll('play',null,'fireRight');
                    elfTween_right.pause();
                }
             else
                {
-                   enemy_right.animations.play('walkRight');
+                   enemy_elf_right.callAll('play',null,'walkRight');
                    elfTween_right.resume();
                }
         }
