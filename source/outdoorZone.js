@@ -28,6 +28,9 @@ var facingRight = false;
 var sound_objects = {};
 var fireballs;
 var fireball_castTime = 0;
+var arrow;
+var arrows;
+var fireArrow = 0;
 var merchant;
 var merchant2;
 var merchant3;
@@ -176,9 +179,18 @@ var outdoorZone =
         fireballs.setAll('outOfBoundsKill', true);
         fireballs.setAll('checkWorldBounds', true);
         
+        arrows = this.game.add.group();
+        arrows.enableBody = true;
+        this.game.physics.arcade.enable(arrows);
+        arrows.createMultiple(20, 'arrow');
+        arrows.setAll('anchor.x', 0.5);
+        arrows.setAll('anchor.y', 1);
+        arrows.setAll('outOfBoundsKill', true);
+        arrows.setAll('checkWorldBounds', true);
+        
         //Player Code
-        player = this.game.add.sprite(1770,2050,'player');
-        //player = this.game.add.sprite(3000,300,'player')
+        //player = this.game.add.sprite(1770,2050,'player');
+        player = this.game.add.sprite(500,300,'player')
  
         player.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],8, false);
         
@@ -656,7 +668,16 @@ var outdoorZone =
     
     shootArrow : function()
     {
-        
+    arrow = arrows.getFirstExists(false);
+
+
+    if (arrow)
+    {
+        arrow.reset(player.x + 32, player.y + 32);
+        arrow.body.velocity.y = +300;
+        game.physics.arcade.moveToObject(arrow,player,120);
+        fireArrow = game.time.now + 2000;
+    }
     },
       
     collectCoin : function(player,coin)
