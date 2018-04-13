@@ -34,6 +34,11 @@ var merchant3;
 var merchant4;
 var merchant5;
 var merchant6;
+var merchant7;
+var merchant8;
+var merchant9;
+var merchant10;
+var merchant11;
 
 var world_outdoorZone = 
 {
@@ -85,6 +90,7 @@ var outdoorZone =
         this.game.load.spritesheet('fireball', '../assets/fireball.png',64,64,63);
         this.game.load.image('merchant', '../assets/merchant.png');
         this.game.load.image('merchantBack', '../assets/merchant2.png');
+        this.game.load.image('merchantDead', '../assets/merchantDead.png');
         this.game.load.image('heart', '../assets/player_heart.png');
         this.game.load.image('heart_upgrade', '../assets/player_heartUpgrade.png');
         this.game.load.image('arrow', '../assets/arrow.png');
@@ -131,11 +137,20 @@ var outdoorZone =
         this.towerSprite.body.setSize(20, 4, 38, 126);
         
         merchant = this.game.add.sprite(1400, 1172, 'merchant');
+        var helpText = this.game.add.text(1413, 1150, "Help!", {font: '13px Arial', fill: '#ffffff'});
         merchant2 = this.game.add.sprite(1410, 1737, 'merchantBack');
         merchant3 = this.game.add.sprite(1820, 1860, 'merchant');
+        var saveMeText = this.game.add.text(1812, 1840, "Save us Please!", {font: '13px Arial', fill: '#ffffff'});
         merchant4 = this.game.add.sprite(850, 1780, 'merchant');
+        var helpTowerText = this.game.add.text(825, 1755, "The Tower Is North East", {font: '13px Arial', fill: '#ffffff'});
         merchant5 = this.game.add.sprite(2237, 1110, 'merchantBack');
         merchant6 = this.game.add.sprite(330, 1200, 'merchant');
+        merchant7 = this.game.add.sprite(3144, 367, 'merchantDead');
+        merchant8 = this.game.add.sprite(3080, 680, 'merchantDead');
+        merchant9 = this.game.add.sprite(2790, 576, 'merchantDead');
+        merchant10 = this.game.add.sprite(3675, 900, 'merchantDead');
+        merchant11 = this.game.add.sprite(2430, 640, 'merchant');
+        var guardText = this.game.add.text(2400, 620, "Watch Out Guards Ahead", {font: '13px Arial', fill: '#ffffff'});
         
         coins = this.game.add.group();
         this.createCoins();
