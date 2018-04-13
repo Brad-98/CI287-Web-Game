@@ -668,16 +668,21 @@ var outdoorZone =
     
     shootArrow : function()
     {
-    arrow = arrows.getFirstExists(false);
-
-
-    if (arrow)
-    {
-        arrow.reset(player.x + 32, player.y + 32);
-        arrow.body.velocity.y = +300;
-        game.physics.arcade.moveToObject(arrow,player,120);
-        fireArrow = game.time.now + 2000;
-    }
+        
+        if(this.game.time.now > fireArrow)
+        {
+            arrow = arrows.getFirstExists(false);
+            
+            if (arrow)
+            {
+                arrow.reset(player.x + 32, player.y + 32);
+                arrow.angle.x = player.x;
+                arrow.angle.y = player.y;
+                arrow.body.velocity.y = +300;
+                game.physics.arcade.moveToObject(arrow,player,120);
+                fireArrow = this.game.time.now + 2000;
+            }
+        }
     },
       
     collectCoin : function(player,coin)
