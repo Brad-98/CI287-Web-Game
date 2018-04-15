@@ -55,10 +55,10 @@ function buildWorld_outdoorZone (game, world)
 {
     // Tilemap
     world_outdoorZone.map = this.game.add.tilemap('map');
-    world_outdoorZone.map.addTilesetImage('tileset_outdoorZone','tileSheet');
-    world_outdoorZone.map.addTilesetImage('farming_fishing','fish&farming');
-    world_outdoorZone.map.addTilesetImage('plants','plants');
-    world_outdoorZone.map.addTilesetImage('stonePath','stonePath');
+    world_outdoorZone.map.addTilesetImage('tileset_outdoorZone', 'tileSheet');
+    world_outdoorZone.map.addTilesetImage('farming_fishing', 'fish&farming');
+    world_outdoorZone.map.addTilesetImage('plants', 'plants');
+    world_outdoorZone.map.addTilesetImage('stonePath', 'stonePath');
     
     // Tilemap layers
     world_outdoorZone.layer_ground = world_outdoorZone.map.createLayer('layer_Ground');
@@ -87,10 +87,10 @@ var outdoorZone =
 {
     preload : function()
     {
-        this.game.load.spritesheet('player', '../assets/playerCharacter.png',64, 64,77);
-        this.game.load.spritesheet('enemy_elf', '../assets/enemyCharacter.png',64,65,117);
-        this.game.load.spritesheet('coin', '../assets/coins.png',16,16,3);
-        this.game.load.spritesheet('fireball', '../assets/fireball.png',64,64,63);
+        this.game.load.spritesheet('player', '../assets/playerCharacter.png',64, 64, 77);
+        this.game.load.spritesheet('enemy_elf', '../assets/enemyCharacter.png',64, 65, 117);
+        this.game.load.spritesheet('coin', '../assets/coins.png', 16, 16, 3);
+        this.game.load.spritesheet('fireball', '../assets/fireball.png', 64, 64, 63);
         this.game.load.image('merchant', '../assets/merchant.png');
         this.game.load.image('merchantBack', '../assets/merchant2.png');
         this.game.load.image('merchantDead', '../assets/merchantDead.png');
@@ -189,26 +189,26 @@ var outdoorZone =
         arrows.setAll('checkWorldBounds', true);
         
         //Player Code
-        //player = this.game.add.sprite(1770,2050,'player');
-        player = this.game.add.sprite(500,300,'player')
+        //player = this.game.add.sprite(1770, 2050, 'player');
+        player = this.game.add.sprite(500, 300, 'player')
  
-        player.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],8, false);
+        player.animations.add('walkUp', [0, 1, 2, 3, 4, 5, 6, 7, 8], 8, false);
         
-        player.animations.add('walkDown', [18,19,20,21,22,23,24,25,26],8, false);
+        player.animations.add('walkDown', [18, 19, 20, 21, 22, 23, 24, 25, 26], 8, false);
         
-        player.animations.add('walkLeft', [9,10,11,12,13,14,15,16,17],12, false);
+        player.animations.add('walkLeft', [9, 10, 11, 12, 13, 14, 15, 16, 17], 12, false);
         
-        player.animations.add('walkRight', [27,28,29,30,31,32,33,34,35],12, false);
+        player.animations.add('walkRight', [27, 28, 29, 30, 31, 32, 33, 34, 35], 12, false);
         
-        player.animations.add('attackUp', [36,37,38,39,40,41,36],10, false);
+        player.animations.add('attackUp', [36, 37, 38, 39, 40, 41, 36], 10, false);
         
-        player.animations.add('attackDown', [54,55,56,57,58,59,54],10, false);
+        player.animations.add('attackDown', [54, 55, 56, 57, 58, 59, 54], 10, false);
         
-        player.animations.add('attackLeft', [45,46,47,48,49,50,45],10, false);
+        player.animations.add('attackLeft', [45, 46, 47, 48, 49, 50, 45], 10, false);
         
-        player.animations.add('attackRight', [63,64,65,66,67,68,63],10, false);
+        player.animations.add('attackRight', [63, 64, 65, 66, 67, 68, 63], 10, false);
         
-        player.anchor.setTo(0.5,0.5);
+        player.anchor.setTo(0.5, 0.5);
         
         this.game.physics.enable(player);
         player.body.setSize(28, 48, 18, 8);
@@ -234,7 +234,7 @@ var outdoorZone =
         coinScoreText.fixedToCamera = true;
         var coin_image;
         coin_image = this.game.add.sprite(90, 89, 'coin');
-        coin_image.scale.setTo(1.3,1.3);
+        coin_image.scale.setTo(1.3, 1.3);
         coin_image.fixedToCamera = true;
         
         player_lives = this.game.add.group();
@@ -259,10 +259,10 @@ var outdoorZone =
         upgrade_priceHeart.fixedToCamera = true;
         var coin_imageUpgrade;
         coin_imageUpgrade = this.game.add.sprite(1225, 56, 'coin');
-        coin_imageUpgrade.scale.setTo(1.2,1.2);
+        coin_imageUpgrade.scale.setTo(1.2, 1.2);
         coin_imageUpgrade.fixedToCamera = true;
         
-        this.game.camera.follow(player,Phaser.Camera.FOLLOW_LOCKON,0.1,0.1);
+        this.game.camera.follow(player, Phaser.Camera.FOLLOW_LOCKON,0.1, 0.1);
     },
     
     update : function()
@@ -270,7 +270,7 @@ var outdoorZone =
         if(player.alive)
         {
             this.game.physics.arcade.collide(player, world_outdoorZone.layer_walls);
-            this.game.physics.arcade.collide(player,coins, this.collectCoin);
+            this.game.physics.arcade.collide(player, coins, this.collectCoin);
             this.game.physics.arcade.collide(player, this.towerSprite, this.gotoTowerLevel);
             this.game.physics.arcade.collide(fireballs, enemy_elf_down, this.fireballHitEnemyDown);
             this.game.physics.arcade.collide(fireballs, enemy_elf_up, this.fireballHitEnemyUp);
@@ -396,48 +396,48 @@ var outdoorZone =
                 }
             }
             
-            if(player.y <= enemy_up.y+500 && player.x <= enemy_up.x+10)
+            if(player.y <= enemy_up.y + 500 && player.x <= enemy_up.x + 10)
                {
-                   enemy_elf_up.callAll('play',null,'fireUp');
+                   enemy_elf_up.callAll('play', null, 'fireUp');
                    elfTween_up.pause();
                    this.shootArrow();
                }
             else
                {
-                   enemy_elf_up.callAll('play',null,'walkUp');
+                   enemy_elf_up.callAll('play', null, 'walkUp');
                    elfTween_up.resume();
                }
             
-            if(player.x <= enemy_left.x+500 && player.y <= enemy_left.y+10)
+            if(player.x <= enemy_left.x + 500 && player.y <= enemy_left.y + 10)
                {
-                   enemy_elf_left.callAll('play',null,'fireLeft');
+                   enemy_elf_left.callAll('play', null, 'fireLeft');
                    elfTween_left.pause();
                }
             else
                {
-                   enemy_elf_left.callAll('play',null,'walkLeft');
+                   enemy_elf_left.callAll('play', null, 'walkLeft');
                    elfTween_left.resume();
                }
             
-            if(player.y <= enemy_down.y+500 && player.x <= enemy_down.x+10)
+            if(player.y <= enemy_down.y + 500 && player.x <= enemy_down.x + 10)
                {
-                   enemy_elf_down.callAll('play',null,'fireDown');
+                   enemy_elf_down.callAll('play', null, 'fireDown');
                    elfTween_down.pause();
                }
             else
                {
-                   enemy_elf_down.callAll('play',null,'walkDown');
+                   enemy_elf_down.callAll('play', null, 'walkDown');
                    elfTween_down.resume();
                }
             
-            if(player.x <= enemy_right.x+500 && player.y <= enemy_right.y+10)
+            if(player.x <= enemy_right.x + 500 && player.y <= enemy_right.y + 10)
                {
-                   enemy_elf_right.callAll('play',null,'fireRight');
+                   enemy_elf_right.callAll('play', null, 'fireRight');
                    elfTween_right.pause();
                }
             else
                {
-                   enemy_elf_right.callAll('play',null,'walkRight');
+                   enemy_elf_right.callAll('play', null, 'walkRight');
                    elfTween_right.resume();
                }
         }
@@ -547,17 +547,17 @@ var outdoorZone =
         for (var x = 1; x < 3; x++)
         {
             coin = coins.create(50 * x, 50, 'coin');
-            coin.animations.add('spin', [0,1,2,3],8,true);
+            coin.animations.add('spin', [0, 1, 2, 3], 8, true);
             coin.animations.play('spin');
-            coin.anchor.setTo(0.5,0.5);
+            coin.anchor.setTo(0.5, 0.5);
         }
             
         for (var x = 1; x < 3; x++)
         {
             coin = coins.create(50 * x, 150, 'coin');
-            coin.animations.add('spin', [0,1,2,3],8,true);
+            coin.animations.add('spin', [0, 1, 2, 3], 8,true);
             coin.animations.play('spin');
-            coin.anchor.setTo(0.5,0.5);
+            coin.anchor.setTo(0.5, 0.5);
         }
     },
     
@@ -566,36 +566,36 @@ var outdoorZone =
          enemy_elf_up.enableBody = true;
          this.game.physics.arcade.enable(enemy_elf_up);
          enemy_up = enemy_elf_up.create(150 , 150, 'enemy_elf');
-         enemy_up.anchor.setTo(0.5,0.5);
+         enemy_up.anchor.setTo(0.5, 0.5);
          enemy_up.body.setSize(8, 13, 28, 26);
             //this.enemy.name = index.toString;
-         enemy_up.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],9, true);
-         enemy_up.animations.add('fireUp', [48,49,50,51,52,53,54,55,56,57,58,59],9, true);
+         enemy_up.animations.add('walkUp', [0, 1, 2, 3, 4, 5, 6, 7, 8], 9, true);
+         enemy_up.animations.add('fireUp', [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59], 9, true);
         
          enemy_up.animations.play('walkUp');
               
             
         elfTween_up = game.add.tween(enemy_up).to({
-                y:enemy_up.y-100
-            },2000,'Linear',true,0,100,true);
+                y:enemy_up.y - 100
+            }, 2000, 'Linear',true, 0, 100, true);
     },
     
     createEnemiesLeft : function()
     {
          enemy_elf_left.enableBody = true;
          enemy_left = enemy_elf_left.create(100 , 100, 'enemy_elf');
-         enemy_left.anchor.setTo(0.5,0.5);
+         enemy_left.anchor.setTo(0.5, 0.5);
          enemy_left.body.setSize(8, 13, 28, 26);
             //this.enemy.name = index.toString;
-         enemy_left.animations.add('walkLeft', [13,14,15,16,17,18,19,20],9, true);
-         enemy_left.animations.add('fireLeft', [60,61,62,63,64,65,66,67,68,69,70,71],9, true);
+         enemy_left.animations.add('walkLeft', [13, 14, 15, 16, 17, 18, 19, 20], 9, true);
+         enemy_left.animations.add('fireLeft', [60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71], 9, true);
 
          enemy_left.animations.play('walkLeft');
          game.physics.arcade.enable(enemy_left,Phaser.Physics.ARCADE);     
             
         elfTween_left = game.add.tween(enemy_left).to({
                 x:enemy_left.x-100
-            },2000,'Linear',true,0,100,true);
+            },2000, 'Linear',true, 0, 100, true);
     },
     
     createEnemiesDown : function()
@@ -604,42 +604,41 @@ var outdoorZone =
         this.game.physics.arcade.enable(enemy_elf_down);
         //enemy_down = enemy_elf_down.create(50 , 50, 'enemy_elf');
         
-     for (var x = 1; x < 3; x++)
+        for (var x = 1; x < 3; x++)
         {
             enemy_down = enemy_elf_down.create(50 * x, 150, 'enemy_elf');     
-            enemy_down.anchor.setTo(0.5,0.5);
+            enemy_down.anchor.setTo(0.5, 0.5);
             enemy_down.body.setSize(8, 13, 28, 26);
-            enemy_down.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
-            enemy_down.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
+            enemy_down.animations.add('walkDown', [24, 25, 26, 27, 28, 29, 30, 31, 32], 9, true);
+            enemy_down.animations.add('fireDown', [72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83], 9, true);
             enemy_elf_down.callAll('play',null,'walkDown');
         
         }
+        
         enemy_elf_down.x = 0;
         enemy_elf_down.y = 0;
         
             elfTween_down = game.add.tween(enemy_elf_down).to({
-                y:enemy_elf_down.y+100
-            },2000,'Linear',true,0,100,true);;     
-            
-
+                y:enemy_elf_down.y + 100
+            }, 2000, 'Linear', true, 0, 100, true);;     
     },
     
     createEnemiesRight : function()
     {
          enemy_elf_right.enableBody = true;
          enemy_right = enemy_elf_right.create(200 , 200, 'enemy_elf');
-         enemy_right.anchor.setTo(0.5,0.5);
+         enemy_right.anchor.setTo(0.5, 0.5);
          enemy_right.body.setSize(8, 13, 28, 26);
             //this.enemy.name = index.toString;
-         enemy_right.animations.add('walkRight', [37,38,39,40,41,42,43,44],9, true);
-         enemy_right.animations.add('fireRight', [84,85,86,87,88,89,90,91,92,93,94,95],9, true);
+         enemy_right.animations.add('walkRight', [37, 38, 39, 40, 41, 42, 43, 44], 9, true);
+         enemy_right.animations.add('fireRight', [84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95], 9, true);
         
          enemy_right.animations.play('walkRight');
          game.physics.arcade.enable(enemy_right,Phaser.Physics.ARCADE);     
             
         elfTween_right = game.add.tween(enemy_right).to({
-                x:enemy_right.x+100
-            },2000,'Linear',true,0,100,true);
+                x:enemy_right.x + 100
+            }, 2000, 'Linear', true, 0, 100, true);
     },
     
     fireballHitEnemyUp : function (fireball, enemy_up)
@@ -667,8 +666,7 @@ var outdoorZone =
     },
     
     shootArrow : function()
-    {
-        
+    {   
         if(this.game.time.now > fireArrow)
         {
             arrow = arrows.getFirstExists(false);
@@ -676,10 +674,10 @@ var outdoorZone =
             if (arrow)
             {
                 arrow.reset(player.x + 32, player.y + 32);
-                arrow.angle.x = player.x;
-                arrow.angle.y = player.y;
-                arrow.body.velocity.y = +300;
-                game.physics.arcade.moveToObject(arrow,player,120);
+                //arrow.angle.x = player.x;
+                //arrow.angle.y = player.y;
+                arrow.body.velocity.y = + 300;
+                game.physics.arcade.moveToObject(arrow, player, 120);
                 fireArrow = this.game.time.now + 2000;
             }
         }
@@ -688,13 +686,13 @@ var outdoorZone =
     collectCoin : function(player,coin)
     {
         coin.kill();
-        coinScore +=1;
+        coinScore += 1;
         coinScoreText.text = coinScoreString + coinScore;
     },
     
     respawnPlayer : function()
     {
-        player.reset(300,300);
+        player.reset(300, 300);
     },
     
     gotoTowerLevel : function(player, towerSprite)
