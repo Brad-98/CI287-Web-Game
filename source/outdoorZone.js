@@ -400,7 +400,6 @@ var outdoorZone =
                {
                    enemy_elf_up.callAll('play', null, 'fireUp');
                    elfTween_up.pause();
-                   this.shootArrow();
                }
             else
                {
@@ -422,7 +421,9 @@ var outdoorZone =
             if(player.y <= enemy_down.y + 500 && player.x <= enemy_down.x + 10)
                {
                    enemy_elf_down.callAll('play', null, 'fireDown');
-                   elfTween_down.pause();
+                   enemy_elf_down.callAll(elfTween_down.pause());
+                   //enemy_elf_down.callAll(this.shootArrow());
+                   enemy_elf_down.forEach(this.shootArrow, this);
                }
             else
                {
@@ -607,20 +608,20 @@ var outdoorZone =
         for (var x = 1; x < 3; x++)
         {
             enemy_down = enemy_elf_down.create(50 * x, 150, 'enemy_elf');     
-            enemy_down.anchor.setTo(0.5, 0.5);
+            enemy_down.anchor.setTo(0.5,0.5);
             enemy_down.body.setSize(8, 13, 28, 26);
-            enemy_down.animations.add('walkDown', [24, 25, 26, 27, 28, 29, 30, 31, 32], 9, true);
-            enemy_down.animations.add('fireDown', [72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83], 9, true);
+            enemy_down.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
+            enemy_down.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
             enemy_elf_down.callAll('play',null,'walkDown');
-        
-        }
+        };
         
         enemy_elf_down.x = 0;
         enemy_elf_down.y = 0;
         
-            elfTween_down = game.add.tween(enemy_elf_down).to({
-                y:enemy_elf_down.y + 100
-            }, 2000, 'Linear', true, 0, 100, true);;     
+        elfTween_down = game.add.tween(enemy_elf_down).to({
+            y:enemy_elf_down.y + 100
+        }, 2000, 'Linear', true, 0, 100, true);
+            
     },
     
     createEnemiesRight : function()
@@ -665,22 +666,22 @@ var outdoorZone =
         enemy_right.kill();
     },
     
-    shootArrow : function()
-    {   
+    shootArrow : function(enemy_down)
+    {
+        
         if(this.game.time.now > fireArrow)
         {
-            arrow = arrows.getFirstExists(false);
-            
-            if (arrow)
+          arrow = arrows.getFirstExists(false);
+           if (arrow && enemy_down.alive)
             {
-                arrow.reset(player.x + 32, player.y + 32);
-                //arrow.angle.x = player.x;
-                //arrow.angle.y = player.y;
-                arrow.body.velocity.y = + 300;
-                game.physics.arcade.moveToObject(arrow, player, 120);
+                arrow.reset(enemy_down.x, enemy_down.y);
+                arrow.angle = 180;
+                game.physics.arcade.moveToObject(arrow,player,200);
                 fireArrow = this.game.time.now + 2000;
             }
-        }
+       }
+        
+        
     },
       
     collectCoin : function(player,coin)
