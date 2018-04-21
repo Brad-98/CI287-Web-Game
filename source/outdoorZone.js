@@ -423,7 +423,7 @@ var outdoorZone =
                    enemy_elf_down.callAll('play', null, 'fireDown');
                    elfTween_down.pause(enemy_elf_down);
                    //enemy_elf_down.callAll(this.shootArrow());
-                   enemy_elf_down.forEach(this.shootArrow, this);
+                   enemy_elf_down.forEach(this.shootArrow, enemy_elf_down);
                }
             else
                {
@@ -614,14 +614,13 @@ var outdoorZone =
             enemy_down.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
             enemy_elf_down.callAll('play',null,'walkDown');
             
-            elfTween_down = game.add.tween(enemy_down).to({
-                y:enemy_down.y + 100
-            }, 2000, 'Linear', true, 0, 100, true);
         };
         
         //enemy_elf_down.x = 0;
         //enemy_elf_down.y = 0;
-        
+            elfTween_down = game.add.tween(enemy_elf_down).to({
+                y:enemy_elf_down.y + 100
+            }, 2000, 'Linear', true, 0, 100, true);
             
     },
     
