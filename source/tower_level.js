@@ -107,7 +107,7 @@ var tower_level =
         this.fireball.animations.add('fireUpRight', [24,25,26,27,28,29,30,31],30,true);
         this.fireball.animations.add('fireDownRight', [40,41,42,43,44,45,46,47],30,true);
         
-        player = this.game.add.sprite(1770,2050,'player');
+        player = this.game.add.sprite(1905,2048,'player');
  
         player.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],8, false);
         

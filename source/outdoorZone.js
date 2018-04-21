@@ -31,6 +31,7 @@ var fireball_castTime = 0;
 var arrow;
 var arrows;
 var fireArrow = 0;
+var fireArrowTrap = 0;
 var merchant;
 var merchant2;
 var merchant3;
@@ -42,6 +43,7 @@ var merchant8;
 var merchant9;
 var merchant10;
 var merchant11;
+var arrowTrap;
 
 var world_outdoorZone = 
 {
@@ -97,6 +99,7 @@ var outdoorZone =
         this.game.load.image('heart', '../assets/player_heart.png');
         this.game.load.image('heart_upgrade', '../assets/player_heartUpgrade.png');
         this.game.load.image('arrow', '../assets/arrow.png');
+        this.game.load.image('arrowTrap', '../assets/tilesets/arrow_trap.png');
         
         this.game.load.tilemap('map','../assets/tilesets/outdoorZone..json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tileSheet', '../assets/tilesets/tileset_outdoor.png');
@@ -155,6 +158,8 @@ var outdoorZone =
         merchant11 = this.game.add.sprite(2430, 640, 'merchant');
         var guardText = this.game.add.text(2400, 620, "Watch Out Guards Ahead", {font: '13px Arial', fill: '#ffffff'});
         
+        arrowTrap = this.game.add.sprite(3000, 50, 'arrowTrap');
+        
         coins = this.game.add.group();
         this.createCoins();
         
@@ -182,7 +187,7 @@ var outdoorZone =
         arrows = this.game.add.group();
         arrows.enableBody = true;
         this.game.physics.arcade.enable(arrows);
-        arrows.createMultiple(20, 'arrow');
+        arrows.createMultiple(100, 'arrow');
         arrows.setAll('anchor.x', 0.5);
         arrows.setAll('anchor.y', 1);
         arrows.setAll('outOfBoundsKill', true);
@@ -190,7 +195,7 @@ var outdoorZone =
         
         //Player Code
         //player = this.game.add.sprite(1770, 2050, 'player');
-        player = this.game.add.sprite(500, 300, 'player')
+        player = this.game.add.sprite(3090, 300, 'player')
  
         player.animations.add('walkUp', [0, 1, 2, 3, 4, 5, 6, 7, 8], 8, false);
         
@@ -269,6 +274,7 @@ var outdoorZone =
     {  
         if(player.alive)
         {
+            this.arrowTrapShoot();
             this.game.physics.arcade.collide(player, world_outdoorZone.layer_walls);
             this.game.physics.arcade.collide(player, coins, this.collectCoin);
             this.game.physics.arcade.collide(player, this.towerSprite, this.gotoTowerLevel);
@@ -423,7 +429,7 @@ var outdoorZone =
                    enemy_elf_down.callAll('play', null, 'fireDown');
                    enemy_elf_down.callAll(elfTween_down.pause());
                    //enemy_elf_down.callAll(this.shootArrow());
-                   enemy_elf_down.forEach(this.shootArrow, this);
+                   this.shootArrow(this);
                }
             else
                {
@@ -668,7 +674,6 @@ var outdoorZone =
     
     shootArrow : function(enemy_down)
     {
-        
         if(this.game.time.now > fireArrow)
         {
           arrow = arrows.getFirstExists(false);
@@ -679,9 +684,23 @@ var outdoorZone =
                 game.physics.arcade.moveToObject(arrow,player,200);
                 fireArrow = this.game.time.now + 2000;
             }
-       }
-        
-        
+       } 
+    },
+    
+    arrowTrapShoot : function()
+    {
+        if(this.game.time.now > fireArrowTrap)
+        {
+          arrow = arrows.getFirstExists(false);
+           if (arrow)
+            {
+                arrow.reset(arrowTrap.x, arrowTrap.y);
+                arrow.angle = 90;
+                arrow.rotation = this.game.physics.arcade.angleBetween(arrow, player);
+                arrow.body.velocity.x = -100;
+                fireArrowTrap = this.game.time.now + 2000;
+            }
+       } 
     },
       
     collectCoin : function(player,coin)
