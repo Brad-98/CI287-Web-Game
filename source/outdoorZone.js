@@ -44,6 +44,8 @@ var merchant9;
 var merchant10;
 var merchant11;
 var arrowTrap;
+var heartOutline;
+
 
 var world_outdoorZone = 
 {
@@ -97,7 +99,9 @@ var outdoorZone =
         this.game.load.image('merchantBack', '../assets/merchant2.png');
         this.game.load.image('merchantDead', '../assets/merchantDead.png');
         this.game.load.image('heart', '../assets/player_heart.png');
-        this.game.load.image('heart_upgrade', '../assets/player_heartUpgrade.png');
+        this.game.load.image('heart_upgradeRevive', '../assets/player_heartUpgradeRevive.png');
+        this.game.load.image('heart_upgradeExtra', '../assets/player_heartUpgradeExtra.png');
+        this.game.load.image('heart_outline', '../assets/player_heartOutline.png');
         this.game.load.image('arrow', '../assets/arrow.png');
         this.game.load.image('arrowTrap', '../assets/tilesets/arrow_trap.png');
         
@@ -243,29 +247,46 @@ var outdoorZone =
         coin_image.fixedToCamera = true;
         
         player_lives = this.game.add.group();
-        player_livesText = this.game.add.text(10 ,15 ,'Health : ', {font: '30px Arial', fill: '#ffffff'});
+        player_livesText = this.game.add.text(10 ,15 ,'Lives : ', {font: '30px Arial', fill: '#ffffff'});
         player_livesText.fixedToCamera = true;
-        
         //Spawn player hearts
         for (var i = 0; i < 3; i++) 
         {
-            var heart = player_lives.create(138 + (35 * i), 35, 'heart');
+            var heart = player_lives.create(118 + (35 * i), 35, 'heart');
             heart.anchor.setTo(0.5, 0.5);
             heart.fixedToCamera = true;
+            heartOutline = this.game.add.sprite(118 + (35 * i), 35, 'heart_outline');
+            heartOutline.anchor.setTo(0.5, 0.5);
+            heartOutline.fixedToCamera = true;
         }
         
         upgrade_text = this.game.add.text(1180 , 15 ,'Upgrades', {font: '20px Arial', fill: '#ffffff'});
         upgrade_text.fixedToCamera = true;
-        var heart_upgrade;
-        heart_upgrade = this.game.add.sprite(1182, 50, 'heart_upgrade');
-        heart_upgrade.fixedToCamera = true;
-        var upgrade_priceHeart;
-        upgrade_priceHeart = this.game.add.text(1250 , 56 ,'10', {font: '18px Arial', fill: '#ffffff'});
-        upgrade_priceHeart.fixedToCamera = true;
-        var coin_imageUpgrade;
-        coin_imageUpgrade = this.game.add.sprite(1225, 56, 'coin');
-        coin_imageUpgrade.scale.setTo(1.2, 1.2);
-        coin_imageUpgrade.fixedToCamera = true;
+        
+        var heart_upgradeExtra;
+        heart_upgradeExtra = this.game.add.button(1182, 50, 'heart_upgradeExtra', this.extraHeart, this);
+        heart_upgradeExtra.fixedToCamera = true;
+        var upgrade_priceHeartExtra;
+        upgrade_priceHeartExtra = this.game.add.text(1250 , 56 ,'10', {font: '18px Arial', fill: '#ffffff'});
+        upgrade_priceHeartExtra.fixedToCamera = true;
+        var coin_imageUpgradeExtra;
+        coin_imageUpgradeExtra = this.game.add.sprite(1225, 56, 'coin');
+        coin_imageUpgradeExtra.scale.setTo(1.2, 1.2);
+        coin_imageUpgradeExtra.fixedToCamera = true;
+        
+        var heart_upgradeRevive;
+        heart_upgradeRevive = this.game.add.button(1182, 100, 'heart_upgradeRevive', this.heartsRevive, this);
+        heart_upgradeRevive.fixedToCamera = true;
+        var upgrade_priceHeartRevive;
+        upgrade_priceHeartRevive = this.game.add.text(1250 , 106 ,'15', {font: '18px Arial', fill: '#ffffff'});
+        upgrade_priceHeartRevive.fixedToCamera = true;
+        var coin_imageUpgradeRevive;
+        coin_imageUpgradeRevive = this.game.add.sprite(1225, 106, 'coin');
+        coin_imageUpgradeRevive.scale.setTo(1.2, 1.2);
+        coin_imageUpgradeRevive.fixedToCamera = true;
+        
+        var objective_text = this.game.add.text(10 , 150 ,'Main Objective:\nLocate the Tower', {font: '20px Arial', fill: '#ffffff'});
+        objective_text.fixedToCamera = true;
         
         this.game.camera.follow(player, Phaser.Camera.FOLLOW_LOCKON,0.1, 0.1);
     },
@@ -275,6 +296,7 @@ var outdoorZone =
         if(player.alive)
         {
             this.arrowTrapShoot();
+            this.game.physics.arcade.collide(player, arrows, this.arrowHitsPlayer);
             this.game.physics.arcade.collide(player, world_outdoorZone.layer_walls);
             this.game.physics.arcade.collide(player, coins, this.collectCoin);
             this.game.physics.arcade.collide(player, this.towerSprite, this.gotoTowerLevel);
@@ -567,6 +589,14 @@ var outdoorZone =
             coin.animations.play('spin');
             coin.anchor.setTo(0.5, 0.5);
         }
+        
+        for (var x = 0; x < 30; x++)
+        {
+            coin = coins.create(2600, 150, 'coin');
+            coin.animations.add('spin', [0, 1, 2, 3], 8,true);
+            coin.animations.play('spin');
+            coin.anchor.setTo(0.5, 0.5);
+        }
     },
     
     createEnemiesUp : function()
@@ -703,12 +733,66 @@ var outdoorZone =
             }
        } 
     },
+    
+    arrowHitsPlayer : function(player, arrow)
+    {
+        arrow.kill();
+        
+        this.player_live = player_lives.getFirstAlive();
+        
+        if(this.player_live)
+        {
+            this.player_live.kill();
+        }
+        
+        if(player_lives.countLiving() < 1)
+        {
+            player.kill();
+        } 
+    },
       
     collectCoin : function(player,coin)
     {
         coin.kill();
         coinScore += 1;
         coinScoreText.text = coinScoreString + coinScore;
+    },
+    
+    extraHeart : function()
+    {
+        if(player_lives.length == 3 && coinScore >= 10)
+        {
+            coinScore -= 10;
+            coinScoreText.text = coinScoreString + coinScore;
+            this.heart = player_lives.create(118 + (35 * 3), 35, 'heart');
+            this.heart.anchor.setTo(0.5, 0.5);
+            this.heart.fixedToCamera = true;
+            heartOutline = this.game.add.sprite(118 + (35 * 3), 35, 'heart_outline');
+            heartOutline.anchor.setTo(0.5, 0.5);
+            heartOutline.fixedToCamera = true;
+        }
+        
+        if(player_lives.length == 4 && coinScore >= 10)
+        {
+            coinScore -= 10;
+            coinScoreText.text = coinScoreString + coinScore;
+            this.heart = player_lives.create(118 + (35 * 4), 35, 'heart');
+            this.heart.anchor.setTo(0.5, 0.5);
+            this.heart.fixedToCamera = true;
+            heartOutline = this.game.add.sprite(118 + (35 * 4), 35, 'heart_outline');
+            heartOutline.anchor.setTo(0.5, 0.5);
+            heartOutline.fixedToCamera = true;
+        }
+    },
+    
+    heartsRevive : function()
+    {
+        if(player_lives.countLiving() < 5 && coinScore >= 15)
+        {
+            coinScore -= 15;
+            coinScoreText.text = coinScoreString + coinScore;
+            player_lives.callAll('revive');        
+        }
     },
     
     respawnPlayer : function()
