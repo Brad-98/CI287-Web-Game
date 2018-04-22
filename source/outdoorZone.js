@@ -91,7 +91,7 @@ var outdoorZone =
 {
     preload : function()
     {
-        this.game.load.spritesheet('player', '../assets/playerCharacter.png',64, 64, 77);
+        this.game.load.spritesheet('player', '../assets/playerCharacter.png',64, 64, 80);
         this.game.load.spritesheet('enemy_elf', '../assets/enemyCharacter.png',64, 65, 117);
         this.game.load.spritesheet('coin', '../assets/coins.png', 16, 16, 3);
         this.game.load.spritesheet('fireball', '../assets/fireball.png', 64, 64, 63);
@@ -216,6 +216,8 @@ var outdoorZone =
         player.animations.add('attackLeft', [45, 46, 47, 48, 49, 50, 45], 10, false);
         
         player.animations.add('attackRight', [63, 64, 65, 66, 67, 68, 63], 10, false);
+        
+        player.animations.add('death', [72, 73, 74 , 75, 76, 77], 7, false);
         
         player.anchor.setTo(0.5, 0.5);
         
@@ -747,7 +749,7 @@ var outdoorZone =
         
         if(player_lives.countLiving() < 1)
         {
-            player.kill();
+            player.animations.play('death');
         } 
     },
       
