@@ -22,6 +22,17 @@ var facingRight = false;
 var sound_objects = {};
 var fireballs;
 var fireball_castTime = 0;
+var arrow;
+var arrows;
+var fireArrowUp = 0;
+var fireArrowLeft = 0;
+var fireArrowDown = 0;
+var fireArrowRight = 0;
+var fireArrowTrap = 0;
+var arrowTrap;
+var heartOutline;
+var timer;
+
 var world_towerLevel = 
 {
     map: null,
@@ -60,9 +71,17 @@ var tower_level =
         this.game.load.image('heart_upgrade', '../assets/player_heartUpgrade.png');
         this.game.load.image('goldKey', '../assets/goldKey.png');
         this.game.load.image('silverKey', '../assets/silverKey.png');
+        this.game.load.image('heart', '../assets/player_heart.png');
+        this.game.load.image('heart_upgradeRevive', '../assets/player_heartUpgradeRevive.png');
+        this.game.load.image('heart_upgradeExtra', '../assets/player_heartUpgradeExtra.png');
+        this.game.load.image('heart_outline', '../assets/player_heartOutline.png');
+        this.game.load.image('arrow', '../assets/arrow.png');
+        this.game.load.image('arrowTrap', '../assets/tilesets/arrow_trap.png');
         
         this.game.load.tilemap('map','../assets/tilesets/towerLevel..json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tileSheet', '../assets/tilesets/TileA3-byLunarea.png');
+        
+        this.game.load.audio('fireball_sound', '../assets/music/sound_fireball.mp3'); 
         
         enemy_elf = function (index, game, x, y) 
         {
@@ -85,27 +104,42 @@ var tower_level =
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
         buildWorld_towerLevel(game, world_towerLevel);
+        sound_objects.fireball_sound = this.game.add.audio('fireball_sound');
+        
+        arrowTrap = this.game.add.sprite(3000, 50, 'arrowTrap');
         
         coins = this.game.add.group();
         this.createCoins();
         
+        enemy_elf_up = this.game.add.group();
+        this.createEnemiesUp();
+        
+        enemy_elf_left = this.game.add.group();
+        this.createEnemiesLeft();
+        
+        enemy_elf_down = this.game.add.group();
+        this.createEnemiesDown();
+        
+        enemy_elf_right = this.game.add.group();
+        this.createEnemiesRight();
+        
         fireballs = this.game.add.group();
         fireballs.enableBody = true;
         this.game.physics.arcade.enable(fireballs);
-        fireballs.createMultiple(5, 'fireball');
+        fireballs.createMultiple(20, 'fireball');
         fireballs.setAll('anchor.x', 0.5);
         fireballs.setAll('anchor.y', 1);
         fireballs.setAll('outOfBoundsKill', true);
         fireballs.setAll('checkWorldBounds', true);
-        this.fireball = fireballs.getFirstExists(false);
-        this.fireball.animations.add('fireUp', [16, 17, 18, 19 ,20 ,21 ,22, 23],30,true);
-        this.fireball.animations.add('fireLeft', [0,1,2,3,4,5,6,7],30,true);
-        this.fireball.animations.add('fireDown', [48,49,50,51,52,53,54,55],30,true);
-        this.fireball.animations.add('fireRight', [32,33,34,35,36,37,38,39],30,true);
-        this.fireball.animations.add('fireUpLeft', [8,9,10,11,12,13,14,15],30,true);
-        this.fireball.animations.add('fireDownLeft', [56,57,58,59,60,61,62,63],30,true);
-        this.fireball.animations.add('fireUpRight', [24,25,26,27,28,29,30,31],30,true);
-        this.fireball.animations.add('fireDownRight', [40,41,42,43,44,45,46,47],30,true);
+        
+        arrows = this.game.add.group();
+        arrows.enableBody = true;
+        this.game.physics.arcade.enable(arrows);
+        arrows.createMultiple(100, 'arrow');
+        arrows.setAll('anchor.x', 0.5);
+        arrows.setAll('anchor.y', 1);
+        arrows.setAll('outOfBoundsKill', true);
+        arrows.setAll('checkWorldBounds', true);
         
         player = this.game.add.sprite(1905,2048,'player');
  
@@ -125,20 +159,16 @@ var tower_level =
         
         player.animations.add('attackRight', [63,64,65,66,67,68,63],10, false);
         
+        player.animations.add('death', [72, 73, 74 , 75, 76, 77], 7, false);
+        
         player.anchor.setTo(0.5,0.5);
     
         this.game.physics.enable(player);
         
+        this.game.physics.enable(player);
+        player.body.setSize(28, 48, 18, 8);
         player.body.collideWorldBounds=true;
         
-        enemy1 = new enemy_elf(0,this.game,100,100);
-        new enemy_elf(0,this.game,200,100);
-        new enemy_elf(0,this.game,300,100);
-        new enemy_elf(0,this.game,400,100);
-        new enemy_elf(0,this.game,3000,100);
-        new enemy_elf(0,this.game,3200,100);
-        new enemy_elf(0,this.game,3400,300);
-        new enemy_elf(0,this.game,3500,300);
         
         controls = 
         {
@@ -156,11 +186,11 @@ var tower_level =
         coin_image.scale.setTo(1.3,1.3);
         coin_image.fixedToCamera = true;
         
-        goldKey = this.game.add.sprite(1700,1700,'goldKey');
+        goldKey = this.game.add.sprite(3700,1100,'goldKey');
         goldKey.enableBody = true;
         this.game.physics.arcade.enable(goldKey);
         
-        silverKey = this.game.add.sprite(1800,1700,'silverKey');
+        silverKey = this.game.add.sprite(125,1570,'silverKey');
         silverKey.enableBody = true;
         this.game.physics.arcade.enable(silverKey);
         
@@ -171,23 +201,41 @@ var tower_level =
         //Spawn player hearts
         for (var i = 0; i < 3; i++) 
         {
-            var heart = player_lives.create(138 + (35 * i), 35, 'heart');
+            var heart = player_lives.create(118 + (35 * i), 35, 'heart');
             heart.anchor.setTo(0.5, 0.5);
             heart.fixedToCamera = true;
+            heartOutline = this.game.add.sprite(118 + (35 * i), 35, 'heart_outline');
+            heartOutline.anchor.setTo(0.5, 0.5);
+            heartOutline.fixedToCamera = true;
         }
         
         upgrade_text = this.game.add.text(1180 , 15 ,'Upgrades', {font: '20px Arial', fill: '#ffffff'});
         upgrade_text.fixedToCamera = true;
-        var heart_upgrade;
-        heart_upgrade = this.game.add.sprite(1182, 50, 'heart_upgrade');
-        heart_upgrade.fixedToCamera = true;
-        var upgrade_priceHeart;
-        upgrade_priceHeart = this.game.add.text(1250 , 56 ,'10', {font: '18px Arial', fill: '#ffffff'});
-        upgrade_priceHeart.fixedToCamera = true;
-        var coin_imageUpgrade;
-        coin_imageUpgrade = this.game.add.sprite(1225, 56, 'coin');
-        coin_imageUpgrade.scale.setTo(1.2,1.2);
-        coin_imageUpgrade.fixedToCamera = true;
+        
+        var heart_upgradeExtra;
+        heart_upgradeExtra = this.game.add.button(1182, 50, 'heart_upgradeExtra', this.extraHeart, this);
+        heart_upgradeExtra.fixedToCamera = true;
+        var upgrade_priceHeartExtra;
+        upgrade_priceHeartExtra = this.game.add.text(1250 , 56 ,'10', {font: '18px Arial', fill: '#ffffff'});
+        upgrade_priceHeartExtra.fixedToCamera = true;
+        var coin_imageUpgradeExtra;
+        coin_imageUpgradeExtra = this.game.add.sprite(1225, 56, 'coin');
+        coin_imageUpgradeExtra.scale.setTo(1.2, 1.2);
+        coin_imageUpgradeExtra.fixedToCamera = true;
+        
+        var heart_upgradeRevive;
+        heart_upgradeRevive = this.game.add.button(1182, 100, 'heart_upgradeRevive', this.heartsRevive, this);
+        heart_upgradeRevive.fixedToCamera = true;
+        var upgrade_priceHeartRevive;
+        upgrade_priceHeartRevive = this.game.add.text(1250 , 106 ,'15', {font: '18px Arial', fill: '#ffffff'});
+        upgrade_priceHeartRevive.fixedToCamera = true;
+        var coin_imageUpgradeRevive;
+        coin_imageUpgradeRevive = this.game.add.sprite(1225, 106, 'coin');
+        coin_imageUpgradeRevive.scale.setTo(1.2, 1.2);
+        coin_imageUpgradeRevive.fixedToCamera = true;
+        
+        var objective_text = this.game.add.text(10 , 150 ,'Main Objective:\nKill the enemies in the Tower', {font: '20px Arial', fill: '#ffffff'});
+        objective_text.fixedToCamera = true;
         
         this.game.camera.follow(player,Phaser.Camera.FOLLOW_LOCKON,0.1,0.1);
         
@@ -199,10 +247,18 @@ var tower_level =
         
         if(player.alive)
         {
+            this.arrowTrapShoot();
+            this.game.physics.arcade.collide(player, arrows, this.arrowHitsPlayer);
+            this.game.physics.arcade.collide(player, coins, this.collectCoin);
+            this.game.physics.arcade.collide(fireballs, enemy_elf_down, this.fireballHitEnemyDown);
+            this.game.physics.arcade.collide(fireballs, enemy_elf_up, this.fireballHitEnemyUp);
+            this.game.physics.arcade.collide(fireballs, enemy_elf_left, this.fireballHitEnemyLeft);
+            this.game.physics.arcade.collide(fireballs, enemy_elf_right, this.fireballHitEnemyRight);
             this.game.physics.arcade.collide(player, world_towerLevel.layer_walls);
             this.game.physics.arcade.collide(player, world_towerLevel.layer_doors);
-            this.game.physics.arcade.collide(player,coins, this.collectCoin);
             this.game.physics.arcade.collide(player,silverKey, this.collectSilverKey);
+            this.game.physics.arcade.collide(player,goldKey, this.collectGoldKey);
+            
             
             player.body.velocity.set(0);
 
@@ -300,17 +356,17 @@ var tower_level =
                 facingRight = true;
             }
 
-            else if(this.game.input.activePointer.leftButton.isDown)
+           if(this.game.input.activePointer.leftButton.isDown)
             {
                 if(facingUp && facingLeft || facingDown && facingLeft || facingLeft)
                 {
-                   player.animations.play('attackLeft');
-                   this.shootFireball();
+                    player.animations.play('attackLeft');
+                    this.shootFireball();
                 }
                 else if(facingUp && facingRight || facingDown && facingRight || facingRight)
                 {
-                   player.animations.play('attackRight');
-                   this.shootFireball();
+                    player.animations.play('attackRight');
+                    this.shootFireball();
                 }
                 else if(facingUp)
                 {
@@ -322,83 +378,156 @@ var tower_level =
                     player.animations.play('attackDown');
                     this.shootFireball();
                 }
-
             }
+            
+            if(player.y <= enemy_up.y + 5 && player.y >= enemy_up.y - 500 && player.x <= enemy_up.x + 100 && player.x >= enemy_up.x - 100)
+               {
+                   enemy_elf_up.callAll('play', null, 'fireUp');
+                   elfTween_up.pause();
+                   enemy_elf_up.forEach(this.shootArrowUp, enemy_elf_up);
+               }
+            else
+               {
+                   enemy_elf_up.callAll('play', null, 'walkUp');
+                   elfTween_up.resume();
+               }
+            
+            if(player.x <= enemy_left.x + 5 && player.x >= enemy_left.x - 500 && player.y <= enemy_left.y + 100 && player.y >= enemy_left.y - 100)
+               {
+                   enemy_elf_left.callAll('play', null, 'fireLeft');
+                   elfTween_left.pause();
+                   enemy_elf_left.forEach(this.shootArrowLeft, enemy_elf_left);
+               }
+            else
+               {
+                   enemy_elf_left.callAll('play', null, 'walkLeft');
+                   elfTween_left.resume();
+               }
+            
+            if(player.y <= enemy_down.y + 500 && player.y >= enemy_down.y - 5 && player.x <= enemy_down.x + 100 && player.x >= enemy_down.x - 100)
+               {
+                   enemy_elf_down.callAll('play', null, 'fireDown');
+                   elfTween_down.pause(enemy_elf_down);
+                   //enemy_elf_down.callAll(this.shootArrow());
+                   //this.shootArrowDown(this);
+                   enemy_elf_down.forEach(this.shootArrowDown, enemy_elf_down);
+               }
+            else
+               {
+                   enemy_elf_down.callAll('play', null, 'walkDown');
+                   elfTween_down.resume();
+               }
+            
+            if(player.x <= enemy_right.x + 500 && player.x >= enemy_right.x - 5 && player.y <= enemy_right.y + 100 && player.y >= enemy_right.y - 100)
+               {
+                   enemy_elf_right.callAll('play', null, 'fireRight');
+                   elfTween_right.pause();
+                   enemy_elf_right.forEach(this.shootArrowRight, enemy_elf_right);
+               }
+            else
+               {
+                   enemy_elf_right.callAll('play', null, 'walkRight');
+                   elfTween_right.resume();
+               }
 
         }
 },
+    enemyDownMove : function (fireball, enemy_right)
+    {
+        fireball.kill();
+        enemy_right.kill();
+    },
+    
     shootFireball : function()
     {
         if(this.game.time.now > fireball_castTime)
-        {
+        { 
+            this.fireball = fireballs.getFirstExists(false);
             
             if(this.fireball && facingUp && facingLeft)   
             {
-               this.fireball.reset(player.x, player.y);
-               this.fireball.body.velocity.y = -50;
-               this.fireball.body.velocity.x = -50;
-               this.fireball.animations.play('fireUpLeft');
-               fireball_castTime = this.game.time.now + 300; 
-            }
-            else if(this.fireball && facingUp && facingRight)   
-            {
-               this.fireball.reset(player.x, player.y);
-               this.fireball.body.velocity.y = -50;
-               this.fireball.body.velocity.x = +50;
-               this.fireball.animations.play('fireUpRight');
-               fireball_castTime = this.game.time.now + 300; 
-            }
-            else if(this.fireball && facingDown && facingLeft)   
-            {
-               this.fireball.reset(player.x, player.y);
-               this.fireball.body.velocity.y = +50;
-               this.fireball.body.velocity.x = -50;
-               this.fireball.animations.play('fireDownLeft');
-               fireball_castTime = this.game.time.now + 300; 
-            }
-            else if(this.fireball && facingDown && facingRight)   
-            {
-               this.fireball.reset(player.x, player.y);
-               this.fireball.body.velocity.y = +50;
-               this.fireball.body.velocity.x = +50;
-               this.fireball.animations.play('fireDownRight');
-               fireball_castTime = this.game.time.now + 300; 
-            }
-            else if(this.fireball && facingUp)
-            {
-               this.fireball.reset(player.x, player.y);
-               this.fireball.body.velocity.y = -50;
-               this.fireball.animations.play('fireUp');
-               fireball_castTime = this.game.time.now + 300;     
-            }
-            else if(this.fireball && facingLeft)
-            {
-               this.fireball.reset(player.x, player.y);
-               this.fireball.body.velocity.x = -50;
-               this.fireball.animations.play('fireLeft');
-               fireball_castTime = this.game.time.now + 300;  
-            }
-            else if(this.fireball && facingDown)
-            {
-               this.fireball.reset(player.x, player.y);
-               this.fireball.body.velocity.y = +50;
-               this.fireball.animations.play('fireDown');
-               fireball_castTime = this.game.time.now + 300;  
-            }
-            else if(this.fireball && facingRight)
-            {
-               this.fireball.reset(player.x, player.y);
-               this.fireball.body.velocity.x = +50;
-               this.fireball.animations.play('fireRight');
-               fireball_castTime = this.game.time.now + 300;  
+                sound_objects.fireball_sound.play();
+                this.fireball.reset(player.x - 20, player.y + 32);
+                this.fireball.body.velocity.y = -260;
+                this.fireball.body.velocity.x = -260;
+                this.fireball.animations.add('fireUpLeft', [8, 9, 10, 11, 12, 13, 14, 15],30,true);
+                this.fireball.animations.play('fireUpLeft');
+                fireball_castTime = this.game.time.now + 1000; 
             }
             
+            else if(this.fireball && facingUp && facingRight)   
+            {
+                sound_objects.fireball_sound.play();
+                this.fireball.reset(player.x + 20, player.y + 32);
+                this.fireball.body.velocity.y = -260;
+                this.fireball.body.velocity.x = +260;
+                this.fireball.animations.add('fireUpRight', [24, 25, 26, 27, 28, 29, 30, 31],30,true);
+                this.fireball.animations.play('fireUpRight');
+                fireball_castTime = this.game.time.now + 1000; 
+            }
+           
+            else if(this.fireball && facingDown && facingLeft)   
+            {
+                sound_objects.fireball_sound.play();
+                this.fireball.reset(player.x - 20, player.y + 32);
+                this.fireball.body.velocity.y = +260;
+                this.fireball.body.velocity.x = -260;
+                this.fireball.animations.add('fireDownLeft', [56, 57, 58, 59, 60, 61, 62, 63],30,true);
+                this.fireball.animations.play('fireDownLeft');
+                fireball_castTime = this.game.time.now + 1000; 
+            }
+           
+            else if(this.fireball && facingDown && facingRight)   
+            {
+                sound_objects.fireball_sound.play();
+                this.fireball.reset(player.x + 20, player.y + 32);
+                this.fireball.body.velocity.y = +260;
+                this.fireball.body.velocity.x = +260;
+                this.fireball.animations.add('fireDownRight', [40, 41, 42, 43, 44, 45, 46, 47],30,true);
+                this.fireball.animations.play('fireDownRight');
+                fireball_castTime = this.game.time.now + 1000; 
+            }
+            
+            else if(this.fireball && facingUp)
+            {
+                sound_objects.fireball_sound.play();    
+                this.fireball.reset(player.x, player.y);
+                this.fireball.body.velocity.y = -300;
+                this.fireball.animations.add('fireUp', [16, 17, 18, 19 ,20 ,21 ,22, 23],30,true);
+                this.fireball.animations.play('fireUp');
+                fireball_castTime = this.game.time.now + 1000;     
+            }
+           
+            else if(this.fireball && facingLeft)
+            {
+                sound_objects.fireball_sound.play();
+                this.fireball.reset(player.x - 32, player.y + 32);
+                this.fireball.body.velocity.x = -300;
+                this.fireball.animations.add('fireLeft', [0, 1, 2, 3, 4, 5, 6, 7],30,true);
+                this.fireball.animations.play('fireLeft');
+                fireball_castTime = this.game.time.now + 1000;  
+            }
+            
+            else if(this.fireball && facingDown)
+            {
+                sound_objects.fireball_sound.play();
+                this.fireball.reset(player.x, player.y + 64);
+                this.fireball.body.velocity.y = +300;
+                this.fireball.animations.add('fireDown', [48, 49, 50, 51, 52, 53, 54, 55],30,true);
+                this.fireball.animations.play('fireDown');
+                fireball_castTime = this.game.time.now + 1000;  
+            }
+            
+            else if(this.fireball && facingRight)
+            {
+                sound_objects.fireball_sound.play();
+                this.fireball.reset(player.x + 32, player.y + 32);
+                this.fireball.body.velocity.x = +300;
+                this.fireball.animations.add('fireRight', [32, 33, 34, 35, 36, 37, 38, 39],30,true);
+                this.fireball.animations.play('fireRight');
+                fireball_castTime = this.game.time.now + 1000;  
+            }    
         }
-    },
-    
-    resetFireball : function (fireball) 
-    {
-        fireball.kill();
     },
     
     createCoins : function()
@@ -413,13 +542,218 @@ var tower_level =
             coin.anchor.setTo(0.5,0.5);
         }
             
-        for (var x = 1; x < 3; x++)
+        for (var x = 1; x < 30; x++)
         {
-            coin = coins.create(50 * x, 150, 'coin');
+            coin = coins.create(50 , 150, 'coin');
             coin.animations.add('spin', [0,1,2,3],8,true);
             coin.animations.play('spin');
             coin.anchor.setTo(0.5,0.5);
         }
+    },
+    
+    createEnemiesUp : function()
+    {
+         enemy_elf_up.enableBody = true;
+         this.game.physics.arcade.enable(enemy_elf_up);
+         enemy_up = enemy_elf_up.create(150 , 150, 'enemy_elf');
+         enemy_up.anchor.setTo(0.5, 0.5);
+         enemy_up.body.setSize(8, 13, 28, 26);
+            //this.enemy.name = index.toString;
+         enemy_up.animations.add('walkUp', [0, 1, 2, 3, 4, 5, 6, 7, 8], 9, true);
+         enemy_up.animations.add('fireUp', [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59], 9, true);
+        
+         enemy_up.animations.play('walkUp');
+              
+            
+        elfTween_up = game.add.tween(enemy_up).to({
+                y:enemy_up.y - 100
+            }, 2000, 'Linear',true, 0, 100, true);
+    },
+    
+    createEnemiesLeft : function()
+    {
+         enemy_elf_left.enableBody = true;
+         enemy_left = enemy_elf_left.create(2500 , 1600, 'enemy_elf');
+         enemy_left.anchor.setTo(0.5, 0.5);
+         enemy_left.body.setSize(8, 13, 28, 26);
+         enemy_left.animations.add('walkLeft', [13, 14, 15, 16, 17, 18, 19, 20], 9, true);
+         enemy_left.animations.add('fireLeft', [60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71], 9, true);
+
+         enemy_left.animations.play('walkLeft');
+         game.physics.arcade.enable(enemy_left,Phaser.Physics.ARCADE);     
+            
+        elfTween_left = game.add.tween(enemy_left).to({
+                x:enemy_left.x-100
+            },2000, 'Linear',true, 0, 100, true);
+    },
+    
+    createEnemiesDown : function()
+    {
+        enemy_elf_down.enableBody = true;
+        this.game.physics.arcade.enable(enemy_elf_down);
+        
+       // for (var x = 1; x < 2; x++)  enemy_down = enemy_elf_down.create(2300, 1200, 'enemy_elf'); 
+        //{
+            enemy_down = enemy_elf_down.create(3600, 1700, 'enemy_elf'); 
+            enemy_down.anchor.setTo(0.5,0.5);
+            enemy_down.body.setSize(8, 13, 28, 26);
+            enemy_down.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
+            enemy_down.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
+            enemy_elf_down.callAll('play',null,'walkDown');
+        
+        
+        //};
+        
+            elfTween_down = game.add.tween(enemy_down).to({
+                y:enemy_down.y + 100
+            }, 2000, 'Linear', true, 0, 100, true);
+            
+    },
+    
+    createEnemiesRight : function()
+    {
+         enemy_elf_right.enableBody = true;
+         enemy_right = enemy_elf_right.create(2600 , 1400, 'enemy_elf');
+         enemy_right.anchor.setTo(0.5, 0.5);
+         enemy_right.body.setSize(8, 13, 28, 26);
+            //this.enemy.name = index.toString;
+         enemy_right.animations.add('walkRight', [37, 38, 39, 40, 41, 42, 43, 44], 9, true);
+         enemy_right.animations.add('fireRight', [84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95], 9, true);
+        
+         enemy_right.animations.play('walkRight');
+         game.physics.arcade.enable(enemy_right,Phaser.Physics.ARCADE);     
+            
+        elfTween_right = game.add.tween(enemy_right).to({
+                x:enemy_right.x + 100
+            }, 2000, 'Linear', true, 0, 100, true);
+    },
+    
+    fireballHitEnemyUp : function (fireball, enemy_up)
+    {
+        fireball.kill();
+        enemy_up.kill();
+    },
+    
+    fireballHitEnemyDown : function (fireball, enemy_down)
+    {
+        fireball.kill();
+        enemy_down.kill();
+    },
+
+    fireballHitEnemyLeft : function (fireball, enemy_left)
+    {
+        fireball.kill();
+        enemy_left.kill();
+    },
+
+    fireballHitEnemyRight : function (fireball, enemy_right)
+    {
+        fireball.kill();
+        enemy_right.kill();
+    },
+    
+    shootArrowUp : function(enemy_up)
+    {
+        if(this.game.time.now > fireArrowUp)
+        {
+          arrow = arrows.getFirstExists(false);
+           if (arrow && enemy_up.alive)
+            {
+                arrow.reset(enemy_up.x, enemy_up.y);
+                arrow.angle = 180;
+                arrow.rotation = this.game.physics.arcade.angleBetween(arrow, player);
+                game.physics.arcade.moveToObject(arrow,player,200);
+                fireArrowUp = this.game.time.now + 2000;
+            }
+       } 
+    },
+    
+    shootArrowLeft : function(enemy_left)
+    {
+        if(this.game.time.now > fireArrowLeft)
+        {
+          arrow = arrows.getFirstExists(false);
+           if (arrow && enemy_left.alive)
+            {
+                arrow.reset(enemy_left.x, enemy_left.y);
+                arrow.angle = 180;
+                arrow.rotation = this.game.physics.arcade.angleBetween(arrow, player);
+                game.physics.arcade.moveToObject(arrow,player,200);
+                fireArrowLeft = this.game.time.now + 2000;
+            }
+       } 
+    },
+    
+    shootArrowDown : function(enemy_down)
+    {
+        if(this.game.time.now > fireArrowDown)
+        {
+          arrow = arrows.getFirstExists(false);
+           if (arrow && enemy_down.alive)
+            {
+                arrow.reset(enemy_down.x, enemy_down.y);
+                arrow.angle = 180;
+                arrow.rotation = this.game.physics.arcade.angleBetween(arrow, player);
+                game.physics.arcade.moveToObject(arrow,player,200);
+                fireArrowDown = this.game.time.now + 2000;
+            }
+       } 
+    },
+    
+    shootArrowRight : function(enemy_right)
+    {
+        if(this.game.time.now > fireArrowRight)
+        {
+          arrow = arrows.getFirstExists(false);
+           if (arrow && enemy_right.alive)
+            {
+                arrow.reset(enemy_right.x, enemy_right.y);
+                arrow.angle = 180;
+                arrow.rotation = this.game.physics.arcade.angleBetween(arrow, player);
+                game.physics.arcade.moveToObject(arrow,player,200);
+                fireArrowRight = this.game.time.now + 2000;
+            }
+       } 
+    },
+    
+    arrowTrapShoot : function()
+    {
+        if(this.game.time.now > fireArrowTrap)
+        {
+          arrow = arrows.getFirstExists(false);
+           if (arrow)
+            {
+                arrow.reset(arrowTrap.x, arrowTrap.y);
+                arrow.angle = 90;
+                arrow.rotation = this.game.physics.arcade.angleBetween(arrow, player);
+                arrow.body.velocity.x = -100;
+                fireArrowTrap = this.game.time.now + 2000;
+            }
+       } 
+    },
+    
+    arrowHitsPlayer : function(player, arrow)
+    {
+        arrow.kill();
+        
+        this.player_live = player_lives.getFirstAlive();
+        
+        if(this.player_live)
+        {
+            this.player_live.kill();
+        }
+        
+        if(player_lives.countLiving() < 1)
+        {
+            player.animations.play('death');
+            controls.up.enabled=false;
+            controls.left.enabled=false;
+            controls.down.enabled=false;
+            controls.right.enabled=false; 
+            //game.state.restart();
+            //game.time.events.add(Phaser.Timer.SECOND * 4, this.respawnPlayer(), this);
+            
+        } 
     },
       
     collectCoin : function(player,coin)
@@ -435,8 +769,46 @@ var tower_level =
         world_towerLevel.layer_doors.kill();
     },
     
-    respawnPlayer : function()
+    collectGoldKey : function(player,goldKey)
     {
-        player.reset(300,300);
+        goldKey.kill();
+        world_towerLevel.layer_doors2.kill();
+    },
+    
+    extraHeart : function()
+    {
+        if(player_lives.length == 3 && coinScore >= 10)
+        {
+            coinScore -= 10;
+            coinScoreText.text = coinScoreString + coinScore;
+            this.heart = player_lives.create(118 + (35 * 3), 35, 'heart');
+            this.heart.anchor.setTo(0.5, 0.5);
+            this.heart.fixedToCamera = true;
+            heartOutline = this.game.add.sprite(118 + (35 * 3), 35, 'heart_outline');
+            heartOutline.anchor.setTo(0.5, 0.5);
+            heartOutline.fixedToCamera = true;
+        }
+        
+        if(player_lives.length == 4 && coinScore >= 10)
+        {
+            coinScore -= 10;
+            coinScoreText.text = coinScoreString + coinScore;
+            this.heart = player_lives.create(118 + (35 * 4), 35, 'heart');
+            this.heart.anchor.setTo(0.5, 0.5);
+            this.heart.fixedToCamera = true;
+            heartOutline = this.game.add.sprite(118 + (35 * 4), 35, 'heart_outline');
+            heartOutline.anchor.setTo(0.5, 0.5);
+            heartOutline.fixedToCamera = true;
+        }
+    },
+    
+    heartsRevive : function()
+    {
+        if(player_lives.countLiving() < 5 && coinScore >= 15)
+        {
+            coinScore -= 15;
+            coinScoreText.text = coinScoreString + coinScore;
+            player_lives.callAll('revive');        
+        }
     },
 };

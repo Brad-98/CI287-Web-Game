@@ -14,7 +14,6 @@ var elfTween_up;
 var elfTween_left;
 var elfTween_down;
 var elfTween_right;
-//var enemy1;
 var controls;
 var coins;
 var coin;
@@ -30,7 +29,10 @@ var fireballs;
 var fireball_castTime = 0;
 var arrow;
 var arrows;
-var fireArrow = 0;
+var fireArrowUp = 0;
+var fireArrowLeft = 0;
+var fireArrowDown = 0;
+var fireArrowRight = 0;
 var fireArrowTrap = 0;
 var merchant;
 var merchant2;
@@ -45,6 +47,7 @@ var merchant10;
 var merchant11;
 var arrowTrap;
 var heartOutline;
+var timer;
 
 
 var world_outdoorZone = 
@@ -80,12 +83,6 @@ function buildWorld_outdoorZone (game, world)
     
 }   
 
-//function checkOverlap (spriteA,spriteB){
- //       var boundsA = spriteA.getBounds();
- //       var boundsB = spriteB.getBounds();
-        
- //       return Phaser.Rectangle.intersects(boundsA,boundsB);
- //   }
 
 var outdoorZone =
 {
@@ -306,7 +303,7 @@ var outdoorZone =
             this.game.physics.arcade.collide(fireballs, enemy_elf_up, this.fireballHitEnemyUp);
             this.game.physics.arcade.collide(fireballs, enemy_elf_left, this.fireballHitEnemyLeft);
             this.game.physics.arcade.collide(fireballs, enemy_elf_right, this.fireballHitEnemyRight);
-            //this.game.physics.arcade.collide(player,enemy1.enemy, this.respawnPlayer);
+            
             
             player.body.velocity.set(0);
 
@@ -426,10 +423,11 @@ var outdoorZone =
                 }
             }
             
-            if(player.y <= enemy_up.y + 500 && player.x <= enemy_up.x + 10)
+            if(player.y <= enemy_up.y + 5 && player.y >= enemy_up.y - 500 && player.x <= enemy_up.x + 100 && player.x >= enemy_up.x - 100)
                {
                    enemy_elf_up.callAll('play', null, 'fireUp');
                    elfTween_up.pause();
+                   enemy_elf_up.forEach(this.shootArrowUp, enemy_elf_up);
                }
             else
                {
@@ -437,10 +435,11 @@ var outdoorZone =
                    elfTween_up.resume();
                }
             
-            if(player.x <= enemy_left.x + 500 && player.y <= enemy_left.y + 10)
+            if(player.x <= enemy_left.x + 5 && player.x >= enemy_left.x - 500 && player.y <= enemy_left.y + 100 && player.y >= enemy_left.y - 100)
                {
                    enemy_elf_left.callAll('play', null, 'fireLeft');
                    elfTween_left.pause();
+                   enemy_elf_left.forEach(this.shootArrowLeft, enemy_elf_left);
                }
             else
                {
@@ -448,13 +447,13 @@ var outdoorZone =
                    elfTween_left.resume();
                }
             
-            if(player.y <= enemy_down.y + 500 && player.x <= enemy_down.x + 10)
+            if(player.y <= enemy_down.y + 500 && player.y >= enemy_down.y - 5 && player.x <= enemy_down.x + 100 && player.x >= enemy_down.x - 100)
                {
                    enemy_elf_down.callAll('play', null, 'fireDown');
                    elfTween_down.pause(enemy_elf_down);
                    //enemy_elf_down.callAll(this.shootArrow());
-                   this.shootArrow(this);
-                   enemy_elf_down.forEach(this.shootArrow, enemy_elf_down);
+                   //this.shootArrowDown(this);
+                   enemy_elf_down.forEach(this.shootArrowDown, enemy_elf_down);
                }
             else
                {
@@ -462,10 +461,11 @@ var outdoorZone =
                    elfTween_down.resume();
                }
             
-            if(player.x <= enemy_right.x + 500 && player.y <= enemy_right.y + 10)
+            if(player.x <= enemy_right.x + 500 && player.x >= enemy_right.x - 5 && player.y <= enemy_right.y + 100 && player.y >= enemy_right.y - 100)
                {
                    enemy_elf_right.callAll('play', null, 'fireRight');
                    elfTween_right.pause();
+                   enemy_elf_right.forEach(this.shootArrowRight, enemy_elf_right);
                }
             else
                {
@@ -567,11 +567,6 @@ var outdoorZone =
         }
     },
     
-    //resetFireball : function (fireball) 
-    //{
-    //    fireball.kill();
-    //},
-    
     createCoins : function()
     {
         coins.enableBody = true;
@@ -587,14 +582,6 @@ var outdoorZone =
         for (var x = 1; x < 3; x++)
         {
             coin = coins.create(50 * x, 150, 'coin');
-            coin.animations.add('spin', [0, 1, 2, 3], 8,true);
-            coin.animations.play('spin');
-            coin.anchor.setTo(0.5, 0.5);
-        }
-        
-        for (var x = 0; x < 30; x++)
-        {
-            coin = coins.create(2600, 150, 'coin');
             coin.animations.add('spin', [0, 1, 2, 3], 8,true);
             coin.animations.play('spin');
             coin.anchor.setTo(0.5, 0.5);
@@ -623,10 +610,9 @@ var outdoorZone =
     createEnemiesLeft : function()
     {
          enemy_elf_left.enableBody = true;
-         enemy_left = enemy_elf_left.create(100 , 100, 'enemy_elf');
+         enemy_left = enemy_elf_left.create(3500 , 400, 'enemy_elf');
          enemy_left.anchor.setTo(0.5, 0.5);
          enemy_left.body.setSize(8, 13, 28, 26);
-            //this.enemy.name = index.toString;
          enemy_left.animations.add('walkLeft', [13, 14, 15, 16, 17, 18, 19, 20], 9, true);
          enemy_left.animations.add('fireLeft', [60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71], 9, true);
 
@@ -642,23 +628,22 @@ var outdoorZone =
     {
         enemy_elf_down.enableBody = true;
         this.game.physics.arcade.enable(enemy_elf_down);
-        //enemy_down = enemy_elf_down.create(50 , 50, 'enemy_elf');
         
-        for (var x = 1; x < 3; x++)
-        {
-            enemy_down = enemy_elf_down.create(50 * x, 150, 'enemy_elf');     
+        //for (var x = 1; x < 2; x++)
+        //{
+            enemy_down = enemy_elf_down.create(3400, 400, 'enemy_elf');     
             enemy_down.anchor.setTo(0.5,0.5);
             enemy_down.body.setSize(8, 13, 28, 26);
             enemy_down.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
             enemy_down.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
             enemy_elf_down.callAll('play',null,'walkDown');
             
-        };
+        //};
         
         //enemy_elf_down.x = 0;
         //enemy_elf_down.y = 0;
-            elfTween_down = game.add.tween(enemy_elf_down).to({
-                y:enemy_elf_down.y + 100
+            elfTween_down = game.add.tween(enemy_down).to({
+                y:enemy_down.y + 100
             }, 2000, 'Linear', true, 0, 100, true);
             
     },
@@ -666,7 +651,7 @@ var outdoorZone =
     createEnemiesRight : function()
     {
          enemy_elf_right.enableBody = true;
-         enemy_right = enemy_elf_right.create(200 , 200, 'enemy_elf');
+         enemy_right = enemy_elf_right.create(3300 , 500, 'enemy_elf');
          enemy_right.anchor.setTo(0.5, 0.5);
          enemy_right.body.setSize(8, 13, 28, 26);
             //this.enemy.name = index.toString;
@@ -705,17 +690,66 @@ var outdoorZone =
         enemy_right.kill();
     },
     
-    shootArrow : function(enemy_down)
+    shootArrowUp : function(enemy_up)
     {
-        if(this.game.time.now > fireArrow)
+        if(this.game.time.now > fireArrowUp)
+        {
+          arrow = arrows.getFirstExists(false);
+           if (arrow && enemy_up.alive)
+            {
+                arrow.reset(enemy_up.x, enemy_up.y);
+                arrow.angle = 180;
+                arrow.rotation = this.game.physics.arcade.angleBetween(arrow, player);
+                game.physics.arcade.moveToObject(arrow,player,200);
+                fireArrowUp = this.game.time.now + 2000;
+            }
+       } 
+    },
+    
+    shootArrowLeft : function(enemy_left)
+    {
+        if(this.game.time.now > fireArrowLeft)
+        {
+          arrow = arrows.getFirstExists(false);
+           if (arrow && enemy_left.alive)
+            {
+                arrow.reset(enemy_left.x, enemy_left.y);
+                arrow.angle = 180;
+                arrow.rotation = this.game.physics.arcade.angleBetween(arrow, player);
+                game.physics.arcade.moveToObject(arrow,player,200);
+                fireArrowLeft = this.game.time.now + 2000;
+            }
+       } 
+    },
+    
+    shootArrowDown : function(enemy_down)
+    {
+        if(this.game.time.now > fireArrowDown)
         {
           arrow = arrows.getFirstExists(false);
            if (arrow && enemy_down.alive)
             {
                 arrow.reset(enemy_down.x, enemy_down.y);
                 arrow.angle = 180;
+                arrow.rotation = this.game.physics.arcade.angleBetween(arrow, player);
                 game.physics.arcade.moveToObject(arrow,player,200);
-                fireArrow = this.game.time.now + 2000;
+                fireArrowDown = this.game.time.now + 2000;
+            }
+       } 
+    },
+    
+    shootArrowRight : function(enemy_right)
+    {
+        if(this.game.time.now > fireArrowRight)
+        {
+          arrow = arrows.getFirstExists(false);
+           if (arrow && enemy_right.alive)
+            {
+                arrow.reset(enemy_right.x, enemy_right.y);
+                arrow.angle = 180;
+                arrow.rotation = this.game.physics.arcade.angleBetween(arrow, player);
+                game.physics.arcade.moveToObject(arrow,player,200);
+                fireArrowRight = this.game.time.now + 2000;
             }
        } 
     },
@@ -750,6 +784,13 @@ var outdoorZone =
         if(player_lives.countLiving() < 1)
         {
             player.animations.play('death');
+            controls.up.enabled=false;
+            controls.left.enabled=false;
+            controls.down.enabled=false;
+            controls.right.enabled=false; 
+            //game.state.restart();
+            //game.time.events.add(Phaser.Timer.SECOND * 4, this.respawnPlayer(), this);
+            
         } 
     },
       
@@ -799,7 +840,7 @@ var outdoorZone =
     
     respawnPlayer : function()
     {
-        player.reset(300, 300);
+        game.state.restart();
     },
     
     gotoTowerLevel : function(player, towerSprite)
