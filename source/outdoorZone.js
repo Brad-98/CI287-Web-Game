@@ -15,8 +15,8 @@ var elfTween_left;
 var elfTween_down;
 var elfTween_right;
 var controls;
-var coins;
-var coin;
+//var coins;
+//var coin;
 var coinScore = 0;
 var coinScoreString = '';
 var coinScoreText;
@@ -33,7 +33,6 @@ var fireArrowUp = 0;
 var fireArrowLeft = 0;
 var fireArrowDown = 0;
 var fireArrowRight = 0;
-var fireArrowTrap = 0;
 var merchant;
 var merchant2;
 var merchant3;
@@ -45,7 +44,6 @@ var merchant8;
 var merchant9;
 var merchant10;
 var merchant11;
-var arrowTrap;
 var heartOutline;
 var timer;
 
@@ -161,11 +159,8 @@ var outdoorZone =
         
         arrowTrap = this.game.add.sprite(3000, 50, 'arrowTrap');
         
-        coins = this.game.add.group();
-        this.createCoins();
-        
-        enemy_elf_up = this.game.add.group();
-        this.createEnemiesUp();
+        //coins = this.game.add.group();
+        //this.createCoins();
         
         enemy_elf_left = this.game.add.group();
         this.createEnemiesLeft();
@@ -195,8 +190,7 @@ var outdoorZone =
         arrows.setAll('checkWorldBounds', true);
         
         //Player Code
-        //player = this.game.add.sprite(1770, 2050, 'player');
-        player = this.game.add.sprite(3090, 300, 'player')
+        player = this.game.add.sprite(1770, 2050, 'player');
  
         player.animations.add('walkUp', [0, 1, 2, 3, 4, 5, 6, 7, 8], 8, false);
         
@@ -221,13 +215,6 @@ var outdoorZone =
         this.game.physics.enable(player);
         player.body.setSize(28, 48, 18, 8);
         player.body.collideWorldBounds=true;
-        
-        //enemy1 = new enemy_elf(0,this.game,100,100);
-        //new enemy_elf(0,this.game,200,100);
-        //new enemy_elf(0,this.game,300,100);
-        //new enemy_elf(0,this.game,400,100);
-        
-        //coin1 = new coins(0,this.game,200,200);
     
         controls = 
         {
@@ -294,7 +281,6 @@ var outdoorZone =
     {  
         if(player.alive)
         {
-            this.arrowTrapShoot();
             this.game.physics.arcade.collide(player, arrows, this.arrowHitsPlayer);
             this.game.physics.arcade.collide(player, world_outdoorZone.layer_walls);
             this.game.physics.arcade.collide(player, coins, this.collectCoin);
@@ -423,17 +409,6 @@ var outdoorZone =
                 }
             }
             
-            if(player.y <= enemy_up.y + 5 && player.y >= enemy_up.y - 500 && player.x <= enemy_up.x + 100 && player.x >= enemy_up.x - 100)
-               {
-                   enemy_elf_up.callAll('play', null, 'fireUp');
-                   elfTween_up.pause();
-                   enemy_elf_up.forEach(this.shootArrowUp, enemy_elf_up);
-               }
-            else
-               {
-                   enemy_elf_up.callAll('play', null, 'walkUp');
-                   elfTween_up.resume();
-               }
             
             if(player.x <= enemy_left.x + 5 && player.x >= enemy_left.x - 500 && player.y <= enemy_left.y + 100 && player.y >= enemy_left.y - 100)
                {
@@ -567,45 +542,26 @@ var outdoorZone =
         }
     },
     
-    createCoins : function()
-    {
-        coins.enableBody = true;
-        this.game.physics.arcade.enable(coins);
-        for (var x = 1; x < 3; x++)
-        {
-            coin = coins.create(50 * x, 50, 'coin');
-            coin.animations.add('spin', [0, 1, 2, 3], 8, true);
-            coin.animations.play('spin');
-            coin.anchor.setTo(0.5, 0.5);
-        }
+    //createCoins : function()
+    //{
+     //   coins.enableBody = true;
+     //   this.game.physics.arcade.enable(coins);
+      //  for (var x = 1; x < 3; x++)
+      //  {
+      //      coin = coins.create(50 * x, 50, 'coin');
+      //      coin.animations.add('spin', [0, 1, 2, 3], 8, true);
+      //      coin.animations.play('spin');
+      //      coin.anchor.setTo(0.5, 0.5);
+      //  }
             
-        for (var x = 1; x < 3; x++)
-        {
-            coin = coins.create(50 * x, 150, 'coin');
-            coin.animations.add('spin', [0, 1, 2, 3], 8,true);
-            coin.animations.play('spin');
-            coin.anchor.setTo(0.5, 0.5);
-        }
-    },
-    
-    createEnemiesUp : function()
-    {
-         enemy_elf_up.enableBody = true;
-         this.game.physics.arcade.enable(enemy_elf_up);
-         enemy_up = enemy_elf_up.create(150 , 150, 'enemy_elf');
-         enemy_up.anchor.setTo(0.5, 0.5);
-         enemy_up.body.setSize(8, 13, 28, 26);
-            //this.enemy.name = index.toString;
-         enemy_up.animations.add('walkUp', [0, 1, 2, 3, 4, 5, 6, 7, 8], 9, true);
-         enemy_up.animations.add('fireUp', [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59], 9, true);
-        
-         enemy_up.animations.play('walkUp');
-              
-            
-        elfTween_up = game.add.tween(enemy_up).to({
-                y:enemy_up.y - 100
-            }, 2000, 'Linear',true, 0, 100, true);
-    },
+      //  for (var x = 1; x < 3; x++)
+       // {
+       //     coin = coins.create(50 * x, 150, 'coin');
+       //     coin.animations.add('spin', [0, 1, 2, 3], 8,true);
+        //    coin.animations.play('spin');
+        //    coin.anchor.setTo(0.5, 0.5);
+       // }
+   // },
     
     createEnemiesLeft : function()
     {
@@ -690,21 +646,6 @@ var outdoorZone =
         enemy_right.kill();
     },
     
-    shootArrowUp : function(enemy_up)
-    {
-        if(this.game.time.now > fireArrowUp)
-        {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_up.alive)
-            {
-                arrow.reset(enemy_up.x, enemy_up.y);
-                arrow.angle = 180;
-                arrow.rotation = this.game.physics.arcade.angleBetween(arrow, player);
-                game.physics.arcade.moveToObject(arrow,player,200);
-                fireArrowUp = this.game.time.now + 2000;
-            }
-       } 
-    },
     
     shootArrowLeft : function(enemy_left)
     {
@@ -754,21 +695,6 @@ var outdoorZone =
        } 
     },
     
-    arrowTrapShoot : function()
-    {
-        if(this.game.time.now > fireArrowTrap)
-        {
-          arrow = arrows.getFirstExists(false);
-           if (arrow)
-            {
-                arrow.reset(arrowTrap.x, arrowTrap.y);
-                arrow.angle = 90;
-                arrow.rotation = this.game.physics.arcade.angleBetween(arrow, player);
-                arrow.body.velocity.x = -100;
-                fireArrowTrap = this.game.time.now + 2000;
-            }
-       } 
-    },
     
     arrowHitsPlayer : function(player, arrow)
     {
@@ -794,12 +720,12 @@ var outdoorZone =
         } 
     },
       
-    collectCoin : function(player,coin)
-    {
-        coin.kill();
-        coinScore += 1;
-        coinScoreText.text = coinScoreString + coinScore;
-    },
+    //collectCoin : function(player,coin)
+    //{
+    //    coin.kill();
+    //    coinScore += 1;
+    //    coinScoreText.text = coinScoreString + coinScore;
+    //},
     
     extraHeart : function()
     {

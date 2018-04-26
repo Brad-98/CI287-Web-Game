@@ -22,6 +22,6 @@ var mainMenu =
     
     gotoBackstory : function()
     {
-        this.state.start('tower_level');
+        this.state.start('backstory');
     }
 };
