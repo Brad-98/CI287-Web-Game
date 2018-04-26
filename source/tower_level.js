@@ -83,34 +83,36 @@ function buildWorld_towerLevel (game, world)
     world_towerLevel.layer_doors = world_towerLevel.map.createLayer('layer_Doors');
     world_towerLevel.layer_doors2 = world_towerLevel.map.createLayer('layer_Doors2');
     world_towerLevel.layer_ground.resizeWorld();
-    
-    
+    world_towerLevel.map.setCollision(21, true, world_towerLevel.layer_walls);
+    world_towerLevel.map.setCollision(17, true, world_towerLevel.layer_doors);
+    world_towerLevel.map.setCollision(17, true, world_towerLevel.layer_door2);
+   // world_towerLevel.map.setTileIndexCallback(21, this.arrowOrFireballHitWall, this);
+    //world_towerLevel.layer_doors.debug = true;
 }
 
 var tower_level =
 {
     preload : function()
     {
-        this.game.load.spritesheet('player', '../assets/playerCharacter.png',64, 64,80);
-        this.game.load.spritesheet('enemy_elf', '../assets/enemyCharacter.png',64,65,117);
-        this.game.load.spritesheet('coin', '../assets/coins.png',16,16,3);
-        this.game.load.spritesheet('fireball', '../assets/fireball.png',64,64,63);
-        this.game.load.image('heart', '../assets/player_heart.png');
-        this.game.load.image('heart_upgrade', '../assets/player_heartUpgrade.png');
+        //this.game.load.spritesheet('player', '../assets/playerCharacter.png',64, 64,80);
+        //this.game.load.spritesheet('enemy_elf', '../assets/enemyCharacter.png',64,65,117);
+        //this.game.load.spritesheet('coin', '../assets/coins.png',16,16,3);
+        //this.game.load.spritesheet('fireball', '../assets/fireball.png',64,64,63);
+        //this.game.load.image('heart', '../assets/player_heart.png');
+        //this.game.load.image('heart_upgrade', '../assets/player_heartUpgrade.png');
         this.game.load.image('goldKey', '../assets/goldKey.png');
         this.game.load.image('silverKey', '../assets/silverKey.png');
-        this.game.load.image('heart', '../assets/player_heart.png');
-        this.game.load.image('heart_upgradeRevive', '../assets/player_heartUpgradeRevive.png');
-        this.game.load.image('heart_upgradeExtra', '../assets/player_heartUpgradeExtra.png');
-        this.game.load.image('heart_outline', '../assets/player_heartOutline.png');
-        this.game.load.image('arrow', '../assets/arrow.png');
-        this.game.load.image('arrowTrap', '../assets/tilesets/arrow_trap.png');
+        //this.game.load.image('heart', '../assets/player_heart.png');
+        //this.game.load.image('heart_upgradeRevive', '../assets/player_heartUpgradeRevive.png');
+        //this.game.load.image('heart_upgradeExtra', '../assets/player_heartUpgradeExtra.png');
+        //this.game.load.image('heart_outline', '../assets/player_heartOutline.png');
+        //this.game.load.image('arrow', '../assets/arrow.png');
+        //this.game.load.image('arrowTrap', '../assets/tilesets/arrow_trap.png');
         
         this.game.load.tilemap('map','../assets/tilesets/towerLevel..json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tileSheet', '../assets/tilesets/TileA3-byLunarea.png');
         
-        this.game.load.audio('fireball_sound', '../assets/music/sound_fireball.mp3'); 
-        
+        //this.game.load.audio('fireball_sound', '../assets/music/sound_fireball.mp3'); 
     },  
     
     create : function()
@@ -158,7 +160,7 @@ var tower_level =
         fireballs = this.game.add.group();
         fireballs.enableBody = true;
         this.game.physics.arcade.enable(fireballs);
-        fireballs.createMultiple(20, 'fireball');
+        fireballs.createMultiple(10, 'fireball');
         fireballs.setAll('anchor.x', 0.5);
         fireballs.setAll('anchor.y', 1);
         fireballs.setAll('outOfBoundsKill', true);
@@ -201,7 +203,6 @@ var tower_level =
         player.body.setSize(28, 48, 18, 8);
         player.body.collideWorldBounds=true;
         
-        
         controls = 
         {
             up: this.input.keyboard.addKey(Phaser.Keyboard.W),
@@ -227,7 +228,7 @@ var tower_level =
         this.game.physics.arcade.enable(silverKey);
         
         player_lives = this.game.add.group();
-        player_livesText = this.game.add.text(10 ,15 ,'Health : ', {font: '30px Arial', fill: '#ffffff'});
+        player_livesText = this.game.add.text(10 ,15 ,'Lives : ', {font: '30px Arial', fill: '#ffffff'});
         player_livesText.fixedToCamera = true;
         
         //Spawn player hearts
@@ -272,392 +273,393 @@ var tower_level =
         objective_text2.fixedToCamera = true;
         
         this.game.camera.follow(player,Phaser.Camera.FOLLOW_LOCKON,0.1,0.1);
-        
     },
     
     update : function()
     {
-        //Update stuff
+        this.game.physics.arcade.collide(player, arrows, this.arrowHitsPlayer);
+        this.game.physics.arcade.collide(player, coins, this.collectCoin);
+        this.game.physics.arcade.collide(arrows, world_towerLevel.layer_walls, this.arrowOrFireballHitWall);
+        this.game.physics.arcade.collide(fireballs, world_towerLevel.layer_walls, this.arrowOrFireballHitWall);
+        this.game.physics.arcade.collide(fireballs, enemy_elf_down, this.fireballHitEnemyDown);
+        this.game.physics.arcade.collide(fireballs, enemy_elf_up, this.fireballHitEnemyUp);
+        this.game.physics.arcade.collide(fireballs, enemy_elf_left, this.fireballHitEnemyLeft);
+        this.game.physics.arcade.collide(fireballs, enemy_elf_right, this.fireballHitEnemyRight);
+        this.game.physics.arcade.collide(player, world_towerLevel.layer_walls);
+        this.game.physics.arcade.collide(player, world_towerLevel.layer_doors);
+        this.game.physics.arcade.collide(player, world_towerLevel.layer_doors2);   
+        this.game.physics.arcade.collide(player,silverKey, this.collectSilverKey);
+        this.game.physics.arcade.collide(player,goldKey, this.collectGoldKey);
         
-        if(player.alive)
+        this.arrowTrapShoot();
+
+        if(player_lives.countLiving() < 1)
         {
-            this.arrowTrapShoot();
-            this.game.physics.arcade.collide(player, arrows, this.arrowHitsPlayer);
-            this.game.physics.arcade.collide(player, coins, this.collectCoin);
-            this.game.physics.arcade.collide(fireballs, enemy_elf_down, this.fireballHitEnemyDown);
-            this.game.physics.arcade.collide(fireballs, enemy_elf_up, this.fireballHitEnemyUp);
-            this.game.physics.arcade.collide(fireballs, enemy_elf_left, this.fireballHitEnemyLeft);
-            this.game.physics.arcade.collide(fireballs, enemy_elf_right, this.fireballHitEnemyRight);
-            this.game.physics.arcade.collide(player, world_towerLevel.layer_walls);
-            this.game.physics.arcade.collide(player, world_towerLevel.layer_doors);
-            this.game.physics.arcade.collide(player,silverKey, this.collectSilverKey);
-            this.game.physics.arcade.collide(player,goldKey, this.collectGoldKey);
-            
-            
-            player.body.velocity.set(0);
+            game.time.events.add(3000, this.respawnPlayer, this.player);
+        }
 
-            if(controls.up.isDown && controls.left.isDown)
-            {
-                player.animations.play('walkLeft');
-                player.body.velocity.y = -140;
-                player.body.velocity.x = -140;
+        player.body.velocity.set(0);
 
-                facingUp = true;
-                facingLeft = true;
-                facingDown = false;
-                facingRight = false;
-            }
+        if(controls.up.isDown && controls.left.isDown)
+        {
+            player.animations.play('walkLeft');
+            player.body.velocity.y = -140;
+            player.body.velocity.x = -140;
 
-            else if(controls.up.isDown && controls.right.isDown)
-            {
-                player.animations.play('walkRight');
-                player.body.velocity.y = -140;
-                player.body.velocity.x = 140;
+            facingUp = true;
+            facingLeft = true;
+            facingDown = false;
+            facingRight = false;
+        }
 
-                facingUp = true;
-                facingLeft = false;
-                facingDown = false;
-                facingRight = true;
-            }
+        else if(controls.up.isDown && controls.right.isDown)
+        {
+            player.animations.play('walkRight');
+            player.body.velocity.y = -140;
+            player.body.velocity.x = 140;
 
-            else if(controls.down.isDown && controls.left.isDown)
-            {
-                player.animations.play('walkLeft');
-                player.body.velocity.y = 140;
-                player.body.velocity.x = -140;
+            facingUp = true;
+            facingLeft = false;
+            facingDown = false;
+            facingRight = true;
+        }
 
-                facingUp = false;
-                facingLeft = true;
-                facingDown = true;
-                facingRight = false;
+        else if(controls.down.isDown && controls.left.isDown)
+        {
+            player.animations.play('walkLeft');
+            player.body.velocity.y = 140;
+            player.body.velocity.x = -140;
 
-            }
-
-            else if(controls.down.isDown && controls.right.isDown)
-            {
-                player.animations.play('walkRight');
-                player.body.velocity.y = 140;
-                player.body.velocity.x = 140;
-
-                facingUp = false;
-                facingLeft = false;
-                facingDown = true;
-                facingRight = true;
-
-            }
-
-            else if (controls.up.isDown)
-            {
-                player.animations.play('walkUp');
-                player.body.velocity.y = -140;
-
-                facingUp = true;
-                facingLeft = false;
-                facingDown = false;
-                facingRight = false;
-            }
-
-            else if(controls.down.isDown)
-            {
-                player.animations.play('walkDown');
-                player.body.velocity.y = 140;
-
-                facingUp = false;
-                facingLeft = false;
-                facingDown = true;
-                facingRight = false;
-            }
-
-            else if(controls.left.isDown)
-            {
-                player.animations.play('walkLeft');
-                player.body.velocity.x = -140;
-
-                facingUp = false;
-                facingLeft = true;
-                facingDown = false;
-                facingRight = false;
-            }
-
-            else if(controls.right.isDown)
-            {
-                player.animations.play('walkRight');
-                player.body.velocity.x = 140;
-
-                facingUp = false;
-                facingLeft = false;
-                facingDown = false;
-                facingRight = true;
-            }
-
-           if(this.game.input.activePointer.leftButton.isDown)
-            {
-                if(facingUp && facingLeft || facingDown && facingLeft || facingLeft)
-                {
-                    player.animations.play('attackLeft');
-                    this.shootFireball();
-                }
-                else if(facingUp && facingRight || facingDown && facingRight || facingRight)
-                {
-                    player.animations.play('attackRight');
-                    this.shootFireball();
-                }
-                else if(facingUp)
-                {
-                    player.animations.play('attackUp');
-                    this.shootFireball();
-                }
-                else if(facingDown)
-                {
-                    player.animations.play('attackDown');
-                    this.shootFireball();
-                }
-            }
-            
-            if(player.y <= enemy_up.y + 5 && player.y >= enemy_up.y - 500 && player.x <= enemy_up.x + 100 && player.x >= enemy_up.x - 100)
-               {
-                   enemy_up.animations.play('fireUp');
-                   elfTween_up.pause();
-                   this.shootArrowUp();
-               }
-            else
-               {
-                   enemy_up.animations.play('walkUp');
-                   elfTween_up.resume();
-               }
-            
-            if(player.y <= enemy_up1.y + 5 && player.y >= enemy_up1.y - 500 && player.x <= enemy_up1.x + 100 && player.x >= enemy_up1.x - 100)
-               {
-                   enemy_up1.animations.play('fireUp');
-                   elfTween_up1.pause();
-                   this.shootArrowUp1();
-               }
-            else
-               {
-                   enemy_up1.animations.play('walkUp');
-                   elfTween_up1.resume();
-               }
-            
-            if(player.y <= enemy_up2.y + 5 && player.y >= enemy_up2.y - 500 && player.x <= enemy_up2.x + 100 && player.x >= enemy_up2.x - 100)
-               {
-                   enemy_up2.animations.play('fireUp');
-                   elfTween_up2.pause();
-                   this.shootArrowUp2();
-               }
-            else
-               {
-                   enemy_up2.animations.play('walkUp');
-                   elfTween_up2.resume();
-               }
-            
-            if(player.y <= enemy_up3.y + 5 && player.y >= enemy_up3.y - 500 && player.x <= enemy_up3.x + 100 && player.x >= enemy_up3.x - 100)
-               {
-                   enemy_up3.animations.play('fireUp');
-                   elfTween_up3.pause();
-                   this.shootArrowUp3();
-               }
-            else
-               {
-                   enemy_up3.animations.play('walkUp');
-                   elfTween_up3.resume();
-               }
-            
-            if(player.y <= enemy_up4.y + 5 && player.y >= enemy_up4.y - 500 && player.x <= enemy_up4.x + 100 && player.x >= enemy_up4.x - 100)
-               {
-                   enemy_up4.animations.play('fireUp');
-                   elfTween_up4.pause();
-                   this.shootArrowUp4();
-               }
-            else
-               {
-                   enemy_up4.animations.play('walkUp');
-                   elfTween_up4.resume();
-               }
-            
-            if(player.x <= enemy_left.x + 5 && player.x >= enemy_left.x - 500 && player.y <= enemy_left.y + 100 && player.y >= enemy_left.y - 100)
-               {
-                   enemy_left.animations.play('fireLeft');
-                   elfTween_left.pause();
-                   this.shootArrowLeft();
-               }
-            else
-               {
-                   enemy_left.animations.play('walkLeft');
-                   elfTween_left.resume();
-               }
-            
-            if(player.x <= enemy_left1.x + 5 && player.x >= enemy_left1.x - 500 && player.y <= enemy_left1.y + 100 && player.y >= enemy_left1.y - 100)
-               {
-                   enemy_left1.animations.play('fireLeft');
-                   elfTween_left1.pause();
-                   this.shootArrowLeft1();
-               }
-            else
-               {
-                   enemy_left1.animations.play('walkLeft');
-                   elfTween_left1.resume();
-               }
-            
-            if(player.x <= enemy_left2.x + 5 && player.x >= enemy_left2.x - 500 && player.y <= enemy_left2.y + 100 && player.y >= enemy_left2.y - 100)
-               {
-                   enemy_left2.animations.play('fireLeft');
-                   elfTween_left2.pause();
-                   this.shootArrowLeft2();
-               }
-            else
-               {
-                   enemy_left2.animations.play('walkLeft');
-                   elfTween_left2.resume();
-               }
-            
-            if(player.x <= enemy_left3.x + 5 && player.x >= enemy_left3.x - 500 && player.y <= enemy_left3.y + 100 && player.y >= enemy_left3.y - 100)
-               {
-                   enemy_left3.animations.play('fireLeft');
-                   elfTween_left3.pause();
-                   this.shootArrowLeft3();
-               }
-            else
-               {
-                   enemy_left3.animations.play('walkLeft');
-                   elfTween_left3.resume();
-               }
-            
-            if(player.x <= enemy_left4.x + 5 && player.x >= enemy_left4.x - 500 && player.y <= enemy_left4.y + 100 && player.y >= enemy_left4.y - 100)
-               {
-                   enemy_left4.animations.play('fireLeft');
-                   elfTween_left4.pause();
-                   this.shootArrowLeft4();
-               }
-            else
-               {
-                   enemy_left4.animations.play('walkLeft');
-                   elfTween_left4.resume();
-               }
-            
-            if(player.y <= enemy_down.y + 500 && player.y >= enemy_down.y - 5 && player.x <= enemy_down.x + 100 && player.x >= enemy_down.x - 100)
-               {
-                   enemy_down.animations.play('fireDown');
-                   elfTween_down.pause();
-                   this.shootArrowDown();
-               }
-            else
-               {
-                   enemy_down.animations.play('walkDown');
-                   elfTween_down.resume();
-               }
-            
-            if(player.y <= enemy_down1.y + 500 && player.y >= enemy_down1.y - 5 && player.x <= enemy_down1.x + 100 && player.x >= enemy_down1.x - 100)
-               {
-                  enemy_down1.animations.play('fireDown');
-                   elfTween_down1.pause();;
-                   this.shootArrowDown1();
-              }
-            else
-              {
-                   enemy_down1.animations.play('walkDown');
-                   elfTween_down1.resume();
-              }
-            
-            if(player.y <= enemy_down2.y + 500 && player.y >= enemy_down2.y - 5 && player.x <= enemy_down2.x + 100 && player.x >= enemy_down2.x - 100)
-               {
-                  enemy_down2.animations.play('fireDown');
-                   elfTween_down2.pause();
-                   this.shootArrowDown2();
-              }
-            else
-              {
-                   enemy_down2.animations.play('walkDown');
-                   elfTween_down2.resume();
-              }
-            
-                        
-            if(player.y <= enemy_down3.y + 500 && player.y >= enemy_down3.y - 5 && player.x <= enemy_down3.x + 100 && player.x >= enemy_down3.x - 100)
-               {
-                  enemy_down3.animations.play('fireDown');
-                   elfTween_down3.pause();
-                   this.shootArrowDown3();
-              }
-            else
-              {
-                   enemy_down3.animations.play('walkDown');
-                   elfTween_down3.resume();
-              }
-            
-                        
-            if(player.y <= enemy_down4.y + 500 && player.y >= enemy_down4.y - 5 && player.x <= enemy_down4.x + 100 && player.x >= enemy_down4.x - 100)
-               {
-                  enemy_down4.animations.play('fireDown');
-                   elfTween_down4.pause();
-                   this.shootArrowDown4();
-              }
-            else
-              {
-                   enemy_down4.animations.play('walkDown');
-                   elfTween_down4.resume();
-              }
-            
-                        
-            if(player.y <= enemy_down5.y + 500 && player.y >= enemy_down5.y - 5 && player.x <= enemy_down5.x + 100 && player.x >= enemy_down5.x - 100)
-               {
-                  enemy_down5.animations.play('fireDown');
-                   elfTween_down5.pause();;
-                   this.shootArrowDown5();
-              }
-            else
-              {
-                   enemy_down5.animations.play('walkDown');
-                   elfTween_down5.resume();
-              }
-            
-            if(player.x <= enemy_right.x + 500 && player.x >= enemy_right.x - 5 && player.y <= enemy_right.y + 100 && player.y >= enemy_right.y - 100)
-               {
-                   enemy_right.animations.play('fireRight');
-                   elfTween_right.pause();
-                   this.shootArrowRight();
-               }
-            else
-               {
-                   enemy_right.animations.play('walkRight');
-                   elfTween_right.resume();
-               }
-            
-            if(player.x <= enemy_right1.x + 500 && player.x >= enemy_right1.x - 5 && player.y <= enemy_right1.y + 100 && player.y >= enemy_right1.y - 100)
-               {
-                   enemy_right1.animations.play('fireRight');
-                   elfTween_right1.pause();
-                   this.shootArrowRight1();
-               }
-            else
-               {
-                   enemy_right1.animations.play('walkRight');
-                   elfTween_right1.resume();
-               }
-            
-            if(player.x <= enemy_right2.x + 500 && player.x >= enemy_right2.x - 5 && player.y <= enemy_right2.y + 100 && player.y >= enemy_right2.y - 100)
-               {
-                   enemy_right2.animations.play('fireRight');
-                   elfTween_right2.pause();
-                   this.shootArrowRight2();
-               }
-            else
-               {
-                   enemy_right2.animations.play('walkRight');
-                   elfTween_right2.resume();
-               }
-            
-            if(player.x <= enemy_right3.x + 500 && player.x >= enemy_right3.x - 5 && player.y <= enemy_right3.y + 100 && player.y >= enemy_right3.y - 100)
-               {
-                   enemy_right3.animations.play('fireRight');
-                   elfTween_right3.pause();
-                   this.shootArrowRight3();
-               }
-            else
-               {
-                   enemy_right3.animations.play('walkRight');
-                   elfTween_right3.resume();
-               }
+            facingUp = false;
+            facingLeft = true;
+            facingDown = true;
+            facingRight = false;
 
         }
+
+        else if(controls.down.isDown && controls.right.isDown)
+        {
+            player.animations.play('walkRight');
+            player.body.velocity.y = 140;
+            player.body.velocity.x = 140;
+
+            facingUp = false;
+            facingLeft = false;
+            facingDown = true;
+            facingRight = true;
+
+        }
+
+        else if (controls.up.isDown)
+        {
+            player.animations.play('walkUp');
+            player.body.velocity.y = -140;
+
+            facingUp = true;
+            facingLeft = false;
+            facingDown = false;
+            facingRight = false;
+        }
+
+        else if(controls.down.isDown)
+        {
+            player.animations.play('walkDown');
+            player.body.velocity.y = 140;
+
+            facingUp = false;
+            facingLeft = false;
+            facingDown = true;
+            facingRight = false;
+        }
+
+        else if(controls.left.isDown)
+        {
+            player.animations.play('walkLeft');
+            player.body.velocity.x = -140;
+
+            facingUp = false;
+            facingLeft = true;
+            facingDown = false;
+            facingRight = false;
+        }
+
+        else if(controls.right.isDown)
+        {
+            player.animations.play('walkRight');
+            player.body.velocity.x = 140;
+
+            facingUp = false;
+            facingLeft = false;
+            facingDown = false;
+            facingRight = true;
+        }
+
+       if(this.game.input.activePointer.leftButton.isDown)
+        {
+            if(facingUp && facingLeft || facingDown && facingLeft || facingLeft)
+            {
+                player.animations.play('attackLeft');
+                this.shootFireball();
+            }
+            else if(facingUp && facingRight || facingDown && facingRight || facingRight)
+            {
+                player.animations.play('attackRight');
+                this.shootFireball();
+            }
+            else if(facingUp)
+            {
+                player.animations.play('attackUp');
+                this.shootFireball();
+            }
+            else if(facingDown)
+            {
+                player.animations.play('attackDown');
+                this.shootFireball();
+            }
+        }
+
+        if(player.y <= enemy_up.y + 5 && player.y >= enemy_up.y - 500 && player.x <= enemy_up.x + 100 && player.x >= enemy_up.x - 100)
+           {
+               enemy_up.animations.play('fireUp');
+               elfTween_up.pause();
+               this.shootArrowUp();
+           }
+        else
+           {
+               enemy_up.animations.play('walkUp');
+               elfTween_up.resume();
+           }
+
+        if(player.y <= enemy_up1.y + 5 && player.y >= enemy_up1.y - 500 && player.x <= enemy_up1.x + 100 && player.x >= enemy_up1.x - 100)
+           {
+               enemy_up1.animations.play('fireUp');
+               elfTween_up1.pause();
+               this.shootArrowUp1();
+           }
+        else
+           {
+               enemy_up1.animations.play('walkUp');
+               elfTween_up1.resume();
+           }
+
+        if(player.y <= enemy_up2.y + 5 && player.y >= enemy_up2.y - 500 && player.x <= enemy_up2.x + 100 && player.x >= enemy_up2.x - 100)
+           {
+               enemy_up2.animations.play('fireUp');
+               elfTween_up2.pause();
+               this.shootArrowUp2();
+           }
+        else
+           {
+               enemy_up2.animations.play('walkUp');
+               elfTween_up2.resume();
+           }
+
+        if(player.y <= enemy_up3.y + 5 && player.y >= enemy_up3.y - 500 && player.x <= enemy_up3.x + 100 && player.x >= enemy_up3.x - 100)
+           {
+               enemy_up3.animations.play('fireUp');
+               elfTween_up3.pause();
+               this.shootArrowUp3();
+           }
+        else
+           {
+               enemy_up3.animations.play('walkUp');
+               elfTween_up3.resume();
+           }
+
+        if(player.y <= enemy_up4.y + 5 && player.y >= enemy_up4.y - 500 && player.x <= enemy_up4.x + 100 && player.x >= enemy_up4.x - 100)
+           {
+               enemy_up4.animations.play('fireUp');
+               elfTween_up4.pause();
+               this.shootArrowUp4();
+           }
+        else
+           {
+               enemy_up4.animations.play('walkUp');
+               elfTween_up4.resume();
+           }
+
+        if(player.x <= enemy_left.x + 5 && player.x >= enemy_left.x - 500 && player.y <= enemy_left.y + 100 && player.y >= enemy_left.y - 100)
+           {
+               enemy_left.animations.play('fireLeft');
+               elfTween_left.pause();
+               this.shootArrowLeft();
+           }
+        else
+           {
+               enemy_left.animations.play('walkLeft');
+               elfTween_left.resume();
+           }
+
+        if(player.x <= enemy_left1.x + 5 && player.x >= enemy_left1.x - 500 && player.y <= enemy_left1.y + 100 && player.y >= enemy_left1.y - 100)
+           {
+               enemy_left1.animations.play('fireLeft');
+               elfTween_left1.pause();
+               this.shootArrowLeft1();
+           }
+        else
+           {
+               enemy_left1.animations.play('walkLeft');
+               elfTween_left1.resume();
+           }
+
+        if(player.x <= enemy_left2.x + 5 && player.x >= enemy_left2.x - 500 && player.y <= enemy_left2.y + 100 && player.y >= enemy_left2.y - 100)
+           {
+               enemy_left2.animations.play('fireLeft');
+               elfTween_left2.pause();
+               this.shootArrowLeft2();
+           }
+        else
+           {
+               enemy_left2.animations.play('walkLeft');
+               elfTween_left2.resume();
+           }
+
+        if(player.x <= enemy_left3.x + 5 && player.x >= enemy_left3.x - 500 && player.y <= enemy_left3.y + 100 && player.y >= enemy_left3.y - 100)
+           {
+               enemy_left3.animations.play('fireLeft');
+               elfTween_left3.pause();
+               this.shootArrowLeft3();
+           }
+        else
+           {
+               enemy_left3.animations.play('walkLeft');
+               elfTween_left3.resume();
+           }
+
+        if(player.x <= enemy_left4.x + 5 && player.x >= enemy_left4.x - 500 && player.y <= enemy_left4.y + 100 && player.y >= enemy_left4.y - 100)
+           {
+               enemy_left4.animations.play('fireLeft');
+               elfTween_left4.pause();
+               this.shootArrowLeft4();
+           }
+        else
+           {
+               enemy_left4.animations.play('walkLeft');
+               elfTween_left4.resume();
+           }
+
+        if(player.y <= enemy_down.y + 500 && player.y >= enemy_down.y - 5 && player.x <= enemy_down.x + 100 && player.x >= enemy_down.x - 100)
+           {
+               enemy_down.animations.play('fireDown');
+               elfTween_down.pause();
+               this.shootArrowDown();
+           }
+        else
+           {
+               enemy_down.animations.play('walkDown');
+               elfTween_down.resume();
+           }
+
+        if(player.y <= enemy_down1.y + 500 && player.y >= enemy_down1.y - 5 && player.x <= enemy_down1.x + 100 && player.x >= enemy_down1.x - 100)
+           {
+              enemy_down1.animations.play('fireDown');
+               elfTween_down1.pause();;
+               this.shootArrowDown1();
+          }
+        else
+          {
+               enemy_down1.animations.play('walkDown');
+               elfTween_down1.resume();
+          }
+
+        if(player.y <= enemy_down2.y + 500 && player.y >= enemy_down2.y - 5 && player.x <= enemy_down2.x + 100 && player.x >= enemy_down2.x - 100)
+           {
+              enemy_down2.animations.play('fireDown');
+               elfTween_down2.pause();
+               this.shootArrowDown2();
+          }
+        else
+          {
+               enemy_down2.animations.play('walkDown');
+               elfTween_down2.resume();
+          }
+
+
+        if(player.y <= enemy_down3.y + 500 && player.y >= enemy_down3.y - 5 && player.x <= enemy_down3.x + 100 && player.x >= enemy_down3.x - 100)
+           {
+              enemy_down3.animations.play('fireDown');
+               elfTween_down3.pause();
+               this.shootArrowDown3();
+          }
+        else
+          {
+               enemy_down3.animations.play('walkDown');
+               elfTween_down3.resume();
+          }
+
+
+        if(player.y <= enemy_down4.y + 500 && player.y >= enemy_down4.y - 5 && player.x <= enemy_down4.x + 100 && player.x >= enemy_down4.x - 100)
+           {
+              enemy_down4.animations.play('fireDown');
+               elfTween_down4.pause();
+               this.shootArrowDown4();
+          }
+        else
+          {
+               enemy_down4.animations.play('walkDown');
+               elfTween_down4.resume();
+          }
+
+
+        if(player.y <= enemy_down5.y + 500 && player.y >= enemy_down5.y - 5 && player.x <= enemy_down5.x + 100 && player.x >= enemy_down5.x - 100)
+           {
+              enemy_down5.animations.play('fireDown');
+               elfTween_down5.pause();;
+               this.shootArrowDown5();
+          }
+        else
+          {
+               enemy_down5.animations.play('walkDown');
+               elfTween_down5.resume();
+          }
+
+        if(player.x <= enemy_right.x + 500 && player.x >= enemy_right.x - 5 && player.y <= enemy_right.y + 100 && player.y >= enemy_right.y - 100)
+           {
+               enemy_right.animations.play('fireRight');
+               elfTween_right.pause();
+               this.shootArrowRight();
+           }
+        else
+           {
+               enemy_right.animations.play('walkRight');
+               elfTween_right.resume();
+           }
+
+        if(player.x <= enemy_right1.x + 500 && player.x >= enemy_right1.x - 5 && player.y <= enemy_right1.y + 100 && player.y >= enemy_right1.y - 100)
+           {
+               enemy_right1.animations.play('fireRight');
+               elfTween_right1.pause();
+               this.shootArrowRight1();
+           }
+        else
+           {
+               enemy_right1.animations.play('walkRight');
+               elfTween_right1.resume();
+           }
+
+        if(player.x <= enemy_right2.x + 500 && player.x >= enemy_right2.x - 5 && player.y <= enemy_right2.y + 100 && player.y >= enemy_right2.y - 100)
+           {
+               enemy_right2.animations.play('fireRight');
+               elfTween_right2.pause();
+               this.shootArrowRight2();
+           }
+        else
+           {
+               enemy_right2.animations.play('walkRight');
+               elfTween_right2.resume();
+           }
+
+        if(player.x <= enemy_right3.x + 500 && player.x >= enemy_right3.x - 5 && player.y <= enemy_right3.y + 100 && player.y >= enemy_right3.y - 100)
+           {
+               enemy_right3.animations.play('fireRight');
+               elfTween_right3.pause();
+               this.shootArrowRight3();
+           }
+        else
+           {
+               enemy_right3.animations.play('walkRight');
+               elfTween_right3.resume();
+           }
 },
     enemyDownMove : function (fireball, enemy_right)
     {
@@ -1175,8 +1177,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowUp)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_up.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_up.alive)
             {
                 arrow.reset(enemy_up.x, enemy_up.y);
                 arrow.angle = 180;
@@ -1191,8 +1193,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowUp)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_up1.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_up1.alive)
             {
                 arrow.reset(enemy_up1.x, enemy_up1.y);
                 arrow.angle = 180;
@@ -1207,8 +1209,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowUp)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_up2.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_up2.alive)
             {
                 arrow.reset(enemy_up2.x, enemy_up2.y);
                 arrow.angle = 180;
@@ -1223,8 +1225,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowUp)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_up3.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_up3.alive)
             {
                 arrow.reset(enemy_up3.x, enemy_up3.y);
                 arrow.angle = 180;
@@ -1239,8 +1241,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowUp)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_up4.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_up4.alive)
             {
                 arrow.reset(enemy_up4.x, enemy_up4.y);
                 arrow.angle = 180;
@@ -1255,8 +1257,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowLeft)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_left.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_left.alive)
             {
                 arrow.reset(enemy_left.x, enemy_left.y);
                 arrow.angle = 180;
@@ -1271,8 +1273,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowLeft)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_left1.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_left1.alive)
             {
                 arrow.reset(enemy_left1.x, enemy_left1.y);
                 arrow.angle = 180;
@@ -1287,8 +1289,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowLeft)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_left2.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_left2.alive)
             {
                 arrow.reset(enemy_left2.x, enemy_left2.y);
                 arrow.angle = 180;
@@ -1303,8 +1305,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowLeft)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_left3.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_left3.alive)
             {
                 arrow.reset(enemy_left3.x, enemy_left3.y);
                 arrow.angle = 180;
@@ -1319,8 +1321,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowLeft)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_left4.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_left4.alive)
             {
                 arrow.reset(enemy_left4.x, enemy_left4.y);
                 arrow.angle = 180;
@@ -1335,8 +1337,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowDown)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_down.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_down.alive)
             {
                 arrow.reset(enemy_down.x, enemy_down.y);
                 arrow.angle = 180;
@@ -1351,8 +1353,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowDown)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_down1.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_down1.alive)
             {
                 arrow.reset(enemy_down1.x, enemy_down1.y);
                 arrow.angle = 180;
@@ -1367,8 +1369,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowDown)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_down2.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_down2.alive)
             {
                 arrow.reset(enemy_down2.x, enemy_down2.y);
                 arrow.angle = 180;
@@ -1383,8 +1385,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowDown)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_down3.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_down3.alive)
             {
                 arrow.reset(enemy_down3.x, enemy_down3.y);
                 arrow.angle = 180;
@@ -1399,8 +1401,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowDown)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_down4.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_down4.alive)
             {
                 arrow.reset(enemy_down4.x, enemy_down4.y);
                 arrow.angle = 180;
@@ -1415,8 +1417,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowDown)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_down5.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_down5.alive)
             {
                 arrow.reset(enemy_down5.x, enemy_down5.y);
                 arrow.angle = 180;
@@ -1431,8 +1433,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowRight)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_right.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_right.alive)
             {
                 arrow.reset(enemy_right.x, enemy_right.y);
                 arrow.angle = 180;
@@ -1447,8 +1449,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowRight)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_right1.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_right1.alive)
             {
                 arrow.reset(enemy_right1.x, enemy_right1.y);
                 arrow.angle = 180;
@@ -1463,8 +1465,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowRight)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_right2.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_right2.alive)
             {
                 arrow.reset(enemy_right2.x, enemy_right2.y);
                 arrow.angle = 180;
@@ -1479,8 +1481,8 @@ var tower_level =
     {
         if(this.game.time.now > fireArrowRight)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_right3.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_right3.alive)
             {
                 arrow.reset(enemy_right3.x, enemy_right3.y);
                 arrow.angle = 180;
@@ -1496,10 +1498,11 @@ var tower_level =
         arrowTrap.angle = 270;
         arrowTrap1.angle = 270;
         arrowTrap2.angle = 270;
+        
         if(this.game.time.now > fireArrowTrap)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow)
+            arrow = arrows.getFirstExists(false);
+            if (arrow)
             {
                 arrow.reset(arrowTrap.x, arrowTrap.y);
                 arrow.angle = 90;
@@ -1510,8 +1513,8 @@ var tower_level =
         
         if(this.game.time.now > fireArrowTrap1)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow)
+            arrow = arrows.getFirstExists(false);
+            if (arrow)
             {
                 arrow.reset(arrowTrap1.x, arrowTrap1.y);
                 arrow.angle = 90;
@@ -1522,16 +1525,15 @@ var tower_level =
         
         if(this.game.time.now > fireArrowTrap2)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow)
+            arrow = arrows.getFirstExists(false);
+            if (arrow)
             {
                 arrow.reset(arrowTrap2.x, arrowTrap2.y);
                 arrow.angle = 90;
                 arrow.body.velocity.y = +100;
                 fireArrowTrap2 = this.game.time.now + 2000;
             }
-       } 
-                
+       }           
     },
     
     arrowHitsPlayer : function(player, arrow)
@@ -1548,16 +1550,20 @@ var tower_level =
         if(player_lives.countLiving() < 1)
         {
             player.animations.play('death');
+            arrows.kill();
             controls.up.enabled=false;
             controls.left.enabled=false;
             controls.down.enabled=false;
-            controls.right.enabled=false; 
-            //game.state.restart();
-            //game.time.events.add(Phaser.Timer.SECOND * 4, this.respawnPlayer(), this);
-            
-        } 
+            controls.right.enabled=false;
+            game.add.tween(player).to( { alpha: 0 }, 2500, Phaser.Easing.Linear.None, true); 
+        }
     },
-      
+    
+    arrowOrFireballHitWall : function(arrow, fireball)
+    {
+        arrow.kill();
+    },
+     
     collectCoin : function(player,coin)
     {
         coin.kill();
@@ -1565,13 +1571,13 @@ var tower_level =
         coinScoreText.text = coinScoreString + coinScore;
     },
     
-    collectSilverKey : function(player,silverKey)
+    collectSilverKey : function(player, silverKey)
     {
         silverKey.kill();
         world_towerLevel.layer_doors.kill();
     },
     
-    collectGoldKey : function(player,goldKey)
+    collectGoldKey : function(player, goldKey)
     {
         goldKey.kill();
         objective_text2.kill();
@@ -1613,5 +1619,10 @@ var tower_level =
             coinScoreText.text = coinScoreString + coinScore;
             player_lives.callAll('revive');        
         }
+    },
+    
+    respawnPlayer : function()
+    {
+        game.state.restart();
     },
 };

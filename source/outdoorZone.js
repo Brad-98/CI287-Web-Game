@@ -45,8 +45,6 @@ var merchant9;
 var merchant10;
 var merchant11;
 var heartOutline;
-var timer;
-
 
 var world_outdoorZone = 
 {
@@ -76,11 +74,8 @@ function buildWorld_outdoorZone (game, world)
     world_outdoorZone.map.setCollisionBetween(75, 78, true, world_outdoorZone.layer_walls);
     world_outdoorZone.map.setCollisionBetween(93, 96, true, world_outdoorZone.layer_walls);
     world_outdoorZone.map.setCollisionBetween(102, 105, true, world_outdoorZone.layer_walls);
-    //world_outdoorZone.map.setTileIndexCallback([5, 16], this.gotoTowerLevel, this ,world_outdoorZone.layer_tower);
-    //world_outdoorZone.layer_walls.debug = true;
-    
+    //world_outdoorZone.layer_walls.debug = true; 
 }   
-
 
 var outdoorZone =
 {
@@ -122,8 +117,7 @@ var outdoorZone =
         //    this.elfTween = game.add.tween(this.enemy).to({
        //         y:this.enemy.y+100
         //    },2000,'Linear',true,0,100,true);
-       // };
-        
+       // };   
     },  
     
     create : function()
@@ -157,7 +151,7 @@ var outdoorZone =
         merchant11 = this.game.add.sprite(2430, 640, 'merchant');
         var guardText = this.game.add.text(2400, 620, "Watch Out Guards Ahead", {font: '13px Arial', fill: '#ffffff'});
         
-        arrowTrap = this.game.add.sprite(3000, 50, 'arrowTrap');
+        //arrowTrap = this.game.add.sprite(3000, 50, 'arrowTrap');
         
         //coins = this.game.add.group();
         //this.createCoins();
@@ -190,7 +184,7 @@ var outdoorZone =
         arrows.setAll('checkWorldBounds', true);
         
         //Player Code
-        player = this.game.add.sprite(1770, 2050, 'player');
+        player = this.game.add.sprite(3200, 100, 'player');
  
         player.animations.add('walkUp', [0, 1, 2, 3, 4, 5, 6, 7, 8], 8, false);
         
@@ -279,175 +273,180 @@ var outdoorZone =
     
     update : function()
     {  
-        if(player.alive)
+        this.game.physics.arcade.collide(player, arrows, this.arrowHitsPlayer);
+        this.game.physics.arcade.collide(player, world_outdoorZone.layer_walls);
+        this.game.physics.arcade.collide(player, coins, this.collectCoin);
+        this.game.physics.arcade.collide(player, this.towerSprite, this.gotoTowerLevel);
+        this.game.physics.arcade.collide(fireballs, enemy_elf_down, this.fireballHitEnemyDown);
+        this.game.physics.arcade.collide(fireballs, enemy_elf_up, this.fireballHitEnemyUp);
+        this.game.physics.arcade.collide(fireballs, enemy_elf_left, this.fireballHitEnemyLeft);
+        this.game.physics.arcade.collide(fireballs, enemy_elf_right, this.fireballHitEnemyRight);
+
+        if(player_lives.countLiving() < 1)
         {
-            this.game.physics.arcade.collide(player, arrows, this.arrowHitsPlayer);
-            this.game.physics.arcade.collide(player, world_outdoorZone.layer_walls);
-            this.game.physics.arcade.collide(player, coins, this.collectCoin);
-            this.game.physics.arcade.collide(player, this.towerSprite, this.gotoTowerLevel);
-            this.game.physics.arcade.collide(fireballs, enemy_elf_down, this.fireballHitEnemyDown);
-            this.game.physics.arcade.collide(fireballs, enemy_elf_up, this.fireballHitEnemyUp);
-            this.game.physics.arcade.collide(fireballs, enemy_elf_left, this.fireballHitEnemyLeft);
-            this.game.physics.arcade.collide(fireballs, enemy_elf_right, this.fireballHitEnemyRight);
-            
-            
-            player.body.velocity.set(0);
-
-            if(controls.up.isDown && controls.left.isDown)
-            {
-                player.animations.play('walkLeft');
-                player.body.velocity.y = -140;
-                player.body.velocity.x = -140;
-
-                facingUp = true;
-                facingLeft = true;
-                facingDown = false;
-                facingRight = false;
-            }
-
-            else if(controls.up.isDown && controls.right.isDown)
-            {
-                player.animations.play('walkRight');
-                player.body.velocity.y = -140;
-                player.body.velocity.x = 140;
-
-                facingUp = true;
-                facingLeft = false;
-                facingDown = false;
-                facingRight = true;
-            }
-
-            else if(controls.down.isDown && controls.left.isDown)
-            {
-                player.animations.play('walkLeft');
-                player.body.velocity.y = 140;
-                player.body.velocity.x = -140;
-
-                facingUp = false;
-                facingLeft = true;
-                facingDown = true;
-                facingRight = false;
-            }
-
-            else if(controls.down.isDown && controls.right.isDown)
-            {
-                player.animations.play('walkRight');
-                player.body.velocity.y = 140;
-                player.body.velocity.x = 140;
-
-                facingUp = false;
-                facingLeft = false;
-                facingDown = true;
-                facingRight = true;
-            }
-
-            else if (controls.up.isDown)
-            {
-                player.animations.play('walkUp');
-                player.body.velocity.y = -140;
-
-                facingUp = true;
-                facingLeft = false;
-                facingDown = false;
-                facingRight = false;
-            }
-
-            else if(controls.down.isDown)
-            {
-                player.animations.play('walkDown');
-                player.body.velocity.y = 140;
-
-                facingUp = false;
-                facingLeft = false;
-                facingDown = true;
-                facingRight = false;
-            }
-
-            else if(controls.left.isDown)
-            {
-                player.animations.play('walkLeft');
-                player.body.velocity.x = -140;
-
-                facingUp = false;
-                facingLeft = true;
-                facingDown = false;
-                facingRight = false;
-            }
-
-            else if(controls.right.isDown)
-            {
-                player.animations.play('walkRight');
-                player.body.velocity.x = 140;
-
-                facingUp = false;
-                facingLeft = false;
-                facingDown = false;
-                facingRight = true;
-            }
-
-            if(this.game.input.activePointer.leftButton.isDown)
-            {
-                if(facingUp && facingLeft || facingDown && facingLeft || facingLeft)
-                {
-                    player.animations.play('attackLeft');
-                    this.shootFireball();
-                }
-                else if(facingUp && facingRight || facingDown && facingRight || facingRight)
-                {
-                    player.animations.play('attackRight');
-                    this.shootFireball();
-                }
-                else if(facingUp)
-                {
-                    player.animations.play('attackUp');
-                    this.shootFireball();
-                }
-                else if(facingDown)
-                {
-                    player.animations.play('attackDown');
-                    this.shootFireball();
-                }
-            }
-            
-            
-            if(player.x <= enemy_left.x + 5 && player.x >= enemy_left.x - 500 && player.y <= enemy_left.y + 100 && player.y >= enemy_left.y - 100)
-               {
-                   enemy_elf_left.callAll('play', null, 'fireLeft');
-                   elfTween_left.pause();
-                   enemy_elf_left.forEach(this.shootArrowLeft, enemy_elf_left);
-               }
-            else
-               {
-                   enemy_elf_left.callAll('play', null, 'walkLeft');
-                   elfTween_left.resume();
-               }
-            
-            if(player.y <= enemy_down.y + 500 && player.y >= enemy_down.y - 5 && player.x <= enemy_down.x + 100 && player.x >= enemy_down.x - 100)
-               {
-                   enemy_elf_down.callAll('play', null, 'fireDown');
-                   elfTween_down.pause(enemy_elf_down);
-                   //enemy_elf_down.callAll(this.shootArrow());
-                   //this.shootArrowDown(this);
-                   enemy_elf_down.forEach(this.shootArrowDown, enemy_elf_down);
-               }
-            else
-               {
-                   enemy_elf_down.callAll('play', null, 'walkDown');
-                   elfTween_down.resume();
-               }
-            
-            if(player.x <= enemy_right.x + 500 && player.x >= enemy_right.x - 5 && player.y <= enemy_right.y + 100 && player.y >= enemy_right.y - 100)
-               {
-                   enemy_elf_right.callAll('play', null, 'fireRight');
-                   elfTween_right.pause();
-                   enemy_elf_right.forEach(this.shootArrowRight, enemy_elf_right);
-               }
-            else
-               {
-                   enemy_elf_right.callAll('play', null, 'walkRight');
-                   elfTween_right.resume();
-               }
+            game.time.events.add(3000, this.respawnPlayer, this.player);
         }
+
+        player.body.velocity.set(0);
+
+        if(controls.up.isDown && controls.left.isDown)
+        {
+            player.animations.play('walkLeft');
+            player.body.velocity.y = -140;
+            player.body.velocity.x = -140;
+
+            facingUp = true;
+            facingLeft = true;
+            facingDown = false;
+            facingRight = false;
+        }
+
+        else if(controls.up.isDown && controls.right.isDown)
+        {
+            player.animations.play('walkRight');
+            player.body.velocity.y = -140;
+            player.body.velocity.x = 140;
+
+            facingUp = true;
+            facingLeft = false;
+            facingDown = false;
+            facingRight = true;
+        }
+
+        else if(controls.down.isDown && controls.left.isDown)
+        {
+            player.animations.play('walkLeft');
+            player.body.velocity.y = 140;
+            player.body.velocity.x = -140;
+
+            facingUp = false;
+            facingLeft = true;
+            facingDown = true;
+            facingRight = false;
+        }
+
+        else if(controls.down.isDown && controls.right.isDown)
+        {
+            player.animations.play('walkRight');
+            player.body.velocity.y = 140;
+            player.body.velocity.x = 140;
+
+            facingUp = false;
+            facingLeft = false;
+            facingDown = true;
+            facingRight = true;
+        }
+
+        else if (controls.up.isDown)
+        {
+            player.animations.play('walkUp');
+            player.body.velocity.y = -140;
+
+            facingUp = true;
+            facingLeft = false;
+            facingDown = false;
+            facingRight = false;
+        }
+
+        else if(controls.down.isDown)
+        {
+            player.animations.play('walkDown');
+            player.body.velocity.y = 140;
+
+            facingUp = false;
+            facingLeft = false;
+            facingDown = true;
+            facingRight = false;
+        }
+
+        else if(controls.left.isDown)
+        {
+            player.animations.play('walkLeft');
+            player.body.velocity.x = -140;
+
+            facingUp = false;
+            facingLeft = true;
+            facingDown = false;
+            facingRight = false;
+        }
+
+        else if(controls.right.isDown)
+        {
+            player.animations.play('walkRight');
+            player.body.velocity.x = 140;
+
+            facingUp = false;
+            facingLeft = false;
+            facingDown = false;
+            facingRight = true;
+        }
+
+        if(this.game.input.activePointer.leftButton.isDown)
+        {
+            if(facingUp && facingLeft || facingDown && facingLeft || facingLeft)
+            {
+                player.animations.play('attackLeft');
+                this.shootFireball();
+            }
+            
+            else if(facingUp && facingRight || facingDown && facingRight || facingRight)
+            {
+                player.animations.play('attackRight');
+                this.shootFireball();
+            }
+            
+            else if(facingUp)
+            {
+                player.animations.play('attackUp');
+                this.shootFireball();
+            }
+            
+            else if(facingDown)
+            {
+                player.animations.play('attackDown');
+                this.shootFireball();
+            }
+        }
+        
+        if(player.x <= enemy_left.x + 5 && player.x >= enemy_left.x - 500 && player.y <= enemy_left.y + 100 && player.y >= enemy_left.y - 100)
+           {
+               enemy_elf_left.callAll('play', null, 'fireLeft');
+               elfTween_left.pause();
+               enemy_elf_left.forEach(this.shootArrowLeft, enemy_elf_left);
+           }
+        
+        else
+           {
+               enemy_elf_left.callAll('play', null, 'walkLeft');
+               elfTween_left.resume();
+           }
+        if(player.y <= enemy_down.y + 500 && player.y >= enemy_down.y - 5 && player.x <= enemy_down.x + 100 && player.x >= enemy_down.x - 100)
+           {
+               enemy_elf_down.callAll('play', null, 'fireDown');
+               elfTween_down.pause(enemy_elf_down);
+               //enemy_elf_down.callAll(this.shootArrow());
+               //this.shootArrowDown(this);
+               enemy_elf_down.forEach(this.shootArrowDown, enemy_elf_down);
+           }
+        
+        else
+           {
+               enemy_elf_down.callAll('play', null, 'walkDown');
+               elfTween_down.resume();
+           }
+
+        if(player.x <= enemy_right.x + 500 && player.x >= enemy_right.x - 5 && player.y <= enemy_right.y + 100 && player.y >= enemy_right.y - 100)
+           {
+               enemy_elf_right.callAll('play', null, 'fireRight');
+               elfTween_right.pause();
+               enemy_elf_right.forEach(this.shootArrowRight, enemy_elf_right);
+           }
+        
+        else
+           {
+               enemy_elf_right.callAll('play', null, 'walkRight');
+               elfTween_right.resume();
+           }
     },
     
     shootFireball : function()
@@ -600,8 +599,7 @@ var outdoorZone =
         //enemy_elf_down.y = 0;
             elfTween_down = game.add.tween(enemy_down).to({
                 y:enemy_down.y + 100
-            }, 2000, 'Linear', true, 0, 100, true);
-            
+            }, 2000, 'Linear', true, 0, 100, true);   
     },
     
     createEnemiesRight : function()
@@ -646,13 +644,12 @@ var outdoorZone =
         enemy_right.kill();
     },
     
-    
     shootArrowLeft : function(enemy_left)
     {
         if(this.game.time.now > fireArrowLeft)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_left.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_left.alive)
             {
                 arrow.reset(enemy_left.x, enemy_left.y);
                 arrow.angle = 180;
@@ -667,8 +664,8 @@ var outdoorZone =
     {
         if(this.game.time.now > fireArrowDown)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_down.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_down.alive)
             {
                 arrow.reset(enemy_down.x, enemy_down.y);
                 arrow.angle = 180;
@@ -683,8 +680,8 @@ var outdoorZone =
     {
         if(this.game.time.now > fireArrowRight)
         {
-          arrow = arrows.getFirstExists(false);
-           if (arrow && enemy_right.alive)
+            arrow = arrows.getFirstExists(false);
+            if (arrow && enemy_right.alive)
             {
                 arrow.reset(enemy_right.x, enemy_right.y);
                 arrow.angle = 180;
@@ -694,7 +691,6 @@ var outdoorZone =
             }
        } 
     },
-    
     
     arrowHitsPlayer : function(player, arrow)
     {
@@ -710,14 +706,13 @@ var outdoorZone =
         if(player_lives.countLiving() < 1)
         {
             player.animations.play('death');
+            arrows.kill();
             controls.up.enabled=false;
             controls.left.enabled=false;
             controls.down.enabled=false;
-            controls.right.enabled=false; 
-            //game.state.restart();
-            //game.time.events.add(Phaser.Timer.SECOND * 4, this.respawnPlayer(), this);
-            
-        } 
+            controls.right.enabled=false;
+            game.add.tween(player).to( { alpha: 0 }, 2500, Phaser.Easing.Linear.None, true); 
+        }  
     },
       
     //collectCoin : function(player,coin)
