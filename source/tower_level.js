@@ -1,7 +1,3 @@
-var player;
-var player_lives;
-var player_livesText;
-var upgrade_text;
 var enemy_elf_up;
 var enemy_up;
 var enemy_up1;
@@ -26,27 +22,14 @@ var enemy_right;
 var enemy_right1;
 var enemy_right2;
 var enemy_right3;
-var elfTween_up;
-var elfTween_left;
-var elfTween_down;
-var elfTween_right;
-var controls;
+//var elfTween_up;
+//var elfTween_left;
+//var elfTween_down;
+//var elfTween_right;
 var coins;
 var coin;
 var silverKey;
 var goldKey;
-var coinScore = 0;
-var coinScoreString = '';
-var coinScoreText;
-var facingUp = true;
-var facingLeft = false;
-var facingDown = false;
-var facingRight = false;
-var sound_objects = {};
-var fireballs;
-var fireball_castTime = 0;
-var arrow;
-var arrows;
 var fireArrowUp = 0;
 var fireArrowLeft = 0;
 var fireArrowDown = 0;
@@ -57,7 +40,6 @@ var fireArrowTrap2 = 0;
 var arrowTrap;
 var arrowTrap1;
 var arrowTrap2;
-var heartOutline;
 var objective_text;
 var objective_text2;
 
@@ -68,7 +50,6 @@ var world_towerLevel =
     layer_walls: null,
     layer_doors: null,
     layer_doors2: null
-    
 };
 
 function buildWorld_towerLevel (game, world) 
@@ -86,7 +67,6 @@ function buildWorld_towerLevel (game, world)
     world_towerLevel.map.setCollision(21, true, world_towerLevel.layer_walls);
     world_towerLevel.map.setCollision(17, true, world_towerLevel.layer_doors);
     world_towerLevel.map.setCollision(17, true, world_towerLevel.layer_door2);
-   // world_towerLevel.map.setTileIndexCallback(21, this.arrowOrFireballHitWall, this);
     //world_towerLevel.layer_doors.debug = true;
 }
 
@@ -94,25 +74,11 @@ var tower_level =
 {
     preload : function()
     {
-        //this.game.load.spritesheet('player', '../assets/playerCharacter.png',64, 64,80);
-        //this.game.load.spritesheet('enemy_elf', '../assets/enemyCharacter.png',64,65,117);
-        //this.game.load.spritesheet('coin', '../assets/coins.png',16,16,3);
-        //this.game.load.spritesheet('fireball', '../assets/fireball.png',64,64,63);
-        //this.game.load.image('heart', '../assets/player_heart.png');
-        //this.game.load.image('heart_upgrade', '../assets/player_heartUpgrade.png');
         this.game.load.image('goldKey', '../assets/goldKey.png');
         this.game.load.image('silverKey', '../assets/silverKey.png');
-        //this.game.load.image('heart', '../assets/player_heart.png');
-        //this.game.load.image('heart_upgradeRevive', '../assets/player_heartUpgradeRevive.png');
-        //this.game.load.image('heart_upgradeExtra', '../assets/player_heartUpgradeExtra.png');
-        //this.game.load.image('heart_outline', '../assets/player_heartOutline.png');
-        //this.game.load.image('arrow', '../assets/arrow.png');
-        //this.game.load.image('arrowTrap', '../assets/tilesets/arrow_trap.png');
         
         this.game.load.tilemap('map','../assets/tilesets/towerLevel..json', null, Phaser.Tilemap.TILED_JSON);
-        this.game.load.image('tileSheet', '../assets/tilesets/TileA3-byLunarea.png');
-        
-        //this.game.load.audio('fireball_sound', '../assets/music/sound_fireball.mp3'); 
+        this.game.load.image('tileSheet', '../assets/tilesets/TileA3-byLunarea.png'); 
     },  
     
     create : function()
@@ -120,7 +86,6 @@ var tower_level =
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
         buildWorld_towerLevel(game, world_towerLevel);
-        sound_objects.fireball_sound = this.game.add.audio('fireball_sound');
         
         arrowTrap = this.game.add.sprite(3000, 900, 'arrowTrap');
         arrowTrap1 = this.game.add.sprite(3100, 900, 'arrowTrap');
@@ -1566,6 +1531,7 @@ var tower_level =
      
     collectCoin : function(player,coin)
     {
+        sound_objects.coin_sound.play();
         coin.kill();
         coinScore +=1;
         coinScoreText.text = coinScoreString + coinScore;

@@ -45,6 +45,7 @@ var merchant9;
 var merchant10;
 var merchant11;
 var heartOutline;
+var explosionAnimation;
 
 var world_outdoorZone = 
 {
@@ -85,6 +86,7 @@ var outdoorZone =
         this.game.load.spritesheet('enemy_elf', '../assets/enemyCharacter.png',64, 65, 117);
         this.game.load.spritesheet('coin', '../assets/coins.png', 16, 16, 3);
         this.game.load.spritesheet('fireball', '../assets/fireball.png', 64, 64, 63);
+        this.game.load.spritesheet('fireballExplosion', '../assets/fireballExplosion.png', 128, 128);
         this.game.load.image('merchant', '../assets/merchant.png');
         this.game.load.image('merchantBack', '../assets/merchant2.png');
         this.game.load.image('merchantDead', '../assets/merchantDead.png');
@@ -103,6 +105,10 @@ var outdoorZone =
         
         this.game.load.audio('levelMusic', '../assets/music/music_outdoorZone.mp3'); 
         this.game.load.audio('fireball_sound', '../assets/music/sound_fireball.mp3'); 
+        this.game.load.audio('coin_sound', '../assets/music/sound_coin.wav'); 
+        this.game.load.audio('playerHit_sound', '../assets/music/sound_playerHit.mp3');
+        this.game.load.audio('playerDead_sound', '../assets/music/sound_playerDead.mp3');
+        this.game.load.audio('enemyHit_sound', '../assets/music/sound_enemyHit.wav');
 
         //enemy_elf = function (index, game, x, y) 
         //{
@@ -127,6 +133,10 @@ var outdoorZone =
         
         buildWorld_outdoorZone(game, world_outdoorZone);
         sound_objects.fireball_sound = this.game.add.audio('fireball_sound');
+        sound_objects.coin_sound = this.game.add.audio('coin_sound');
+        sound_objects.playerHit_sound = this.game.add.audio('playerHit_sound');
+        sound_objects.playerDead_sound = this.game.add.audio('playerDead_sound');
+        sound_objects.enemyHit_sound = this.game.add.audio('enemyHit_sound');
         sound_objects.levelMusic = this.game.add.audio('levelMusic');
         sound_objects.levelMusic.loopFull();
         
@@ -173,6 +183,10 @@ var outdoorZone =
         fireballs.setAll('anchor.y', 1);
         fireballs.setAll('outOfBoundsKill', true);
         fireballs.setAll('checkWorldBounds', true);
+        
+        explosionAnimation = this.game.add.group();
+        explosionAnimation.createMultiple(5, 'fireballExplosion');
+        explosionAnimation.forEach(this.addExplosionToEnemies, this);
         
         arrows = this.game.add.group();
         arrows.enableBody = true;
@@ -615,33 +629,54 @@ var outdoorZone =
          enemy_right.animations.play('walkRight');
          game.physics.arcade.enable(enemy_right,Phaser.Physics.ARCADE);     
             
-        elfTween_right = game.add.tween(enemy_right).to({
+         elfTween_right = game.add.tween(enemy_right).to({
                 x:enemy_right.x + 100
             }, 2000, 'Linear', true, 0, 100, true);
     },
     
+    addExplosionToEnemies : function(enemy_elf)
+    {
+        enemy_elf.animations.add('fireballExplosion');
+    },
+    
     fireballHitEnemyUp : function (fireball, enemy_up)
     {
+        sound_objects.enemyHit_sound.play();
         fireball.kill();
         enemy_up.kill();
     },
     
     fireballHitEnemyDown : function (fireball, enemy_down)
     {
+        sound_objects.enemyHit_sound.play();
         fireball.kill();
         enemy_down.kill();
+        
+        var explosion = explosionAnimation.getFirstExists(false);
+        explosion.reset(enemy_down.body.x - 55, enemy_down.body.y - 47);
+        explosion.play('fireballExplosion', 20, false, true);
     },
 
     fireballHitEnemyLeft : function (fireball, enemy_left)
     {
+        sound_objects.enemyHit_sound.play();
         fireball.kill();
         enemy_left.kill();
+        
+        var explosion = explosionAnimation.getFirstExists(false);
+        explosion.reset(enemy_left.body.x - 55, enemy_left.body.y - 47);
+        explosion.play('fireballExplosion', 20, false, true);
     },
 
     fireballHitEnemyRight : function (fireball, enemy_right)
     {
+        sound_objects.enemyHit_sound.play();
         fireball.kill();
         enemy_right.kill();
+        
+        var explosion = explosionAnimation.getFirstExists(false);
+        explosion.reset(enemy_right.body.x - 55, enemy_right.body.y - 47);
+        explosion.play('fireballExplosion', 20, false, true);
     },
     
     shootArrowLeft : function(enemy_left)
@@ -695,6 +730,7 @@ var outdoorZone =
     arrowHitsPlayer : function(player, arrow)
     {
         arrow.kill();
+        sound_objects.playerHit_sound.play();
         
         this.player_live = player_lives.getFirstAlive();
         
@@ -705,6 +741,7 @@ var outdoorZone =
         
         if(player_lives.countLiving() < 1)
         {
+            sound_objects.playerDead_sound.play();
             player.animations.play('death');
             arrows.kill();
             controls.up.enabled=false;
@@ -761,11 +798,13 @@ var outdoorZone =
     
     respawnPlayer : function()
     {
+        sound_objects.levelMusic.stop();
         game.state.restart();
     },
     
     gotoTowerLevel : function(player, towerSprite)
     {
+        sound_objects.levelMusic.stop();
         game.state.start('tower_level');
     }, 
 };
