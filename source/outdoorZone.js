@@ -198,7 +198,7 @@ var outdoorZone =
         arrows.setAll('checkWorldBounds', true);
         
         //Player Code
-        player = this.game.add.sprite(3200, 100, 'player');
+        player = this.game.add.sprite(3390, 360, 'player');
  
         player.animations.add('walkUp', [0, 1, 2, 3, 4, 5, 6, 7, 8], 8, false);
         
@@ -677,6 +677,8 @@ var outdoorZone =
         var explosion = explosionAnimation.getFirstExists(false);
         explosion.reset(enemy_right.body.x - 55, enemy_right.body.y - 47);
         explosion.play('fireballExplosion', 20, false, true);
+        
+        
     },
     
     shootArrowLeft : function(enemy_left)

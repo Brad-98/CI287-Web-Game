@@ -37,11 +37,22 @@ var fireArrowRight = 0;
 var fireArrowTrap = 0;
 var fireArrowTrap1 = 0;
 var fireArrowTrap2 = 0;
+var fireArrowTrap3 = 0;
+var fireArrowTrap4 = 0;
+var fireArrowTrap5 = 0;
+var fireArrowTrap6 = 0;
+var fireArrowTrap7 = 0;
 var arrowTrap;
 var arrowTrap1;
 var arrowTrap2;
+var arrowTrap3;
+var arrowTrap4;
+var arrowTrap5;
+var arrowTrap6;
+var arrowTrap7;
 var objective_text;
 var objective_text2;
+
 
 var world_towerLevel = 
 {
@@ -64,7 +75,7 @@ function buildWorld_towerLevel (game, world)
     world_towerLevel.layer_doors = world_towerLevel.map.createLayer('layer_Doors');
     world_towerLevel.layer_doors2 = world_towerLevel.map.createLayer('layer_Doors2');
     world_towerLevel.layer_ground.resizeWorld();
-    world_towerLevel.map.setCollision(21, true, world_towerLevel.layer_walls);
+   // world_towerLevel.map.setCollision(21, true, world_towerLevel.layer_walls);
     world_towerLevel.map.setCollision(17, true, world_towerLevel.layer_doors);
     world_towerLevel.map.setCollision(17, true, world_towerLevel.layer_door2);
     //world_towerLevel.layer_doors.debug = true;
@@ -87,9 +98,14 @@ var tower_level =
         
         buildWorld_towerLevel(game, world_towerLevel);
         
-        arrowTrap = this.game.add.sprite(3000, 900, 'arrowTrap');
-        arrowTrap1 = this.game.add.sprite(3100, 900, 'arrowTrap');
-        arrowTrap2 = this.game.add.sprite(3200, 900, 'arrowTrap');
+        arrowTrap = this.game.add.sprite(3308, 890, 'arrowTrap');
+        arrowTrap1 = this.game.add.sprite(3400, 890, 'arrowTrap');
+        arrowTrap2 = this.game.add.sprite(3496, 890, 'arrowTrap');
+        arrowTrap3 = this.game.add.sprite(3143, 1500, 'arrowTrap');
+        arrowTrap4 = this.game.add.sprite(3810, 1398, 'arrowTrap');
+        arrowTrap5 = this.game.add.sprite(957, 1401, 'arrowTrap');
+        arrowTrap6 = this.game.add.sprite(1284, 423, 'arrowTrap');
+        arrowTrap7 = this.game.add.sprite(1284, 519, 'arrowTrap');
         
         coins = this.game.add.group();
         this.createCoins();
@@ -131,6 +147,10 @@ var tower_level =
         fireballs.setAll('outOfBoundsKill', true);
         fireballs.setAll('checkWorldBounds', true);
         
+        explosionAnimation = this.game.add.group();
+        explosionAnimation.createMultiple(5, 'fireballExplosion');
+        explosionAnimation.forEach(this.addExplosionToEnemies, this);
+        
         arrows = this.game.add.group();
         arrows.enableBody = true;
         this.game.physics.arcade.enable(arrows);
@@ -140,7 +160,7 @@ var tower_level =
         arrows.setAll('outOfBoundsKill', true);
         arrows.setAll('checkWorldBounds', true);
         
-        player = this.game.add.sprite(1905,2048,'player');
+        player = this.game.add.sprite(1300,400,'player');
  
         player.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],8, false);
         
@@ -1114,28 +1134,53 @@ var tower_level =
             }, 2000, 'Linear', true, 0, 100, true);
     },
     
+    addExplosionToEnemies : function(enemy_elf)
+    {
+        enemy_elf.animations.add('fireballExplosion');
+    },
+    
     fireballHitEnemyUp : function (fireball, enemy_up)
     {
+        sound_objects.enemyHit_sound.play();
         fireball.kill();
         enemy_up.kill();
+        
+        var explosion = explosionAnimation.getFirstExists(false);
+        explosion.reset(enemy_up.body.x - 55, enemy_up.body.y - 47);
+        explosion.play('fireballExplosion', 20, false, true);
     },
     
     fireballHitEnemyDown : function (fireball, enemy_down)
     {
+        sound_objects.enemyHit_sound.play();
         fireball.kill();
         enemy_down.kill();
+        
+        var explosion = explosionAnimation.getFirstExists(false);
+        explosion.reset(enemy_down.body.x - 55, enemy_down.body.y - 47);
+        explosion.play('fireballExplosion', 20, false, true);
     },
 
     fireballHitEnemyLeft : function (fireball, enemy_left)
     {
+        sound_objects.enemyHit_sound.play();
         fireball.kill();
         enemy_left.kill();
+        
+        var explosion = explosionAnimation.getFirstExists(false);
+        explosion.reset(enemy_left.body.x - 55, enemy_left.body.y - 47);
+        explosion.play('fireballExplosion', 20, false, true);
     },
 
     fireballHitEnemyRight : function (fireball, enemy_right)
     {
+        sound_objects.enemyHit_sound.play();
         fireball.kill();
         enemy_right.kill();
+        
+        var explosion = explosionAnimation.getFirstExists(false);
+        explosion.reset(enemy_right.body.x - 55, enemy_right.body.y - 47);
+        explosion.play('fireballExplosion', 20, false, true);
     },
     
     shootArrowUp : function()
@@ -1463,13 +1508,15 @@ var tower_level =
         arrowTrap.angle = 270;
         arrowTrap1.angle = 270;
         arrowTrap2.angle = 270;
+        arrowTrap3.angle = 270;
+        arrowTrap5.angle = 180;
         
         if(this.game.time.now > fireArrowTrap)
         {
             arrow = arrows.getFirstExists(false);
             if (arrow)
             {
-                arrow.reset(arrowTrap.x, arrowTrap.y);
+                arrow.reset(arrowTrap.x + 5, arrowTrap.y + 9);
                 arrow.angle = 90;
                 arrow.body.velocity.y = +100;
                 fireArrowTrap = this.game.time.now + 2000;
@@ -1481,7 +1528,7 @@ var tower_level =
             arrow = arrows.getFirstExists(false);
             if (arrow)
             {
-                arrow.reset(arrowTrap1.x, arrowTrap1.y);
+                arrow.reset(arrowTrap1.x + 5, arrowTrap1.y + 9);
                 arrow.angle = 90;
                 arrow.body.velocity.y = +100;
                 fireArrowTrap1 = this.game.time.now + 2000;
@@ -1493,17 +1540,78 @@ var tower_level =
             arrow = arrows.getFirstExists(false);
             if (arrow)
             {
-                arrow.reset(arrowTrap2.x, arrowTrap2.y);
+                arrow.reset(arrowTrap2.x + 5, arrowTrap2.y + 9);
                 arrow.angle = 90;
                 arrow.body.velocity.y = +100;
                 fireArrowTrap2 = this.game.time.now + 2000;
             }
-       }           
+       }
+        
+        if(this.game.time.now > fireArrowTrap3)
+        {
+            arrow = arrows.getFirstExists(false);
+            if (arrow)
+            {
+                arrow.reset(arrowTrap3.x + 5, arrowTrap3.y + 9);
+                arrow.angle = 90;
+                arrow.body.velocity.y = +100;
+                fireArrowTrap3 = this.game.time.now + 2000;
+            }
+       }
+        
+        if(this.game.time.now > fireArrowTrap4)
+        {
+            arrow = arrows.getFirstExists(false);
+            if (arrow)
+            {
+                arrow.reset(arrowTrap4.x - 5, arrowTrap4.y + 5);
+                arrow.angle = 180;
+                arrow.body.velocity.x = -100;
+                fireArrowTrap4 = this.game.time.now + 2000;
+            }
+       }
+        
+        if(this.game.time.now > fireArrowTrap5)
+        {
+            arrow = arrows.getFirstExists(false);
+            if (arrow)
+            {
+                arrow.reset(arrowTrap5.x + 10, arrowTrap5.y - 1);
+                arrow.angle = 0;
+                arrow.body.velocity.x = 100;
+                fireArrowTrap5 = this.game.time.now + 1600;
+            }
+       }
+        
+        if(this.game.time.now > fireArrowTrap6)
+        {
+            arrow = arrows.getFirstExists(false);
+            if (arrow)
+            {
+                arrow.reset(arrowTrap6.x - 5, arrowTrap6.y + 5);
+                arrow.angle = 180;
+                arrow.body.velocity.x = -100;
+                fireArrowTrap6 = this.game.time.now + 2000;
+            }
+       }
+        
+        if(this.game.time.now > fireArrowTrap7)
+        {
+            arrow = arrows.getFirstExists(false);
+            if (arrow)
+            {
+                arrow.reset(arrowTrap7.x - 5, arrowTrap7.y + 5);
+                arrow.angle = 180;
+                arrow.body.velocity.x = -100;
+                fireArrowTrap7 = this.game.time.now + 2000;
+            }
+       }
     },
     
     arrowHitsPlayer : function(player, arrow)
     {
         arrow.kill();
+        sound_objects.playerHit_sound.play();
         
         this.player_live = player_lives.getFirstAlive();
         
@@ -1514,6 +1622,7 @@ var tower_level =
         
         if(player_lives.countLiving() < 1)
         {
+            sound_objects.playerDead_sound.play();
             player.animations.play('death');
             arrows.kill();
             controls.up.enabled=false;
