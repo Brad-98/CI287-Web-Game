@@ -259,7 +259,7 @@ var outdoorZone =
         heart_upgradeExtra = this.game.add.button(1182, 50, 'heart_upgradeExtra', this.extraHeart, this);
         heart_upgradeExtra.fixedToCamera = true;
         var upgrade_priceHeartExtra;
-        upgrade_priceHeartExtra = this.game.add.text(1250 , 56 ,'10', {font: '18px Arial', fill: '#ffffff'});
+        upgrade_priceHeartExtra = this.game.add.text(1250 , 56 ,'7', {font: '18px Arial', fill: '#ffffff'});
         upgrade_priceHeartExtra.fixedToCamera = true;
         var coin_imageUpgradeExtra;
         coin_imageUpgradeExtra = this.game.add.sprite(1225, 56, 'coin');
@@ -270,7 +270,7 @@ var outdoorZone =
         heart_upgradeRevive = this.game.add.button(1182, 100, 'heart_upgradeRevive', this.heartsRevive, this);
         heart_upgradeRevive.fixedToCamera = true;
         var upgrade_priceHeartRevive;
-        upgrade_priceHeartRevive = this.game.add.text(1250 , 106 ,'15', {font: '18px Arial', fill: '#ffffff'});
+        upgrade_priceHeartRevive = this.game.add.text(1250 , 106 ,'10', {font: '18px Arial', fill: '#ffffff'});
         upgrade_priceHeartRevive.fixedToCamera = true;
         var coin_imageUpgradeRevive;
         coin_imageUpgradeRevive = this.game.add.sprite(1225, 106, 'coin');
@@ -761,7 +761,7 @@ var outdoorZone =
     
     extraHeart : function()
     {
-        if(player_lives.length == 3 && coinScore >= 10)
+        if(player_lives.countLiving() > 2 && coinScore >= 10)
         {
             coinScore -= 10;
             coinScoreText.text = coinScoreString + coinScore;
@@ -773,7 +773,7 @@ var outdoorZone =
             heartOutline.fixedToCamera = true;
         }
         
-        if(player_lives.length == 4 && coinScore >= 10)
+        if(player_lives.countLiving() > 3 && coinScore >= 10)
         {
             coinScore -= 10;
             coinScoreText.text = coinScoreString + coinScore;

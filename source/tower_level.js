@@ -77,7 +77,7 @@ function buildWorld_towerLevel (game, world)
     world_towerLevel.layer_ground.resizeWorld();
     world_towerLevel.map.setCollision(21, true, world_towerLevel.layer_walls);
     world_towerLevel.map.setCollision(17, true, world_towerLevel.layer_doors);
-    world_towerLevel.map.setCollision(17, true, world_towerLevel.layer_door2);
+    world_towerLevel.map.setCollision(23, true, world_towerLevel.layer_doors2);
     //world_towerLevel.layer_doors.debug = true;
 }
 
@@ -208,7 +208,7 @@ var tower_level =
         goldKey.enableBody = true;
         this.game.physics.arcade.enable(goldKey);
         
-        silverKey = this.game.add.sprite(125,1570,'silverKey');
+        silverKey = this.game.add.sprite(615,1650,'silverKey');
         silverKey.enableBody = true;
         this.game.physics.arcade.enable(silverKey);
         
@@ -234,7 +234,7 @@ var tower_level =
         heart_upgradeExtra = this.game.add.button(1182, 50, 'heart_upgradeExtra', this.extraHeart, this);
         heart_upgradeExtra.fixedToCamera = true;
         var upgrade_priceHeartExtra;
-        upgrade_priceHeartExtra = this.game.add.text(1250 , 56 ,'10', {font: '18px Arial', fill: '#ffffff'});
+        upgrade_priceHeartExtra = this.game.add.text(1250 , 56 ,'7', {font: '18px Arial', fill: '#ffffff'});
         upgrade_priceHeartExtra.fixedToCamera = true;
         var coin_imageUpgradeExtra;
         coin_imageUpgradeExtra = this.game.add.sprite(1225, 56, 'coin');
@@ -245,7 +245,7 @@ var tower_level =
         heart_upgradeRevive = this.game.add.button(1182, 100, 'heart_upgradeRevive', this.heartsRevive, this);
         heart_upgradeRevive.fixedToCamera = true;
         var upgrade_priceHeartRevive;
-        upgrade_priceHeartRevive = this.game.add.text(1250 , 106 ,'15', {font: '18px Arial', fill: '#ffffff'});
+        upgrade_priceHeartRevive = this.game.add.text(1250 , 106 ,'10', {font: '18px Arial', fill: '#ffffff'});
         upgrade_priceHeartRevive.fixedToCamera = true;
         var coin_imageUpgradeRevive;
         coin_imageUpgradeRevive = this.game.add.sprite(1225, 106, 'coin');
@@ -750,25 +750,22 @@ var tower_level =
         this.game.physics.arcade.enable(coins);
         for (var y = 0; y < 2; y++)
             {
-                for (var x = 0; x < 5; x++)
+                for (var x = 0; x < 3; x++)
                 {
-                    coin = coins.create(2425 + (50 * x), 2000 + (50 * y), 'coin');
+                    coin = coins.create(100 + (50 * x), 1500 + (50 * y), 'coin');
                     coin.animations.add('spin', [0,1,2,3],8,true);
                     coin.animations.play('spin');
                     coin.anchor.setTo(0.5,0.5);
                 }
             }  
         
-        for (var y = 0; y < 2; y++)
-            {
-                for (var x = 0; x < 2; x++)
+            for (var x = 0; x < 2; x++)
                 {
-                    coin = coins.create(600 + (50 * x), 1700 + (50 * y), 'coin');
+                    coin = coins.create(600 + (50 * x), 1700, 'coin');
                     coin.animations.add('spin', [0,1,2,3],8,true);
                     coin.animations.play('spin');
                     coin.anchor.setTo(0.5,0.5);
                 }
-            } 
         
         for (var y = 0; y < 3; y++)
                 {
@@ -801,17 +798,6 @@ var tower_level =
                     coin.animations.play('spin');
                     coin.anchor.setTo(0.5,0.5);
                 }
-        
-        for (var y = 0; y < 2; y++)
-            {
-                for (var x = 0; x < 2; x++)
-                {
-                    coin = coins.create(125 + (50 * x), 1500 + (50 * y), 'coin');
-                    coin.animations.add('spin', [0,1,2,3],8,true);
-                    coin.animations.play('spin');
-                    coin.anchor.setTo(0.5,0.5);
-                }
-            }  
         
         for (var y = 0; y < 3; y++)
                 {
@@ -1661,9 +1647,9 @@ var tower_level =
     
     extraHeart : function()
     {
-        if(player_lives.length == 3 && coinScore >= 10)
+        if(player_lives.countLiving() > 2 && coinScore >= 7)
         {
-            coinScore -= 10;
+            coinScore -= 7;
             coinScoreText.text = coinScoreString + coinScore;
             this.heart = player_lives.create(118 + (35 * 3), 35, 'heart');
             this.heart.anchor.setTo(0.5, 0.5);
@@ -1673,9 +1659,9 @@ var tower_level =
             heartOutline.fixedToCamera = true;
         }
         
-        if(player_lives.length == 4 && coinScore >= 10)
+        if(player_lives.length == 4 && coinScore >= 7)
         {
-            coinScore -= 10;
+            coinScore -= 7;
             coinScoreText.text = coinScoreString + coinScore;
             this.heart = player_lives.create(118 + (35 * 4), 35, 'heart');
             this.heart.anchor.setTo(0.5, 0.5);
@@ -1688,9 +1674,9 @@ var tower_level =
     
     heartsRevive : function()
     {
-        if(player_lives.countLiving() < 5 && coinScore >= 15)
+        if(player_lives.countLiving() < 5 && coinScore >= 10)
         {
-            coinScore -= 15;
+            coinScore -= 10;
             coinScoreText.text = coinScoreString + coinScore;
             player_lives.callAll('revive');        
         }
@@ -1698,6 +1684,7 @@ var tower_level =
     
     respawnPlayer : function()
     {
+        coinScore = 0;
         game.state.restart();
     },
 };
