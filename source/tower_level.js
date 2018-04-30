@@ -26,8 +26,8 @@ var enemy_right3;
 //var elfTween_left;
 //var elfTween_down;
 //var elfTween_right;
-var coins;
-var coin;
+//var coins;
+//var coin;
 var silverKey;
 var goldKey;
 var fireArrowUp = 0;
@@ -75,7 +75,7 @@ function buildWorld_towerLevel (game, world)
     world_towerLevel.layer_doors = world_towerLevel.map.createLayer('layer_Doors');
     world_towerLevel.layer_doors2 = world_towerLevel.map.createLayer('layer_Doors2');
     world_towerLevel.layer_ground.resizeWorld();
-   // world_towerLevel.map.setCollision(21, true, world_towerLevel.layer_walls);
+    world_towerLevel.map.setCollision(21, true, world_towerLevel.layer_walls);
     world_towerLevel.map.setCollision(17, true, world_towerLevel.layer_doors);
     world_towerLevel.map.setCollision(17, true, world_towerLevel.layer_door2);
     //world_towerLevel.layer_doors.debug = true;
@@ -160,7 +160,7 @@ var tower_level =
         arrows.setAll('outOfBoundsKill', true);
         arrows.setAll('checkWorldBounds', true);
         
-        player = this.game.add.sprite(1300,400,'player');
+        player = this.game.add.sprite(1810,2000,'player');
  
         player.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],8, false);
         

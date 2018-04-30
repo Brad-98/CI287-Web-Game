@@ -15,8 +15,8 @@ var elfTween_left;
 var elfTween_down;
 var elfTween_right;
 var controls;
-//var coins;
-//var coin;
+var coins;
+var coin;
 var coinScore = 0;
 var coinScoreString = '';
 var coinScoreText;
@@ -161,10 +161,8 @@ var outdoorZone =
         merchant11 = this.game.add.sprite(2430, 640, 'merchant');
         var guardText = this.game.add.text(2400, 620, "Watch Out Guards Ahead", {font: '13px Arial', fill: '#ffffff'});
         
-        //arrowTrap = this.game.add.sprite(3000, 50, 'arrowTrap');
-        
-        //coins = this.game.add.group();
-        //this.createCoins();
+        coins = this.game.add.group();
+        this.createCoins();
         
         enemy_elf_left = this.game.add.group();
         this.createEnemiesLeft();
@@ -555,26 +553,26 @@ var outdoorZone =
         }
     },
     
-    //createCoins : function()
-    //{
-     //   coins.enableBody = true;
-     //   this.game.physics.arcade.enable(coins);
-      //  for (var x = 1; x < 3; x++)
-      //  {
-      //      coin = coins.create(50 * x, 50, 'coin');
-      //      coin.animations.add('spin', [0, 1, 2, 3], 8, true);
-      //      coin.animations.play('spin');
-      //      coin.anchor.setTo(0.5, 0.5);
-      //  }
+    createCoins : function()
+    {
+        coins.enableBody = true;
+        this.game.physics.arcade.enable(coins);
+        for (var x = 1; x < 3; x++)
+        {
+            coin = coins.create(2900 + (x + 50), 300, 'coin');
+            coin.animations.add('spin', [0, 1, 2, 3], 8, true);
+            coin.animations.play('spin');
+            coin.anchor.setTo(0.5, 0.5);
+        }
             
-      //  for (var x = 1; x < 3; x++)
-       // {
-       //     coin = coins.create(50 * x, 150, 'coin');
-       //     coin.animations.add('spin', [0, 1, 2, 3], 8,true);
-        //    coin.animations.play('spin');
-        //    coin.anchor.setTo(0.5, 0.5);
-       // }
-   // },
+        for (var x = 1; x < 3; x++)
+        {
+            coin = coins.create(50 * x, 150, 'coin');
+            coin.animations.add('spin', [0, 1, 2, 3], 8,true);
+            coin.animations.play('spin');
+            coin.anchor.setTo(0.5, 0.5);
+        }
+    },
     
     createEnemiesLeft : function()
     {
@@ -754,12 +752,12 @@ var outdoorZone =
         }  
     },
       
-    //collectCoin : function(player,coin)
-    //{
-    //    coin.kill();
-    //    coinScore += 1;
-    //    coinScoreText.text = coinScoreString + coinScore;
-    //},
+    collectCoin : function(player,coin)
+    {
+        coin.kill();
+        coinScore += 1;
+        coinScoreText.text = coinScoreString + coinScore;
+    },
     
     extraHeart : function()
     {
