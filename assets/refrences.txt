@@ -5,3 +5,4 @@ fireball sound effect https://www.freesoundeffects.com/free-track/fireball-1-466
 scroll image http://www.pptbackgrounds.org/advanced-blank-scroll-paper-backgrounds.html
 death sound effect https://opengameart.org/content/hurt-death-sound-effect-for-character
 explosion animation from phaser website
+key sound https://opengameart.org/content/key-pickup

@@ -52,7 +52,18 @@ var arrowTrap6;
 var arrowTrap7;
 var objective_text;
 var objective_text2;
-
+var villageSavedScore = 0;
+var villageSavedString = '';
+var villageSavedStringNumber = ' / 8';
+var villageSavedText;
+var villager;
+var villager1;
+var villager2;
+var villager3;
+var villager4;
+var villager5;
+var villager6;
+var villager7;
 
 var world_towerLevel = 
 {
@@ -60,7 +71,8 @@ var world_towerLevel =
     layer_ground: null,
     layer_walls: null,
     layer_doors: null,
-    layer_doors2: null
+    layer_doors2: null,
+    layer_villagerDead: null
 };
 
 function buildWorld_towerLevel (game, world) 
@@ -68,12 +80,14 @@ function buildWorld_towerLevel (game, world)
     // Tilemap
     world_towerLevel.map = this.game.add.tilemap('map');
     world_towerLevel.map.addTilesetImage('TileA3-byLunarea','tileSheet');
+    world_towerLevel.map.addTilesetImage('merchantDead','villagerDead');
     
     // Tilemap layers
     world_towerLevel.layer_ground = world_towerLevel.map.createLayer('layer_Ground');
     world_towerLevel.layer_walls = world_towerLevel.map.createLayer('layer_Walls');
     world_towerLevel.layer_doors = world_towerLevel.map.createLayer('layer_Doors');
     world_towerLevel.layer_doors2 = world_towerLevel.map.createLayer('layer_Doors2');
+    world_towerLevel.layer_villagerDead = world_towerLevel.map.createLayer('layer_VillagerDead');
     world_towerLevel.layer_ground.resizeWorld();
     //world_towerLevel.map.setCollision(21, true, world_towerLevel.layer_walls);
     world_towerLevel.map.setCollision(17, true, world_towerLevel.layer_doors);
@@ -88,8 +102,11 @@ var tower_level =
         this.game.load.image('goldKey', '../assets/goldKey.png');
         this.game.load.image('silverKey', '../assets/silverKey.png');
         
+        this.game.load.audio('keyPickup_sound', '../assets/music/sound_keyPickup.mp3');
+        
         this.game.load.tilemap('map','../assets/tilesets/towerLevel..json', null, Phaser.Tilemap.TILED_JSON);
-        this.game.load.image('tileSheet', '../assets/tilesets/TileA3-byLunarea.png'); 
+        this.game.load.image('tileSheet', '../assets/tilesets/TileA3-byLunarea.png');
+        this.game.load.image('villagerDead', '../assets/merchantDead.png'); 
     },  
     
     create : function()
@@ -97,6 +114,8 @@ var tower_level =
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
         buildWorld_towerLevel(game, world_towerLevel);
+        
+        sound_objects.keyPickup_sound = this.game.add.audio('keyPickup_sound');
         
         arrowTrap = this.game.add.sprite(3308, 890, 'arrowTrap');
         arrowTrap1 = this.game.add.sprite(3400, 890, 'arrowTrap');
@@ -106,6 +125,9 @@ var tower_level =
         arrowTrap5 = this.game.add.sprite(957, 1401, 'arrowTrap');
         arrowTrap6 = this.game.add.sprite(1284, 423, 'arrowTrap');
         arrowTrap7 = this.game.add.sprite(1284, 519, 'arrowTrap');
+        
+        villagers = this.game.add.group();
+        this.createVillagers();
         
         coins = this.game.add.group();
         this.createCoins();
@@ -160,7 +182,7 @@ var tower_level =
         arrows.setAll('outOfBoundsKill', true);
         arrows.setAll('checkWorldBounds', true);
         
-        player = this.game.add.sprite(1810,2000,'player');
+        player = this.game.add.sprite(2810,273,'player');
  
         player.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],8, false);
         
@@ -216,6 +238,10 @@ var tower_level =
         player_livesText = this.game.add.text(10 ,15 ,'Lives : ', {font: '30px Arial', fill: '#ffffff'});
         player_livesText.fixedToCamera = true;
         
+        villageSavedString = 'Villagers Rescued: ';
+        villageSavedText = this.game.add.text(10, 145, villageSavedString + villageSavedScore + villageSavedStringNumber, {font: '30px Arial', fill: '#ffffff'});
+        villageSavedText.fixedToCamera = true;
+        
         //Spawn player hearts
         for (var i = 0; i < 3; i++) 
         {
@@ -252,8 +278,8 @@ var tower_level =
         coin_imageUpgradeRevive.scale.setTo(1.2, 1.2);
         coin_imageUpgradeRevive.fixedToCamera = true;
         
-        objective_text = this.game.add.text(10 , 150 ,'Main Objective:\nKill the enemies in the Tower', {font: '20px Arial', fill: '#ffffff'});
-        objective_text2 = this.game.add.text(10 , 200 ,'Find the Gold Key', {font: '20px Arial', fill: '#ffffff'});
+        objective_text = this.game.add.text(10 , 200 ,'Main Objective:\nRescue the Villages', {font: '20px Arial', fill: '#ffffff'});
+        objective_text2 = this.game.add.text(10 , 270 ,'Find the Gold Key', {font: '20px Arial', fill: '#ffffff'});
         objective_text.fixedToCamera = true;
         objective_text2.fixedToCamera = true;
         
@@ -264,6 +290,14 @@ var tower_level =
     {
         this.game.physics.arcade.collide(player, arrows, this.arrowHitsPlayer);
         this.game.physics.arcade.collide(player, coins, this.collectCoin);
+        this.game.physics.arcade.collide(player, villager, this.villagerSaved);
+        this.game.physics.arcade.collide(player, villager1, this.villager1Saved);
+        this.game.physics.arcade.collide(player, villager2, this.villager2Saved);
+        this.game.physics.arcade.collide(player, villager3, this.villager3Saved);
+        this.game.physics.arcade.collide(player, villager4, this.villager4Saved);
+        this.game.physics.arcade.collide(player, villager5, this.villager5Saved);
+        this.game.physics.arcade.collide(player, villager6, this.villager6Saved);
+        this.game.physics.arcade.collide(player, villager7, this.villager7Saved);
         this.game.physics.arcade.collide(arrows, world_towerLevel.layer_walls, this.arrowOrFireballHitWall);
         this.game.physics.arcade.collide(arrows, world_towerLevel.layer_doors, this.arrowOrFireballHitWall);
         this.game.physics.arcade.collide(arrows, world_towerLevel.layer_doors2, this.arrowOrFireballHitWall);
@@ -1636,14 +1670,102 @@ var tower_level =
         coinScoreText.text = coinScoreString + coinScore;
     },
     
+    createVillagers : function()
+    {
+        villagers.enableBody = true;
+        this.game.physics.arcade.enable(villagers);
+        
+        villager = villagers.create(507, 1700, 'merchant');
+        villager.anchor.setTo(0.5,0.5);
+        
+        villager1 = villagers.create(240, 1395, 'merchant');
+        villager1.anchor.setTo(0.5,0.5);
+        
+        villager2 = villagers.create(240, 1545, 'merchantBack');
+        villager2.anchor.setTo(0.5,0.5); 
+        
+        villager3 = villagers.create(60, 1500, 'merchantBack');
+        villager3.anchor.setTo(0.5,0.5); 
+        
+        villager4 = villagers.create(3000, 2080, 'merchantBack');
+        villager4.anchor.setTo(0.5,0.5); 
+        
+        villager5 = villagers.create(2740, 250, 'merchant');
+        villager5.anchor.setTo(0.5,0.5); 
+        
+        villager6 = villagers.create(3712, 1030, 'merchant');
+        villager6.anchor.setTo(0.5,0.5); 
+        
+        villager7 = villagers.create(3712, 1200, 'merchant');
+        villager7.anchor.setTo(0.5,0.5); 
+    },
+    
+    villagerSaved : function()
+    {
+        villager.kill();
+        villageSavedScore += 1;
+        villageSavedText.text = villageSavedString + villageSavedScore + villageSavedStringNumber;
+    },
+    
+    villager1Saved : function()
+    {
+        villager1.kill();
+        villageSavedScore += 1;
+        villageSavedText.text = villageSavedString + villageSavedScore + villageSavedStringNumber;
+    },
+    
+    villager2Saved : function()
+    {
+        villager2.kill();
+        villageSavedScore += 1;
+        villageSavedText.text = villageSavedString + villageSavedScore + villageSavedStringNumber;
+    },
+    
+    villager3Saved : function()
+    {
+        villager3.kill();
+        villageSavedScore += 1;
+        villageSavedText.text = villageSavedString + villageSavedScore + villageSavedStringNumber;
+    },
+    
+    villager4Saved : function()
+    {
+        villager4.kill();
+        villageSavedScore += 1;
+        villageSavedText.text = villageSavedString + villageSavedScore + villageSavedStringNumber;
+    },
+    
+    villager5Saved : function()
+    {
+        villager5.kill();
+        villageSavedScore += 1;
+        villageSavedText.text = villageSavedString + villageSavedScore + villageSavedStringNumber;
+    },
+    
+    villager6Saved : function()
+    {
+        villager6.kill();
+        villageSavedScore += 1;
+        villageSavedText.text = villageSavedString + villageSavedScore + villageSavedStringNumber;
+    },
+    
+    villager7Saved : function()
+    {
+        villager7.kill();
+        villageSavedScore += 1;
+        villageSavedText.text = villageSavedString + villageSavedScore + villageSavedStringNumber;
+    },
+    
     collectSilverKey : function(player, silverKey)
     {
+        sound_objects.keyPickup_sound.play();
         silverKey.kill();
         world_towerLevel.layer_doors.kill();
     },
     
     collectGoldKey : function(player, goldKey)
     {
+        sound_objects.keyPickup_sound.play();
         goldKey.kill();
         objective_text2.kill();
         world_towerLevel.layer_doors2.kill();
@@ -1689,6 +1811,7 @@ var tower_level =
     respawnPlayer : function()
     {
         coinScore = 0;
+        villageSavedScore = 0;
         game.state.restart();
     },
 };

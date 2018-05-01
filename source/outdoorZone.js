@@ -181,7 +181,7 @@ var outdoorZone =
         arrows.setAll('checkWorldBounds', true);
         
         //Player Code
-        player = this.game.add.sprite(1774, 1997, 'player');
+        player = this.game.add.sprite(3000, 300, 'player');
  
         player.animations.add('walkUp', [0, 1, 2, 3, 4, 5, 6, 7, 8], 8, false);
         
