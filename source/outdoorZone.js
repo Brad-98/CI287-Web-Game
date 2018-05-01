@@ -9,10 +9,12 @@ var enemy_elf_right;
 var enemy_up;
 var enemy_left;
 var enemy_down;
+var enemy_down2;
 var enemy_right;
 var elfTween_up;
 var elfTween_left;
 var elfTween_down;
+var elfTween_down2;
 var elfTween_right;
 var controls;
 var coins;
@@ -109,21 +111,6 @@ var outdoorZone =
         this.game.load.audio('playerHit_sound', '../assets/music/sound_playerHit.mp3');
         this.game.load.audio('playerDead_sound', '../assets/music/sound_playerDead.mp3');
         this.game.load.audio('enemyHit_sound', '../assets/music/sound_enemyHit.wav');
-
-        //enemy_elf = function (index, game, x, y) 
-        //{
-        //    this.enemy= game.add.sprite(x ,y , "enemy_elf");
-        //    this.enemy.anchor.setTo(0.5,0.5);
-        //    this.enemy.name = index.toString;
-         //   this.enemy.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],9, true);
-        //    this.enemy.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
-        //    this.enemy.animations.play('walkDown');
-        //    game.physics.arcade.enable(this.enemy,Phaser.Physics.ARCADE);     
-            
-        //    this.elfTween = game.add.tween(this.enemy).to({
-       //         y:this.enemy.y+100
-        //    },2000,'Linear',true,0,100,true);
-       // };   
     },  
     
     create : function()
@@ -169,9 +156,7 @@ var outdoorZone =
         
         enemy_elf_down = this.game.add.group();
         this.createEnemiesDown();
-        
-        enemy_elf_right = this.game.add.group();
-        this.createEnemiesRight();
+        this.createEnemiesDown2();
         
         fireballs = this.game.add.group();
         fireballs.enableBody = true;
@@ -196,7 +181,7 @@ var outdoorZone =
         arrows.setAll('checkWorldBounds', true);
         
         //Player Code
-        player = this.game.add.sprite(3390, 360, 'player');
+        player = this.game.add.sprite(1774, 1997, 'player');
  
         player.animations.add('walkUp', [0, 1, 2, 3, 4, 5, 6, 7, 8], 8, false);
         
@@ -434,31 +419,29 @@ var outdoorZone =
            }
         if(player.y <= enemy_down.y + 500 && player.y >= enemy_down.y - 5 && player.x <= enemy_down.x + 100 && player.x >= enemy_down.x - 100)
            {
-               enemy_elf_down.callAll('play', null, 'fireDown');
-               elfTween_down.pause(enemy_elf_down);
-               //enemy_elf_down.callAll(this.shootArrow());
-               //this.shootArrowDown(this);
-               enemy_elf_down.forEach(this.shootArrowDown, enemy_elf_down);
+               enemy_down.animations.play('fireDown');
+               elfTween_down.pause();
+               this.shootArrowDown();
            }
-        
         else
            {
-               enemy_elf_down.callAll('play', null, 'walkDown');
+               enemy_down.animations.play('walkDown');
                elfTween_down.resume();
            }
 
-        if(player.x <= enemy_right.x + 500 && player.x >= enemy_right.x - 5 && player.y <= enemy_right.y + 100 && player.y >= enemy_right.y - 100)
+
+         if(player.y <= enemy_down2.y + 500 && player.y >= enemy_down2.y - 5 && player.x <= enemy_down2.x + 100 && player.x >= enemy_down2.x - 100)
            {
-               enemy_elf_right.callAll('play', null, 'fireRight');
-               elfTween_right.pause();
-               enemy_elf_right.forEach(this.shootArrowRight, enemy_elf_right);
-           }
-        
+              enemy_down2.animations.play('fireDown');
+               elfTween_down2.pause();
+               this.shootArrowDown2();
+          }
         else
-           {
-               enemy_elf_right.callAll('play', null, 'walkRight');
-               elfTween_right.resume();
-           }
+          {
+               enemy_down2.animations.play('walkDown');
+               elfTween_down2.resume();
+          }
+
     },
     
     shootFireball : function()
@@ -559,13 +542,13 @@ var outdoorZone =
         this.game.physics.arcade.enable(coins);
         for (var x = 1; x < 3; x++)
         {
-            coin = coins.create(2900 + (x + 50), 300, 'coin');
+            coin = coins.create(2900 + (x * 50), 300, 'coin');
             coin.animations.add('spin', [0, 1, 2, 3], 8, true);
             coin.animations.play('spin');
             coin.anchor.setTo(0.5, 0.5);
         }
             
-        for (var x = 1; x < 3; x++)
+        for (var x = 1; x < 2; x++)
         {
             coin = coins.create(50 * x, 150, 'coin');
             coin.animations.add('spin', [0, 1, 2, 3], 8,true);
@@ -577,7 +560,7 @@ var outdoorZone =
     createEnemiesLeft : function()
     {
          enemy_elf_left.enableBody = true;
-         enemy_left = enemy_elf_left.create(3500 , 400, 'enemy_elf');
+         enemy_left = enemy_elf_left.create(3185 , 515, 'enemy_elf');
          enemy_left.anchor.setTo(0.5, 0.5);
          enemy_left.body.setSize(8, 13, 28, 26);
          enemy_left.animations.add('walkLeft', [13, 14, 15, 16, 17, 18, 19, 20], 9, true);
@@ -596,40 +579,31 @@ var outdoorZone =
         enemy_elf_down.enableBody = true;
         this.game.physics.arcade.enable(enemy_elf_down);
         
-        //for (var x = 1; x < 2; x++)
-        //{
-            enemy_down = enemy_elf_down.create(3400, 400, 'enemy_elf');     
+            enemy_down = enemy_elf_down.create(3339, 356, 'enemy_elf');     
             enemy_down.anchor.setTo(0.5,0.5);
             enemy_down.body.setSize(8, 13, 28, 26);
             enemy_down.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
             enemy_down.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
             enemy_elf_down.callAll('play',null,'walkDown');
-            
-        //};
-        
-        //enemy_elf_down.x = 0;
-        //enemy_elf_down.y = 0;
             elfTween_down = game.add.tween(enemy_down).to({
                 y:enemy_down.y + 100
             }, 2000, 'Linear', true, 0, 100, true);   
     },
     
-    createEnemiesRight : function()
+    createEnemiesDown2 : function()
     {
-         enemy_elf_right.enableBody = true;
-         enemy_right = enemy_elf_right.create(3300 , 500, 'enemy_elf');
-         enemy_right.anchor.setTo(0.5, 0.5);
-         enemy_right.body.setSize(8, 13, 28, 26);
-            //this.enemy.name = index.toString;
-         enemy_right.animations.add('walkRight', [37, 38, 39, 40, 41, 42, 43, 44], 9, true);
-         enemy_right.animations.add('fireRight', [84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95], 9, true);
+        enemy_elf_down.enableBody = true;
+        this.game.physics.arcade.enable(enemy_elf_down);
         
-         enemy_right.animations.play('walkRight');
-         game.physics.arcade.enable(enemy_right,Phaser.Physics.ARCADE);     
-            
-         elfTween_right = game.add.tween(enemy_right).to({
-                x:enemy_right.x + 100
-            }, 2000, 'Linear', true, 0, 100, true);
+            enemy_down2 = enemy_elf_down.create(3440, 356, 'enemy_elf');     
+            enemy_down2.anchor.setTo(0.5,0.5);
+            enemy_down2.body.setSize(8, 13, 28, 26);
+            enemy_down2.animations.add('walkDown', [24,25,26,27,28,29,30,31,32],9, true);
+            enemy_down2.animations.add('fireDown', [72,73,74,75,76,77,78,79,80,81,82,83],9, true);
+            enemy_elf_down.callAll('play',null,'walkDown');
+            elfTween_down2 = game.add.tween(enemy_down2).to({
+                y:enemy_down2.y + 100
+            }, 2000, 'Linear', true, 0, 100, true);   
     },
     
     addExplosionToEnemies : function(enemy_elf)
@@ -695,7 +669,7 @@ var outdoorZone =
        } 
     },
     
-    shootArrowDown : function(enemy_down)
+    shootArrowDown : function()
     {
         if(this.game.time.now > fireArrowDown)
         {
@@ -711,13 +685,29 @@ var outdoorZone =
        } 
     },
     
-    shootArrowRight : function(enemy_right)
+    shootArrowDown2 : function()
     {
-        if(this.game.time.now > fireArrowRight)
+        if(this.game.time.now > fireArrowDown)
         {
             arrow = arrows.getFirstExists(false);
-            if (arrow && enemy_right.alive)
+            if (arrow && enemy_down2.alive)
             {
+                arrow.reset(enemy_down2.x, enemy_down2.y);
+                arrow.angle = 180;
+                arrow.rotation = this.game.physics.arcade.angleBetween(arrow, player);
+                game.physics.arcade.moveToObject(arrow,player,200);
+                fireArrowDown = this.game.time.now + 2000;
+            }
+       } 
+    },
+    
+    //shootArrowRight : function(enemy_right)
+   // {
+    //    if(this.game.time.now > fireArrowRight)
+    //    {
+    //        arrow = arrows.getFirstExists(false);
+    //        if (arrow && enemy_right.alive)
+     /*       {
                 arrow.reset(enemy_right.x, enemy_right.y);
                 arrow.angle = 180;
                 arrow.rotation = this.game.physics.arcade.angleBetween(arrow, player);
@@ -725,7 +715,7 @@ var outdoorZone =
                 fireArrowRight = this.game.time.now + 2000;
             }
        } 
-    },
+    },*/
     
     arrowHitsPlayer : function(player, arrow)
     {
@@ -761,7 +751,7 @@ var outdoorZone =
     
     extraHeart : function()
     {
-        if(player_lives.countLiving() > 2 && coinScore >= 10)
+        if(player_lives.length == 3 && coinScore >= 10)
         {
             coinScore -= 10;
             coinScoreText.text = coinScoreString + coinScore;
@@ -773,7 +763,7 @@ var outdoorZone =
             heartOutline.fixedToCamera = true;
         }
         
-        if(player_lives.countLiving() > 3 && coinScore >= 10)
+        if(player_lives.length == 4 && coinScore >= 10)
         {
             coinScore -= 10;
             coinScoreText.text = coinScoreString + coinScore;

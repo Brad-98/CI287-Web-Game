@@ -75,7 +75,7 @@ function buildWorld_towerLevel (game, world)
     world_towerLevel.layer_doors = world_towerLevel.map.createLayer('layer_Doors');
     world_towerLevel.layer_doors2 = world_towerLevel.map.createLayer('layer_Doors2');
     world_towerLevel.layer_ground.resizeWorld();
-    world_towerLevel.map.setCollision(21, true, world_towerLevel.layer_walls);
+    //world_towerLevel.map.setCollision(21, true, world_towerLevel.layer_walls);
     world_towerLevel.map.setCollision(17, true, world_towerLevel.layer_doors);
     world_towerLevel.map.setCollision(23, true, world_towerLevel.layer_doors2);
     //world_towerLevel.layer_doors.debug = true;
@@ -265,7 +265,11 @@ var tower_level =
         this.game.physics.arcade.collide(player, arrows, this.arrowHitsPlayer);
         this.game.physics.arcade.collide(player, coins, this.collectCoin);
         this.game.physics.arcade.collide(arrows, world_towerLevel.layer_walls, this.arrowOrFireballHitWall);
+        this.game.physics.arcade.collide(arrows, world_towerLevel.layer_doors, this.arrowOrFireballHitWall);
+        this.game.physics.arcade.collide(arrows, world_towerLevel.layer_doors2, this.arrowOrFireballHitWall);
         this.game.physics.arcade.collide(fireballs, world_towerLevel.layer_walls, this.arrowOrFireballHitWall);
+        this.game.physics.arcade.collide(fireballs, world_towerLevel.layer_doors, this.arrowOrFireballHitWall);
+        this.game.physics.arcade.collide(fireballs, world_towerLevel.layer_doors2, this.arrowOrFireballHitWall);
         this.game.physics.arcade.collide(fireballs, enemy_elf_down, this.fireballHitEnemyDown);
         this.game.physics.arcade.collide(fireballs, enemy_elf_up, this.fireballHitEnemyUp);
         this.game.physics.arcade.collide(fireballs, enemy_elf_left, this.fireballHitEnemyLeft);
@@ -1647,7 +1651,7 @@ var tower_level =
     
     extraHeart : function()
     {
-        if(player_lives.countLiving() > 2 && coinScore >= 7)
+        if(player_lives.length == 3 && coinScore >= 7)
         {
             coinScore -= 7;
             coinScoreText.text = coinScoreString + coinScore;
