@@ -22,12 +22,6 @@ var enemy_right;
 var enemy_right1;
 var enemy_right2;
 var enemy_right3;
-//var elfTween_up;
-//var elfTween_left;
-//var elfTween_down;
-//var elfTween_right;
-//var coins;
-//var coin;
 var silverKey;
 var goldKey;
 var fireArrowUp = 0;
@@ -64,6 +58,7 @@ var villager4;
 var villager5;
 var villager6;
 var villager7;
+var end;
 
 var world_towerLevel = 
 {
@@ -89,7 +84,7 @@ function buildWorld_towerLevel (game, world)
     world_towerLevel.layer_doors2 = world_towerLevel.map.createLayer('layer_Doors2');
     world_towerLevel.layer_villagerDead = world_towerLevel.map.createLayer('layer_VillagerDead');
     world_towerLevel.layer_ground.resizeWorld();
-    //world_towerLevel.map.setCollision(21, true, world_towerLevel.layer_walls);
+    world_towerLevel.map.setCollision(21, true, world_towerLevel.layer_walls);
     world_towerLevel.map.setCollision(17, true, world_towerLevel.layer_doors);
     world_towerLevel.map.setCollision(23, true, world_towerLevel.layer_doors2);
     //world_towerLevel.layer_doors.debug = true;
@@ -107,6 +102,7 @@ var tower_level =
         this.game.load.tilemap('map','../assets/tilesets/towerLevel..json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tileSheet', '../assets/tilesets/TileA3-byLunarea.png');
         this.game.load.image('villagerDead', '../assets/merchantDead.png'); 
+        this.game.load.image('end', '../assets/end.png'); 
     },  
     
     create : function()
@@ -125,6 +121,10 @@ var tower_level =
         arrowTrap5 = this.game.add.sprite(957, 1401, 'arrowTrap');
         arrowTrap6 = this.game.add.sprite(1284, 423, 'arrowTrap');
         arrowTrap7 = this.game.add.sprite(1284, 519, 'arrowTrap');
+        
+        end = this.game.add.sprite(3617,0,'end');
+        this.game.physics.enable(end);
+        end.body.immovable = true;
         
         villagers = this.game.add.group();
         this.createVillagers();
@@ -182,7 +182,7 @@ var tower_level =
         arrows.setAll('outOfBoundsKill', true);
         arrows.setAll('checkWorldBounds', true);
         
-        player = this.game.add.sprite(2810,273,'player');
+        player = this.game.add.sprite(1791,2106,'player');
  
         player.animations.add('walkUp', [0,1,2,3,4,5,6,7,8],8, false);
         
@@ -278,8 +278,8 @@ var tower_level =
         coin_imageUpgradeRevive.scale.setTo(1.2, 1.2);
         coin_imageUpgradeRevive.fixedToCamera = true;
         
-        objective_text = this.game.add.text(10 , 200 ,'Main Objective:\nRescue the Villages', {font: '20px Arial', fill: '#ffffff'});
-        objective_text2 = this.game.add.text(10 , 270 ,'Find the Gold Key', {font: '20px Arial', fill: '#ffffff'});
+        objective_text = this.game.add.text(10 , 200 ,'Main Objective:\nRescue the villagers and escape the tower', {font: '20px Arial', fill: '#ffffff'});
+        objective_text2 = this.game.add.text(10 , 270 ,'Find the gold key to unlock the exit', {font: '20px Arial', fill: '#ffffff'});
         objective_text.fixedToCamera = true;
         objective_text2.fixedToCamera = true;
         
@@ -313,6 +313,7 @@ var tower_level =
         this.game.physics.arcade.collide(player, world_towerLevel.layer_doors2);   
         this.game.physics.arcade.collide(player,silverKey, this.collectSilverKey);
         this.game.physics.arcade.collide(player,goldKey, this.collectGoldKey);
+        this.game.physics.arcade.collide(player,end, this.ending);
         
         this.arrowTrapShoot();
 
@@ -326,8 +327,8 @@ var tower_level =
         if(controls.up.isDown && controls.left.isDown)
         {
             player.animations.play('walkLeft');
-            player.body.velocity.y = -140;
-            player.body.velocity.x = -140;
+            player.body.velocity.y = -150;
+            player.body.velocity.x = -150;
 
             facingUp = true;
             facingLeft = true;
@@ -338,8 +339,8 @@ var tower_level =
         else if(controls.up.isDown && controls.right.isDown)
         {
             player.animations.play('walkRight');
-            player.body.velocity.y = -140;
-            player.body.velocity.x = 140;
+            player.body.velocity.y = -150;
+            player.body.velocity.x = 150;
 
             facingUp = true;
             facingLeft = false;
@@ -350,8 +351,8 @@ var tower_level =
         else if(controls.down.isDown && controls.left.isDown)
         {
             player.animations.play('walkLeft');
-            player.body.velocity.y = 140;
-            player.body.velocity.x = -140;
+            player.body.velocity.y = 150;
+            player.body.velocity.x = -150;
 
             facingUp = false;
             facingLeft = true;
@@ -363,8 +364,8 @@ var tower_level =
         else if(controls.down.isDown && controls.right.isDown)
         {
             player.animations.play('walkRight');
-            player.body.velocity.y = 140;
-            player.body.velocity.x = 140;
+            player.body.velocity.y = 150;
+            player.body.velocity.x = 150;
 
             facingUp = false;
             facingLeft = false;
@@ -376,7 +377,7 @@ var tower_level =
         else if (controls.up.isDown)
         {
             player.animations.play('walkUp');
-            player.body.velocity.y = -140;
+            player.body.velocity.y = -160;
 
             facingUp = true;
             facingLeft = false;
@@ -387,7 +388,7 @@ var tower_level =
         else if(controls.down.isDown)
         {
             player.animations.play('walkDown');
-            player.body.velocity.y = 140;
+            player.body.velocity.y = 160;
 
             facingUp = false;
             facingLeft = false;
@@ -398,7 +399,7 @@ var tower_level =
         else if(controls.left.isDown)
         {
             player.animations.play('walkLeft');
-            player.body.velocity.x = -140;
+            player.body.velocity.x = -160;
 
             facingUp = false;
             facingLeft = true;
@@ -409,7 +410,7 @@ var tower_level =
         else if(controls.right.isDown)
         {
             player.animations.play('walkRight');
-            player.body.velocity.x = 140;
+            player.body.velocity.x = 160;
 
             facingUp = false;
             facingLeft = false;
@@ -1675,10 +1676,10 @@ var tower_level =
         villagers.enableBody = true;
         this.game.physics.arcade.enable(villagers);
         
-        villager = villagers.create(507, 1700, 'merchant');
+        villager = villagers.create(2993, 249, 'merchant');
         villager.anchor.setTo(0.5,0.5);
         
-        villager1 = villagers.create(240, 1395, 'merchant');
+        villager1 = villagers.create(1263, 470, 'merchant');
         villager1.anchor.setTo(0.5,0.5);
         
         villager2 = villagers.create(240, 1545, 'merchantBack');
@@ -1813,5 +1814,14 @@ var tower_level =
         coinScore = 0;
         villageSavedScore = 0;
         game.state.restart();
+    },
+    
+    ending : function(player, end)
+    {
+        if(villageSavedScore == 8)
+            {
+                game.state.start('mainMenu');
+            }
+        
     },
 };

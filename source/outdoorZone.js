@@ -65,6 +65,7 @@ function buildWorld_outdoorZone (game, world)
     world_outdoorZone.map.addTilesetImage('farming_fishing', 'fish&farming');
     world_outdoorZone.map.addTilesetImage('plants', 'plants');
     world_outdoorZone.map.addTilesetImage('stonePath', 'stonePath');
+    world_outdoorZone.map.addTilesetImage('mossStonePath', 'mossStonePath');
     
     // Tilemap layers
     world_outdoorZone.layer_ground = world_outdoorZone.map.createLayer('layer_Ground');
@@ -104,6 +105,7 @@ var outdoorZone =
         this.game.load.image('fish&farming', '../assets/tilesets/farming_fishing.png');
         this.game.load.image('plants', '../assets/tilesets/plants.png');
         this.game.load.image('stonePath', '../assets/tilesets/stonePath.png');
+        this.game.load.image('mossStonePath', '../assets/tilesets/mossStonePath.png');
         
         this.game.load.audio('levelMusic', '../assets/music/music_outdoorZone.mp3'); 
         this.game.load.audio('fireball_sound', '../assets/music/sound_fireball.mp3'); 
@@ -181,7 +183,7 @@ var outdoorZone =
         arrows.setAll('checkWorldBounds', true);
         
         //Player Code
-        player = this.game.add.sprite(3000, 300, 'player');
+        player = this.game.add.sprite(1776, 2000, 'player');
  
         player.animations.add('walkUp', [0, 1, 2, 3, 4, 5, 6, 7, 8], 8, false);
         
@@ -262,7 +264,7 @@ var outdoorZone =
         coin_imageUpgradeRevive.scale.setTo(1.2, 1.2);
         coin_imageUpgradeRevive.fixedToCamera = true;
         
-        var objective_text = this.game.add.text(10 , 150 ,'Main Objective:\nLocate the Tower', {font: '20px Arial', fill: '#ffffff'});
+        var objective_text = this.game.add.text(10 , 150 ,'Main Objective:\nFollow the mossy stone path to locate the tower', {font: '20px Arial', fill: '#ffffff'});
         objective_text.fixedToCamera = true;
         
         this.game.camera.follow(player, Phaser.Camera.FOLLOW_LOCKON,0.1, 0.1);
@@ -278,7 +280,14 @@ var outdoorZone =
         this.game.physics.arcade.collide(fireballs, enemy_elf_up, this.fireballHitEnemyUp);
         this.game.physics.arcade.collide(fireballs, enemy_elf_left, this.fireballHitEnemyLeft);
         this.game.physics.arcade.collide(fireballs, enemy_elf_right, this.fireballHitEnemyRight);
+        this.game.physics.arcade.collide(arrows, world_outdoorZone.layer_walls, this.arrowOrFireballHitWall);
+        this.game.physics.arcade.collide(fireballs, world_outdoorZone.layer_walls, this.arrowOrFireballHitWall);
 
+        if (game.sound.usingWebAudio && game.sound.context.state === 'suspended')
+        {
+            game.input.onTap.addOnce(game.sound.context.resume, game.sound.context);
+        }
+        
         if(player_lives.countLiving() < 1)
         {
             game.time.events.add(3000, this.respawnPlayer, this.player);
@@ -289,8 +298,8 @@ var outdoorZone =
         if(controls.up.isDown && controls.left.isDown)
         {
             player.animations.play('walkLeft');
-            player.body.velocity.y = -140;
-            player.body.velocity.x = -140;
+            player.body.velocity.y = -150;
+            player.body.velocity.x = -150;
 
             facingUp = true;
             facingLeft = true;
@@ -301,8 +310,8 @@ var outdoorZone =
         else if(controls.up.isDown && controls.right.isDown)
         {
             player.animations.play('walkRight');
-            player.body.velocity.y = -140;
-            player.body.velocity.x = 140;
+            player.body.velocity.y = -150;
+            player.body.velocity.x = 150;
 
             facingUp = true;
             facingLeft = false;
@@ -313,8 +322,8 @@ var outdoorZone =
         else if(controls.down.isDown && controls.left.isDown)
         {
             player.animations.play('walkLeft');
-            player.body.velocity.y = 140;
-            player.body.velocity.x = -140;
+            player.body.velocity.y = 150;
+            player.body.velocity.x = -150;
 
             facingUp = false;
             facingLeft = true;
@@ -325,8 +334,8 @@ var outdoorZone =
         else if(controls.down.isDown && controls.right.isDown)
         {
             player.animations.play('walkRight');
-            player.body.velocity.y = 140;
-            player.body.velocity.x = 140;
+            player.body.velocity.y = 150;
+            player.body.velocity.x = 150;
 
             facingUp = false;
             facingLeft = false;
@@ -337,7 +346,7 @@ var outdoorZone =
         else if (controls.up.isDown)
         {
             player.animations.play('walkUp');
-            player.body.velocity.y = -140;
+            player.body.velocity.y = -160;
 
             facingUp = true;
             facingLeft = false;
@@ -348,7 +357,7 @@ var outdoorZone =
         else if(controls.down.isDown)
         {
             player.animations.play('walkDown');
-            player.body.velocity.y = 140;
+            player.body.velocity.y = 160;
 
             facingUp = false;
             facingLeft = false;
@@ -359,7 +368,7 @@ var outdoorZone =
         else if(controls.left.isDown)
         {
             player.animations.play('walkLeft');
-            player.body.velocity.x = -140;
+            player.body.velocity.x = -160;
 
             facingUp = false;
             facingLeft = true;
@@ -370,7 +379,7 @@ var outdoorZone =
         else if(controls.right.isDown)
         {
             player.animations.play('walkRight');
-            player.body.velocity.x = 140;
+            player.body.velocity.x = 160;
 
             facingUp = false;
             facingLeft = false;
@@ -540,17 +549,41 @@ var outdoorZone =
     {
         coins.enableBody = true;
         this.game.physics.arcade.enable(coins);
-        for (var x = 1; x < 3; x++)
+        for (var x = 1; x < 2; x++)
         {
-            coin = coins.create(2900 + (x * 50), 300, 'coin');
+            coin = coins.create(3391, 353, 'coin');
             coin.animations.add('spin', [0, 1, 2, 3], 8, true);
             coin.animations.play('spin');
             coin.anchor.setTo(0.5, 0.5);
         }
             
-        for (var x = 1; x < 2; x++)
+        for ( x = 1; x < 2; x++)
         {
-            coin = coins.create(50 * x, 150, 'coin');
+            coin = coins.create(334, 647, 'coin');
+            coin.animations.add('spin', [0, 1, 2, 3], 8,true);
+            coin.animations.play('spin');
+            coin.anchor.setTo(0.5, 0.5);
+        }
+        
+        for ( x = 1; x < 2; x++)
+        {
+            coin = coins.create(884, 1902, 'coin');
+            coin.animations.add('spin', [0, 1, 2, 3], 8,true);
+            coin.animations.play('spin');
+            coin.anchor.setTo(0.5, 0.5);
+        }
+        
+        for ( x = 1; x < 2; x++)
+        {
+            coin = coins.create(1745, 1042, 'coin');
+            coin.animations.add('spin', [0, 1, 2, 3], 8,true);
+            coin.animations.play('spin');
+            coin.anchor.setTo(0.5, 0.5);
+        }
+        
+        for ( x = 1; x < 2; x++)
+        {
+            coin = coins.create(1779, 147, 'coin');
             coin.animations.add('spin', [0, 1, 2, 3], 8,true);
             coin.animations.play('spin');
             coin.anchor.setTo(0.5, 0.5);
@@ -744,6 +777,7 @@ var outdoorZone =
       
     collectCoin : function(player,coin)
     {
+        sound_objects.coin_sound.play();
         coin.kill();
         coinScore += 1;
         coinScoreText.text = coinScoreString + coinScore;
@@ -784,6 +818,11 @@ var outdoorZone =
             coinScoreText.text = coinScoreString + coinScore;
             player_lives.callAll('revive');        
         }
+    },
+    
+    arrowOrFireballHitWall : function(arrow, fireball)
+    {
+        arrow.kill();
     },
     
     respawnPlayer : function()
