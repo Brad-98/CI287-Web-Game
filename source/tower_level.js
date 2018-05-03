@@ -87,7 +87,6 @@ function buildWorld_towerLevel (game, world)
     world_towerLevel.map.setCollision(21, true, world_towerLevel.layer_walls);
     world_towerLevel.map.setCollision(17, true, world_towerLevel.layer_doors);
     world_towerLevel.map.setCollision(23, true, world_towerLevel.layer_doors2);
-    //world_towerLevel.layer_doors.debug = true;
 }
 
 var tower_level =
@@ -98,6 +97,7 @@ var tower_level =
         this.game.load.image('silverKey', '../assets/silverKey.png');
         
         this.game.load.audio('keyPickup_sound', '../assets/music/sound_keyPickup.mp3');
+        this.game.load.audio('tower_levelMusic', '../assets/music/music_towerLevel.mp3'); 
         
         this.game.load.tilemap('map','../assets/tilesets/towerLevel..json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tileSheet', '../assets/tilesets/TileA3-byLunarea.png');
@@ -110,6 +110,9 @@ var tower_level =
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
         buildWorld_towerLevel(game, world_towerLevel);
+        
+        sound_objects.tower_levelMusic = this.game.add.audio('tower_levelMusic');
+        sound_objects.tower_levelMusic.loopFull();
         
         sound_objects.keyPickup_sound = this.game.add.audio('keyPickup_sound');
         
@@ -1776,6 +1779,8 @@ var tower_level =
     {
         if(player_lives.length == 3 && coinScore >= 7)
         {
+            sound_objects.fireball_sound.stop();
+            sound_objects.upgrade_sound.play();
             coinScore -= 7;
             coinScoreText.text = coinScoreString + coinScore;
             this.heart = player_lives.create(118 + (35 * 3), 35, 'heart');
@@ -1788,6 +1793,8 @@ var tower_level =
         
         if(player_lives.length == 4 && coinScore >= 7)
         {
+            sound_objects.fireball_sound.stop();
+            sound_objects.upgrade_sound.play();
             coinScore -= 7;
             coinScoreText.text = coinScoreString + coinScore;
             this.heart = player_lives.create(118 + (35 * 4), 35, 'heart');
@@ -1803,6 +1810,8 @@ var tower_level =
     {
         if(player_lives.countLiving() < 5 && coinScore >= 10)
         {
+            sound_objects.fireball_sound.stop();
+            sound_objects.upgrade_sound.play();
             coinScore -= 10;
             coinScoreText.text = coinScoreString + coinScore;
             player_lives.callAll('revive');        
@@ -1811,6 +1820,7 @@ var tower_level =
     
     respawnPlayer : function()
     {
+        sound_objects.tower_levelMusic.stop();
         coinScore = 0;
         villageSavedScore = 0;
         game.state.restart();
@@ -1819,9 +1829,10 @@ var tower_level =
     ending : function(player, end)
     {
         if(villageSavedScore == 8)
-            {
-                game.state.start('mainMenu');
-            }
+        {
+            sound_objects.tower_levelMusic.stop();
+            game.state.start('winScreen');
+        }
         
     },
 };

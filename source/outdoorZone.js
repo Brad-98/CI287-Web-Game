@@ -78,7 +78,6 @@ function buildWorld_outdoorZone (game, world)
     world_outdoorZone.map.setCollisionBetween(75, 78, true, world_outdoorZone.layer_walls);
     world_outdoorZone.map.setCollisionBetween(93, 96, true, world_outdoorZone.layer_walls);
     world_outdoorZone.map.setCollisionBetween(102, 105, true, world_outdoorZone.layer_walls);
-    //world_outdoorZone.layer_walls.debug = true; 
 }   
 
 var outdoorZone =
@@ -107,27 +106,29 @@ var outdoorZone =
         this.game.load.image('stonePath', '../assets/tilesets/stonePath.png');
         this.game.load.image('mossStonePath', '../assets/tilesets/mossStonePath.png');
         
-        this.game.load.audio('levelMusic', '../assets/music/music_outdoorZone.mp3'); 
+        this.game.load.audio('outdoor_levelMusic', '../assets/music/music_outdoorZone.mp3'); 
         this.game.load.audio('fireball_sound', '../assets/music/sound_fireball.mp3'); 
         this.game.load.audio('coin_sound', '../assets/music/sound_coin.wav'); 
         this.game.load.audio('playerHit_sound', '../assets/music/sound_playerHit.mp3');
         this.game.load.audio('playerDead_sound', '../assets/music/sound_playerDead.mp3');
         this.game.load.audio('enemyHit_sound', '../assets/music/sound_enemyHit.wav');
+        this.game.load.audio('upgrade_sound', '../assets/music/sound_upgrade.wav');
     },  
     
     create : function()
     {
-        // Initialise the tilemap
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
         buildWorld_outdoorZone(game, world_outdoorZone);
+        
         sound_objects.fireball_sound = this.game.add.audio('fireball_sound');
         sound_objects.coin_sound = this.game.add.audio('coin_sound');
         sound_objects.playerHit_sound = this.game.add.audio('playerHit_sound');
         sound_objects.playerDead_sound = this.game.add.audio('playerDead_sound');
         sound_objects.enemyHit_sound = this.game.add.audio('enemyHit_sound');
-        sound_objects.levelMusic = this.game.add.audio('levelMusic');
-        sound_objects.levelMusic.loopFull();
+        sound_objects.upgrade_sound = this.game.add.audio('upgrade_sound');
+        sound_objects.outdoor_levelMusic = this.game.add.audio('outdoor_levelMusic');
+        sound_objects.outdoor_levelMusic.loopFull();
         
         this.towerSprite = this.game.add.sprite(3300, 35, 'towerSprite');
         this.game.physics.enable(this.towerSprite);
@@ -182,7 +183,6 @@ var outdoorZone =
         arrows.setAll('outOfBoundsKill', true);
         arrows.setAll('checkWorldBounds', true);
         
-        //Player Code
         player = this.game.add.sprite(1776, 2000, 'player');
  
         player.animations.add('walkUp', [0, 1, 2, 3, 4, 5, 6, 7, 8], 8, false);
@@ -283,11 +283,6 @@ var outdoorZone =
         this.game.physics.arcade.collide(arrows, world_outdoorZone.layer_walls, this.arrowOrFireballHitWall);
         this.game.physics.arcade.collide(fireballs, world_outdoorZone.layer_walls, this.arrowOrFireballHitWall);
 
-        if (game.sound.usingWebAudio && game.sound.context.state === 'suspended')
-        {
-            game.input.onTap.addOnce(game.sound.context.resume, game.sound.context);
-        }
-        
         if(player_lives.countLiving() < 1)
         {
             game.time.events.add(3000, this.respawnPlayer, this.player);
@@ -787,6 +782,8 @@ var outdoorZone =
     {
         if(player_lives.length == 3 && coinScore >= 10)
         {
+            sound_objects.fireball_sound.stop();
+            sound_objects.upgrade_sound.play();
             coinScore -= 10;
             coinScoreText.text = coinScoreString + coinScore;
             this.heart = player_lives.create(118 + (35 * 3), 35, 'heart');
@@ -799,6 +796,8 @@ var outdoorZone =
         
         if(player_lives.length == 4 && coinScore >= 10)
         {
+            sound_objects.fireball_sound.stop();
+            sound_objects.upgrade_sound.play();
             coinScore -= 10;
             coinScoreText.text = coinScoreString + coinScore;
             this.heart = player_lives.create(118 + (35 * 4), 35, 'heart');
@@ -814,6 +813,8 @@ var outdoorZone =
     {
         if(player_lives.countLiving() < 5 && coinScore >= 15)
         {
+            sound_objects.fireball_sound.stop();
+            sound_objects.upgrade_sound.play();
             coinScore -= 15;
             coinScoreText.text = coinScoreString + coinScore;
             player_lives.callAll('revive');        
@@ -827,13 +828,13 @@ var outdoorZone =
     
     respawnPlayer : function()
     {
-        sound_objects.levelMusic.stop();
+        sound_objects.outdoor_levelMusic.stop();
         game.state.restart();
     },
     
     gotoTowerLevel : function(player, towerSprite)
     {
-        sound_objects.levelMusic.stop();
+        sound_objects.outdoor_levelMusic.stop();
         game.state.start('tower_level');
     }, 
 };

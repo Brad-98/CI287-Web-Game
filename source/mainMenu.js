@@ -18,6 +18,12 @@ var mainMenu =
         
         towerSprite = this.game.add.sprite(GAMEWIDTH/1.35, GAMEHEIGHT/4, 'towerSprite');
         towerSprite.scale.setTo(3, 3);
+        
+        //Enables music some issue with Google Chrome
+        if (game.sound.usingWebAudio && game.sound.context.state === 'suspended')
+        {
+            game.input.onTap.addOnce(game.sound.context.resume, game.sound.context);
+        }
     },
     
     gotoBackstory : function()

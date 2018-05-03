@@ -1,13 +1,5 @@
-var scrollBackground
-
 var control = 
 {
-    preload : function()
-    {
-        this.game.load.image('scrollBackground', '../assets/scrollBackground.jpg');
-        this.game.load.image('continueButton', '../assets/continueButton.png');
-    },  
-    
     create : function()
     {
         scrollBackground = this.game.add.sprite(0, -150, 'scrollBackground');
