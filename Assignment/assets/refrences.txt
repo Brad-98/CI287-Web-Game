@@ -1,0 +1,10 @@
+OUTSIDE TILESET https://opengameart.org/content/lpc-farming-tilesets-magic-animations-and-ui-elements
+Hearts https://opengameart.org/content/heart2-1616
+Fireball https://opengameart.org/content/fireball-spell
+fireball sound effect https://www.freesoundeffects.com/free-track/fireball-1-466500/
+scroll image http://www.pptbackgrounds.org/advanced-blank-scroll-paper-backgrounds.html
+death sound effect https://opengameart.org/content/hurt-death-sound-effect-for-character
+explosion animation from phaser website
+key sound https://opengameart.org/content/key-pickup
+tower level music http://soundimage.org/wp-content/uploads/2017/06/Guitar-Mayhem-2.mp3
+winscreen sound http://www.freesfx.co.uk/rx2/mp3s/4/16055_1460555775.mp3
